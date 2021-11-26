@@ -28,7 +28,9 @@ fn part_two(input: Vec<String>){
 }
 
 fn main() {
+    let start = std::time::Instant::now();
     let input = file_handler::read_lines_from_file("C:/Users/TimHi/Documents/GitHub/AdventOfCode/src/bin/2020/day01/input/input.txt");
     part_one(input.clone());
     part_two(input);
+    println!("{:?}", start.elapsed());
 }
