@@ -15,7 +15,7 @@ pub fn div_up(a: i32, b: i32) -> i32 {
     (a + (b - 1)) / b
 }
 
-//TODO: Potential off by one hehe
+//Could be unified with colum
 fn get_row(pass: String) -> i32 {
     let mut max_row = 127;
     let mut min_row = 0;
