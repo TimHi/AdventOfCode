@@ -1,14 +1,3 @@
-/*
-For example, consider just the first seven characters of FBFBBFFRLR:
-    Start by considering the whole range, rows 0 through 127.
-    F means to take the lower half, keeping rows 0 through 63.
-    B means to take the upper half, keeping rows 32 through 63.
-    F means to take the lower half, keeping rows 32 through 47.
-    B means to take the upper half, keeping rows 40 through 47.
-    B keeps rows 44 through 47.
-    F keeps rows 44 through 45.
-    The final F keeps the lower of the two, row 44.
-*/
 use string_util::StringUtils;
 
 pub fn div_up(a: i32, b: i32) -> i32 {
@@ -86,9 +75,7 @@ fn get_boarding(input: Vec<String>) {
         let row_number = get_row(line.clone());
         let column_number = get_column(line);
         let seat_id = get_seat_id(row_number, column_number);
-        //println!("Row: {}", row_number);
-        //println!("Column: {}", column_number);
-        //println!("Seat ID: {}", seat_id);
+
         id_list.push(seat_id);
         if seat_id > highest_id {
             highest_id = seat_id;
