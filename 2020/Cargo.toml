@@ -9,6 +9,7 @@ edition = "2021"
 file_handler = {path ="./src/lib/file_handler/"}
 string_util = {path = "./src/lib/string_util/"}
 regex = "1"
+arrayvec = "0.7.2"
 
 [[bin]]
 name = "day01"
@@ -37,3 +38,7 @@ path = "src/bin/2020/day06/day06.rs"
 [[bin]]
 name = "day07"
 path = "src/bin/2020/day07/day07.rs"
+
+[[bin]]
+name = "day08"
+path = "src/bin/2020/day08/day08.rs"

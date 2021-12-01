@@ -16,27 +16,15 @@ impl Default for bag {
     }
 }
 
-fn get_bag(vibrance: String, color: String, bag_list: Vec<bag>) -> bag {
-    let bags: Vec<&bag> = bag_list
-        .iter()
-        .filter(|b| b.color == color && b.vibrance == vibrance)
-        .collect();
-
-    return bags.get(0).unwrap();
-}
-
 fn get_rule_count(bag_list: Vec<bag>) -> i32 {
     /*
     Iterate through bag list
     Iterate through cap vector and check for
     each sub-bag (get by vibrance & color) the shiny gold count
     Iterate through sub bags cap vector until its empty (repeat this)
-
     */
     let mut shiny_count = 0;
-    for koffer in bag_list {
-        shiny_count = shiny_count + koffer.shiny_gold_capacity;
-    }
+
     return shiny_count;
 }
 
@@ -76,6 +64,7 @@ fn get_color_count(rules: Vec<String>) -> i32 {
     return bag_rules;
 }
 
+//TODO Rework with Hashmap
 fn main() {
     let input = file_handler::read_lines_from_file(
         "C:/Users/TimHi/Documents/GitHub/AdventOfCode/src/bin/2020/day07/input/input.txt",
