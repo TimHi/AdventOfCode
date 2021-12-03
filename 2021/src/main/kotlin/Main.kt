@@ -20,5 +20,6 @@ fun main(args: Array<String>) {
      var day03 = Day03(readInput("day03_input.txt"))
      val day03part1 = day03.SolvePartOne();
      println("Day 03 Part 01: $day03part1")
-
+     val day03part2 = day03.SolvePartTwo();
+     println("Day 03 Part 02: $day03part2")
 }
