@@ -1,4 +1,5 @@
 import day03.Day03
+import day04.Day04
 
 
 fun readInput(fileName: String): List<String>
@@ -16,10 +17,16 @@ fun main(args: Array<String>) {
      println("Day 02 Part 01: $day02part1")
      val day02part2 = day02.SolvePartTwo()
      println("Day 02 Part 02: $day02part2")
-     */
+
      var day03 = Day03(readInput("day03_input.txt"))
      val day03part1 = day03.SolvePartOne();
      println("Day 03 Part 01: $day03part1")
      val day03part2 = day03.SolvePartTwo();
      println("Day 03 Part 02: $day03part2")
+     */
+     var day04 = Day04(readInput("day04_input.txt"))
+     val day04part1 = day04.SolvePartOne()
+     println("Day 04 Part 01: $day04part1")
+     val day04part2 = day04.SolvePartTwo()
+     println("Day 04 Part 02: $day04part2")
 }
