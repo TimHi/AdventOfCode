@@ -64,7 +64,7 @@ class Day06(_input: List<String>) {
         }
         return fishSum
     }
-    
+
     fun SolvePartOne(): Int {
         for (l in input) {
             setInitialState(l.split(","))
