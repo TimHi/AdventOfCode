@@ -26,9 +26,7 @@ class Day07 (private var input: List<String>) {
         for(i in 0..crabList.size) {
             tempFuel = 0
             for (c in crabList) {
-                var stepsNeeded = (c.toInt() - i).absoluteValue
-                val steps = IntArray(stepsNeeded) { it + 1 }
-                tempFuel += steps.sum()
+                tempFuel += IntArray((c.toInt() - i).absoluteValue) { it + 1 }.sum() // Take the steps needed, create an array with increasing numbers and take their sum https://de.wikipedia.org/wiki/Summe#Notation_mit_dem_Summenzeichen
             }
             if(tempFuel < totalFuel){
                 totalFuel = tempFuel
