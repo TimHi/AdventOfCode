@@ -2,6 +2,7 @@ import day03.Day03
 import day04.Day04
 import day05.Day05
 import day06.Day06
+import day07.Day07
 
 
 fun readInput(fileName: String): List<String>
@@ -37,10 +38,17 @@ fun main(args: Array<String>) {
      println("Day 05 Part 01: $day05part1")
      val day05part2 = day05.SolvePartTwo()
      println("Day 05 Part 02: $day05part2")
-     */
+
      var day06 = Day06(readInput("day06_input.txt"))
      val day06part1 = day06.SolvePartOne()
      println("Day 06 Part 01: $day06part1")
      val day06part2 = day06.SolvePartTwo()
      println("Day 06 Part 02: $day06part2")
+
+     */
+     var day07 = Day07(readInput("day07_input.txt"))
+     val day07part1 = day07.SolvePartOne()
+     println("Day 07 Part 01: $day07part1")
+     val day07part2 = day07.SolvePartTwo()
+     println("Day 06 Part 02: $day07part2")
 }
