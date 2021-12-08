@@ -23,6 +23,7 @@ class Day07 (private var input: List<String>) {
         val crabList = input[0].split(",")
         var totalFuel = Int.MAX_VALUE
         var tempFuel = 0
+        var pos = 0
         for(i in 0..crabList.size) {
             tempFuel = 0
             for (c in crabList) {
@@ -30,8 +31,10 @@ class Day07 (private var input: List<String>) {
             }
             if(tempFuel < totalFuel){
                 totalFuel = tempFuel
+                pos = i
             }
         }
+        println("Pos: $pos, Fuel: $totalFuel")
         return totalFuel
     }
 }

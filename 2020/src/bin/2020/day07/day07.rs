@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+#[derive(PartialEq, Eq, Hash, Clone, Debug)]
 struct bag {
     color: String,
     vibrance: String,
@@ -16,20 +18,23 @@ impl Default for bag {
     }
 }
 
-fn get_rule_count(bag_list: Vec<bag>) -> i32 {
-    /*
-    Iterate through bag list
-    Iterate through cap vector and check for
-    each sub-bag (get by vibrance & color) the shiny gold count
-    Iterate through sub bags cap vector until its empty (repeat this)
-    */
-    let mut shiny_count = 0;
-
-    return shiny_count;
+fn get_rule_count(bag_list: Vec<bag>, bag_map: HashMap<bag, Vec<bag>>) -> i32 {
+    for b in bag_list {
+        let sub_bags: Vec<bag> = bag_map
+            .get(&b)
+            .unwrap_or(&(&Vec::new() as &Vec<bag>))
+            .to_vec();
+        let mut all_sub_bags_scanned = sub_bags.eq(&Vec::new());
+        while all_sub_bags_scanned {
+            all_sub_bags_scanned = false;
+        }
+    }
+    return 0;
 }
 
 fn get_color_count(rules: Vec<String>) -> i32 {
     let mut koffer_list: Vec<bag> = Vec::new();
+
     for rule in rules {
         let w = rule.split(" ");
         let words = w.collect::<Vec<&str>>();
@@ -54,20 +59,33 @@ fn get_color_count(rules: Vec<String>) -> i32 {
             if vibrance.to_string() == "shiny" && color.to_string() == "gold" {
                 shiny_counter = shiny_counter + 1;
             }
-            println!("{}:{}:{}", cap, vibrance, color);
+            println!("Bag: {}:{}:{}", cap, vibrance, color);
         }
         koffer.shiny_gold_capacity = shiny_counter;
         koffer.capacity = cap_vec;
         koffer_list.push(koffer);
     }
-    let bag_rules = get_rule_count(koffer_list);
+    //Create hashmap of rules
+    let mut bag_map: HashMap<bag, Vec<bag>> = HashMap::new();
+    for b in koffer_list.clone() {
+        let mut cap_vec: Vec<bag> = Vec::new();
+        for c in &b.capacity {
+            let bag_to_find = koffer_list
+                .iter()
+                .find(|b| b.vibrance == c.1 && b.color == c.2)
+                .unwrap();
+            cap_vec.push(bag_to_find.to_owned());
+        }
+        bag_map.insert(b, cap_vec);
+    }
+    let bag_rules = get_rule_count(koffer_list, bag_map);
     return bag_rules;
 }
 
 //TODO Rework with Hashmap
 fn main() {
     let input = file_handler::read_lines_from_file(
-        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/src/bin/2020/day07/input/input.txt",
+        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/2020/src/bin/2020/day07/input/input.txt",
     );
     let part_one = get_color_count(input);
     println!("Day 07 - Part 01: {}", part_one);

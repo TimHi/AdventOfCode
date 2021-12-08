@@ -105,7 +105,7 @@ fn get_own_id(mut id_list: Vec<i32>) -> i32 {
 
 fn main() {
     let input = file_handler::read_lines_from_file(
-        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/src/bin/2020/day05/input/input.txt",
+        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/2020/src/bin/2020/day05/input/input.txt",
     );
     get_boarding(input);
 }

@@ -60,7 +60,7 @@ fn get_all_yes_questions(input: Vec<String>) -> i32 {
 
 fn main() {
     let input = file_handler::read_lines_from_file(
-        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/src/bin/2020/day06/input/input.txt",
+        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/2020/src/bin/2020/day06/input/input.txt",
     );
     let part_one = get_question_count(input.clone());
     println!("Day 06 Part 01: {}", part_one);

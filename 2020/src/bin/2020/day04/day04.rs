@@ -182,7 +182,7 @@ fn check_passports(input: Vec<String>) {
 }
 fn main() {
     let input = file_handler::read_lines_from_file(
-        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/src/bin/2020/day04/input/input.txt",
+        "C:/Users/TimHi/Documents/GitHub/AdventOfCode/2020/src/bin/2020/day04/input/input.txt",
     );
     check_passports(input);
 }
