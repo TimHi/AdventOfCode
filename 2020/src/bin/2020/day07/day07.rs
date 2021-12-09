@@ -18,17 +18,7 @@ impl Default for bag {
     }
 }
 
-fn get_rule_count(bag_list: Vec<bag>, bag_map: HashMap<bag, Vec<bag>>) -> i32 {
-    for b in bag_list {
-        let sub_bags: Vec<bag> = bag_map
-            .get(&b)
-            .unwrap_or(&(&Vec::new() as &Vec<bag>))
-            .to_vec();
-        let mut all_sub_bags_scanned = sub_bags.eq(&Vec::new());
-        while all_sub_bags_scanned {
-            all_sub_bags_scanned = false;
-        }
-    }
+fn get_rule_count(bag_map: HashMap<bag, Vec<bag>>) -> i32 {
     return 0;
 }
 
@@ -65,7 +55,8 @@ fn get_color_count(rules: Vec<String>) -> i32 {
         koffer.capacity = cap_vec;
         koffer_list.push(koffer);
     }
-    //Create hashmap of rules
+
+    //Create hashmap of rules but reverse it OUF
     let mut bag_map: HashMap<bag, Vec<bag>> = HashMap::new();
     for b in koffer_list.clone() {
         let mut cap_vec: Vec<bag> = Vec::new();
@@ -78,7 +69,8 @@ fn get_color_count(rules: Vec<String>) -> i32 {
         }
         bag_map.insert(b, cap_vec);
     }
-    let bag_rules = get_rule_count(koffer_list, bag_map);
+
+    let bag_rules = get_rule_count(bag_map);
     return bag_rules;
 }
 
