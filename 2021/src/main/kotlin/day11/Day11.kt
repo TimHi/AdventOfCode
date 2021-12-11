@@ -1,5 +1,5 @@
 package day11
-
+//Not happy with this
 class DumboOctopuss(var energyLevel: Int, var didBlink: Boolean, var didInc: Boolean, var x: Int, var y: Int, var marked: Boolean)
 
 class Day11(private var input: List<String>) {
