@@ -72,7 +72,6 @@ class Day09(private var input: List<String>) {
 
     private fun findBiggestBasins(){
         fillMarker()
-        var markerCounter = 0
         for((y) in heightMap.withIndex()) {
             for ((x) in heightMap[y].withIndex()) {
                 detectBasin(x, y, heightMap[y][x])

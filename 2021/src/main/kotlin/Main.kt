@@ -5,6 +5,8 @@ import day06.Day06
 import day07.Day07
 import day08.Day08
 import day09.Day09
+import day10.Day10
+import day11.Day11
 
 
 fun readInput(fileName: String): List<String>
@@ -59,10 +61,17 @@ fun main(args: Array<String>) {
      val day08part2 = day08.SolvePartTwo()
      println("Day 08 Part 02: $day08part2")
 
-     */
      var day09 = Day09(readInput("day09_input.txt"))
      val day09part1 = day09.solvePartOne()
      println("Day 09 Part 01: $day09part1")
      val day09part2 = day09.solvePartTwo()
      println("Day 09 Part 02: $day09part2")
+
+     var day10 = Day10(readInput("day10_input.txt"))
+     println("Day 10 Part 01: ${day10.solvePartOne()}")
+     println("Day 10 Part 02: ${day10.solvePartTwo()}")
+     */
+     var day11 = Day11(readInput("day11_input.txt"))
+     println("Day 11 Part 01: ${day11.solvePartOne()}")
+     println("Day 11 Part 02: ${day11.solvePartTwo()}")
 }
