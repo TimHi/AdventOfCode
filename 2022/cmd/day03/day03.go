@@ -32,26 +32,34 @@ func SolvePartOne(input []string, start time.Time) int {
 func SolvePartTwo(input []string) int {
 	prio := 0
 	comp := []string{}
+	//Had no time here, loop can be improved
 	for i, content := range input {
-		if len(comp) == 3 || i == len(input)-1 {
-			fmt.Println("Compare: ")
-			fmt.Println(comp)
+		if len(comp) == 3 {
 			subOneTwo := sliceutil.Intersection(strings.Split(comp[0], ""), strings.Split(comp[1], ""))
 			subsOneThree := sliceutil.Intersection(strings.Split(comp[0], ""), strings.Split(comp[2], ""))
 			subs := sliceutil.Intersection(subOneTwo, subsOneThree)
-			fmt.Println(subs)
+			for _, sub := range subs {
+				prio += alphabet[sub]
+			}
 			comp = []string{}
+			comp = append(comp, content)
+		} else if i == len(input)-1 {
+			comp = append(comp, content)
+			subOneTwo := sliceutil.Intersection(strings.Split(comp[0], ""), strings.Split(comp[1], ""))
+			subsOneThree := sliceutil.Intersection(strings.Split(comp[0], ""), strings.Split(comp[2], ""))
+			subs := sliceutil.Intersection(subOneTwo, subsOneThree)
+			for _, sub := range subs {
+				prio += alphabet[sub]
+			}
 		} else {
-			fmt.Println(comp)
 			comp = append(comp, content)
 		}
-		fmt.Println(i)
 	}
 	return prio
 }
 
 func Solve() {
-	input := fileutil.ReadLines(sampleFileName)
-	//fmt.Printf("Day 03 Part 01: Priority is %d ", SolvePartOne(input, time.Now()))
+	input := fileutil.ReadLines(fullFileName)
+	fmt.Printf("Day 03 Part 01: Priority is %d ", SolvePartOne(input, time.Now()))
 	fmt.Printf("Day 03 Part 02: Priority is %d ", SolvePartTwo(input))
 }
