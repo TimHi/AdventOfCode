@@ -1,5 +1,10 @@
 package sliceutil
 
+import (
+	"log"
+	"strconv"
+)
+
 func Intersection(s1, s2 []string) (inter []string) {
 	hash := make(map[string]bool)
 	for _, e := range s1 {
@@ -26,4 +31,24 @@ func removeDups(elements []string) (nodups []string) {
 		}
 	}
 	return
+}
+
+func StringToIntSlice(stringSlice []string) []int {
+	var intSlice = []int{}
+	for _, s := range stringSlice {
+		i, e := strconv.Atoi(s)
+		if e != nil {
+			log.Fatal(e)
+		}
+		intSlice = append(intSlice, i)
+	}
+	return intSlice
+}
+
+func BloatSlice(min, max int) []int {
+	a := make([]int, max-min+1)
+	for i := range a {
+		a[i] = min + i
+	}
+	return a
 }
