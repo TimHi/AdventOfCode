@@ -33,6 +33,7 @@ func Solve(start time.Time) {
 	fmt.Printf("Day 05 Part 02: finished in: %s \n", elapsed)
 }
 
+// TODO: Check string handling here, should be a more pleasant way to pop chars
 func MoveCrates(crates []string, instructions []instruction, canMoveMultiple bool) string {
 	for _, instruction := range instructions {
 		origin := crates[instruction.Origin-1]
