@@ -10,11 +10,15 @@ import (
 )
 
 const filePathPrefix = "cmd/day01/"
-const sampleFileName = "sampleinput.txt"
-const fullFileName = "fullinput.txt"
+const sampleFileName = filePathPrefix + "sampleinput.txt"
+const fullFileName = filePathPrefix + "fullinput.txt"
 
-func Solve(start time.Time) {
-	input := fileutil.ReadLines(filePathPrefix + fullFileName)
+func Solve(start time.Time, useSampleFlag bool) {
+	file := fullFileName
+	if useSampleFlag {
+		file = sampleFileName
+	}
+	input := fileutil.ReadLines(file)
 	elfs := setupElfCalorieMap(input)
 
 	sortedElfs := pairs.SortMapToPairs(elfs)

@@ -98,8 +98,13 @@ func SolvePartTwo(input []string) int {
 	return points
 }
 
-func Solve(start time.Time) {
-	input := fileutil.ReadLines(fullFileName)
+func Solve(start time.Time, useSampleFlag bool) {
+	file := fullFileName
+	if useSampleFlag {
+		file = sampleFileName
+	}
+	input := fileutil.ReadLines(file)
+
 	partOne := SolvePartOne(input)
 	log.Printf("Day 02 Part 01: Rock, Paper, Scissor Tournament Points: %d", partOne)
 	elapsed := time.Since(start)
