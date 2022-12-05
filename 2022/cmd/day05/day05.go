@@ -19,12 +19,8 @@ type instruction struct {
 	Destination int
 }
 
-func Solve(start time.Time, useSampleFlag bool) {
-	file := fullFileName
-	if useSampleFlag {
-		file = sampleFileName
-	}
-	input := fileutil.ReadLines(file)
+func Solve(start time.Time, useSampleFlag bool, day int) {
+	input := fileutil.GetPuzzleInput(useSampleFlag, day)
 	firstPartCrates, instructions := parseInput(input)
 	secondPartCrates := make([]string, len(firstPartCrates))
 	copy(secondPartCrates, firstPartCrates)

@@ -25,19 +25,19 @@ func main() {
 	start := time.Now()
 	switch dayFlag {
 	case 1:
-		day01.Solve(start, useSampleFlag)
+		day01.Solve(start, useSampleFlag, dayFlag)
 		log.Printf("Day 01 took: %s", time.Since(start))
 	case 2:
-		day02.Solve(start, useSampleFlag)
+		day02.Solve(start, useSampleFlag, dayFlag)
 		log.Printf("Day 02 took: %s", time.Since(start))
 	case 3:
-		day03.Solve(start, useSampleFlag)
+		day03.Solve(start, useSampleFlag, dayFlag)
 		log.Printf("Day 03 took: %s", time.Since(start))
 	case 4:
-		day04.Solve(start, useSampleFlag)
+		day04.Solve(start, useSampleFlag, dayFlag)
 		log.Printf("Day 04 took: %s", time.Since(start))
 	case 5:
-		day05.Solve(start, useSampleFlag)
+		day05.Solve(start, useSampleFlag, dayFlag)
 		log.Printf("Day 05 took: %s", time.Since(start))
 	default:
 		log.Fatalf("Day %d not found.", dayFlag)

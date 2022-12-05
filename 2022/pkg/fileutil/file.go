@@ -2,6 +2,7 @@ package fileutil
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -32,4 +33,20 @@ func ReadLines(path string) []string {
 		log.Fatal(err)
 	}
 	return fileContent
+}
+
+const filePathPrefix = "cmd/day"
+const sampleFileName = "sampleinput.txt"
+const fullFileName = "fullinput.txt"
+
+func GetPuzzleInput(useSampleFlag bool, day int) []string {
+	prefix := fmt.Sprintf("cmd/day%d/", day)
+	if day < 10 {
+		prefix = fmt.Sprintf("cmd/day0%d/", day)
+	}
+	file := prefix + fullFileName
+	if useSampleFlag {
+		file = prefix + sampleFileName
+	}
+	return ReadLines(file)
 }

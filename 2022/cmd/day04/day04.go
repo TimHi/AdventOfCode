@@ -14,12 +14,8 @@ const filePathPrefix = "cmd/day04/"
 const sampleFileName = filePathPrefix + "sampleinput.txt"
 const fullFileName = filePathPrefix + "fullinput.txt"
 
-func Solve(start time.Time, useSampleFlag bool) {
-	file := fullFileName
-	if useSampleFlag {
-		file = sampleFileName
-	}
-	input := fileutil.ReadLines(file)
+func Solve(start time.Time, useSampleFlag bool, day int) {
+	input := fileutil.GetPuzzleInput(useSampleFlag, day)
 	fmt.Printf("Day 04 Part 01: Full overlaps: %d \n", SolvePartOne(input))
 	elapsed := time.Since(start)
 	fmt.Printf("Day 04 Part 01: finished in: %s \n", elapsed)

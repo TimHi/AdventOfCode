@@ -8,10 +8,6 @@ import (
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
 )
 
-const filePathPrefix = "cmd/day02/"
-const sampleFileName = filePathPrefix + "sampleinput.txt"
-const fullFileName = filePathPrefix + "fullinput.txt"
-
 // P1: A,X: Rock, B,Y: Paper, C,Z: Scissor
 // X: lose, Y: draw, z: win
 var winner = map[string]string{
@@ -98,12 +94,8 @@ func SolvePartTwo(input []string) int {
 	return points
 }
 
-func Solve(start time.Time, useSampleFlag bool) {
-	file := fullFileName
-	if useSampleFlag {
-		file = sampleFileName
-	}
-	input := fileutil.ReadLines(file)
+func Solve(start time.Time, useSampleFlag bool, day int) {
+	input := fileutil.GetPuzzleInput(useSampleFlag, day)
 
 	partOne := SolvePartOne(input)
 	log.Printf("Day 02 Part 01: Rock, Paper, Scissor Tournament Points: %d", partOne)
