@@ -35,13 +35,17 @@ var Cards = map[string]int{
 	"A": 1, "B": 2, "C": 3,
 	"X": 1, "Y": 2, "Z": 3}
 
-func didIWin(me string, enemy string) bool {
-	loser := winner[me]
-	return loser == enemy
-}
+func Solve(start time.Time, useSampleFlag bool, day int) {
+	input := fileutil.GetPuzzleInput(useSampleFlag, day)
 
-func isDraw(me string, enemy string) bool {
-	return Cards[me] == Cards[enemy]
+	partOne := SolvePartOne(input)
+	log.Printf("Day 02 Part 01: Rock, Paper, Scissor Tournament Points: %d", partOne)
+	elapsed := time.Since(start)
+	log.Printf("Day 02: Part 01 took: %s", elapsed)
+	partTwo := SolvePartTwo(input)
+	log.Printf("Day 02 Part 02: Rock, Paper, Scissor Tournament Points: %d", partTwo)
+	elapsed = time.Since(start)
+	log.Printf("Day 02: Part 02 took: %s", elapsed)
 }
 
 func SolvePartOne(input []string) int {
@@ -58,23 +62,6 @@ func SolvePartOne(input []string) int {
 	return points
 }
 
-func getLosePoints(me string, enemy string) int {
-	cardToLose := loser[enemy]
-	return Cards[cardToLose]
-}
-
-func getDrawPoints(me string, enemy string) int {
-	return Cards[enemy]
-}
-
-func getWinPoints(me string, enemy string) int {
-	cardToWin := p2Winner[enemy]
-	return Cards[cardToWin]
-}
-
-// X means you need to lose,
-// Y means you need to end the round in a draw, and
-// Z means you need to win.
 func SolvePartTwo(input []string) int {
 	points := 0
 	for _, round := range input {
@@ -94,15 +81,25 @@ func SolvePartTwo(input []string) int {
 	return points
 }
 
-func Solve(start time.Time, useSampleFlag bool, day int) {
-	input := fileutil.GetPuzzleInput(useSampleFlag, day)
+func didIWin(me string, enemy string) bool {
+	loser := winner[me]
+	return loser == enemy
+}
 
-	partOne := SolvePartOne(input)
-	log.Printf("Day 02 Part 01: Rock, Paper, Scissor Tournament Points: %d", partOne)
-	elapsed := time.Since(start)
-	log.Printf("Day 02: Part 01 took: %s", elapsed)
-	partTwo := SolvePartTwo(input)
-	log.Printf("Day 02 Part 02: Rock, Paper, Scissor Tournament Points: %d", partTwo)
-	elapsed = time.Since(start)
-	log.Printf("Day 02: Part 02 took: %s", elapsed)
+func isDraw(me string, enemy string) bool {
+	return Cards[me] == Cards[enemy]
+}
+
+func getLosePoints(me string, enemy string) int {
+	cardToLose := loser[enemy]
+	return Cards[cardToLose]
+}
+
+func getDrawPoints(me string, enemy string) int {
+	return Cards[enemy]
+}
+
+func getWinPoints(me string, enemy string) int {
+	cardToWin := p2Winner[enemy]
+	return Cards[cardToWin]
 }

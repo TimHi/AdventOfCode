@@ -9,10 +9,6 @@ import (
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/stringutil"
 )
 
-const filePathPrefix = "cmd/day05/"
-const sampleFileName = filePathPrefix + "sampleinput.txt"
-const fullFileName = filePathPrefix + "fullinput.txt"
-
 type instruction struct {
 	Amount      int
 	Origin      int
