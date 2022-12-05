@@ -58,18 +58,13 @@ func MoveCrates(crates []string, instructions []instruction, canMoveMultiple boo
 	return result
 }
 
-func isNumber(s string) bool {
-	_, err := strconv.Atoi(s)
-	return err == nil
-}
-
 func parseInput(input []string) ([]string, []instruction) {
 	crates := []string{}
 	instructions := []instruction{}
 	crateString := ""
 	for i := 1; i < len(input[0]); i += 4 {
 		for j := 0; j < len(input); j++ {
-			if isNumber(string([]rune(input[j])[i])) {
+			if stringutil.IsNumber(string([]rune(input[j])[i])) {
 				crates = append(crates, crateString)
 				crateString = ""
 				break
