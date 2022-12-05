@@ -78,20 +78,19 @@ func parseInput(input []string) ([]string, []instruction) {
 	for _, line := range input {
 		if len(line) > 0 && line[0:1] == "m" {
 			words := strings.Split(line, " ")
-			amount, err := strconv.Atoi(words[1])
-			if err != nil {
-				log.Fatal(err)
-			}
-			origin, err := strconv.Atoi(words[3])
-			if err != nil {
-				log.Fatal(err)
-			}
-			destination, err := strconv.Atoi(words[5])
-			if err != nil {
-				log.Fatal(err)
-			}
+			amount := parseNumber(words[1])
+			origin := parseNumber(words[3])
+			destination := parseNumber(words[5])
 			instructions = append(instructions, instruction{Amount: amount, Origin: origin, Destination: destination})
 		}
 	}
 	return crates, instructions
+}
+
+func parseNumber(s string) int {
+	number, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return number
 }
