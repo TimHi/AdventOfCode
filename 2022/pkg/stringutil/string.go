@@ -1,6 +1,9 @@
 package stringutil
 
-import "strconv"
+import (
+	"log"
+	"strconv"
+)
 
 func Reverse(s string) (result string) {
 	for _, v := range s {
@@ -12,4 +15,12 @@ func Reverse(s string) (result string) {
 func IsNumber(s string) bool {
 	_, err := strconv.Atoi(s)
 	return err == nil
+}
+
+func ParseNumber(s string) int {
+	number, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return number
 }

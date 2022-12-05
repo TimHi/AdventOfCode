@@ -2,8 +2,6 @@ package day05
 
 import (
 	"fmt"
-	"log"
-	"strconv"
 	"strings"
 	"time"
 
@@ -78,19 +76,11 @@ func parseInput(input []string) ([]string, []instruction) {
 	for _, line := range input {
 		if len(line) > 0 && line[0:1] == "m" {
 			words := strings.Split(line, " ")
-			amount := parseNumber(words[1])
-			origin := parseNumber(words[3])
-			destination := parseNumber(words[5])
+			amount := stringutil.ParseNumber(words[1])
+			origin := stringutil.ParseNumber(words[3])
+			destination := stringutil.ParseNumber(words[5])
 			instructions = append(instructions, instruction{Amount: amount, Origin: origin, Destination: destination})
 		}
 	}
 	return crates, instructions
-}
-
-func parseNumber(s string) int {
-	number, err := strconv.Atoi(s)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return number
 }
