@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
+	"github.com/TimHi/AdventOfCode/m/v2/pkg/stringutil"
 )
 
 const filePathPrefix = "cmd/day05/"
@@ -44,7 +45,7 @@ func MoveCrates(crates []string, instructions []instruction, canMoveMultiple boo
 		if canMoveMultiple {
 			dest = payload + dest
 		} else {
-			dest = Reverse(payload) + dest
+			dest = stringutil.Reverse(payload) + dest
 		}
 		crates[instruction.Destination-1] = dest
 	}
@@ -55,13 +56,6 @@ func MoveCrates(crates []string, instructions []instruction, canMoveMultiple boo
 		}
 	}
 	return result
-}
-
-func Reverse(s string) (result string) {
-	for _, v := range s {
-		result = string(v) + result
-	}
-	return
 }
 
 func isNumber(s string) bool {
