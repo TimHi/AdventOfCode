@@ -1,12 +1,13 @@
 package day01
 
 import (
+	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/pairs"
+	"github.com/TimHi/AdventOfCode/m/v2/pkg/stringutil"
 )
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
@@ -28,6 +29,7 @@ func SolvePartOne(input []string) pairs.Pair {
 
 func SolvePartTwo(input []string) int {
 	elfs := setupElfCalorieMap(input)
+	fmt.Println(elfs)
 	sortedElfs := pairs.SortMapToPairs(elfs)
 	topThreeElfCalorieSum := 0
 	for i := 0; i < 3; i++ {
@@ -44,12 +46,7 @@ func setupElfCalorieMap(values []string) map[int]int {
 			elfId++
 			elfs[elfId] = 0
 		} else {
-			calorie, err := strconv.Atoi(element)
-			if err != nil {
-				log.Fatal("Converting calorie failed: " + element)
-			}
-
-			elfs[elfId] += calorie
+			elfs[elfId] += stringutil.ParseNumber(element)
 		}
 	}
 	return elfs

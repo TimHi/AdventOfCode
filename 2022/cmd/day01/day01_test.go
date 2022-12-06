@@ -35,3 +35,18 @@ func TestSolvePartTwo(t *testing.T) {
 	result := day01.SolvePartTwo(input)
 	assert.Equal(t, 45000, result, "Result was not matching")
 }
+
+var CalorieMapTestData = []struct {
+	in  []string
+	out map[int]int
+}{
+	{[]string{"1000", "2000", "3000", "", "4000", "", "5000", "6000", "", "7000", "8000", "9000", "", "10000"}, map[int]int{0: 6000, 1: 4000, 2: 11000, 3: 24000, 4: 10000}},
+	{[]string{}, map[int]int{}},
+}
+
+func TestSetupElfCalorieMap(t *testing.T) {
+	for _, testData := range CalorieMapTestData {
+		r := day01.SetupElfCalorieMap(testData.in)
+		assert.Equal(t, testData.out, r, "Map was constructed wron")
+	}
+}
