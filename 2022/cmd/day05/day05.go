@@ -17,15 +17,22 @@ type instruction struct {
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
 	input := fileutil.GetPuzzleInput(useSampleFlag, day)
-	firstPartCrates, instructions := parseInput(input)
-	secondPartCrates := make([]string, len(firstPartCrates))
-	copy(secondPartCrates, firstPartCrates)
-	fmt.Printf("Day 05 Part 01: Top Crates are: %s \n", MoveCrates(firstPartCrates, instructions, false))
+	fmt.Printf("Day 05 Part 01: Top crates from the CrateMover 9000 are: %s \n", SolvePartOne(input))
 	elapsed := time.Since(start)
 	fmt.Printf("Day 05 Part 01: finished in: %s \n", elapsed)
-	fmt.Printf("Day 05 Part 02: Top Crates are %s \n", MoveCrates(secondPartCrates, instructions, true))
+	fmt.Printf("Day 05 Part 02: Top crates from the CrateMover 9001 are %s \n", SolvePartTwo(input))
 	elapsed = time.Since(start)
 	fmt.Printf("Day 05 Part 02: finished in: %s \n", elapsed)
+}
+
+func SolvePartOne(input []string) string {
+	crates, instructions := parseInput(input)
+	return MoveCrates(crates, instructions, false)
+}
+
+func SolvePartTwo(input []string) string {
+	crates, instructions := parseInput(input)
+	return MoveCrates(crates, instructions, true)
 }
 
 func MoveCrates(crates []string, instructions []instruction, canMoveMultiple bool) string {
