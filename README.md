@@ -24,7 +24,6 @@ Simple run: `go test ./...`
 Get coverage: `go test -coverprofile cover.out`   
 View the coverage: `go tool cover -html=cover.out`   
 
-
 Language: Go
 
 | Day | Stars |
