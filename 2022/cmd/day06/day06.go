@@ -41,6 +41,9 @@ func checkChunks(data string, chunkSize int) int {
 }
 
 func isMarker(data string) bool {
+	if len(data) == 0 {
+		return false
+	}
 	for _, r := range data {
 		if strings.Count(data, string(r)) > 1 {
 			return false
