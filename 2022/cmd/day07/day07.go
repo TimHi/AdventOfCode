@@ -21,6 +21,7 @@ func Solve(start time.Time, useSampleFlag bool, day int) {
 
 type Node struct {
 	files    map[string]File
+	dirSize  int64
 	name     string
 	children []*Node
 	parent   *Node
@@ -36,22 +37,17 @@ func SolvePartOne(input []string) int64 {
 	currentNode := &rootNode
 	var test = make(map[string]int)
 	for _, line := range input {
-		fmt.Println("Read line: " + line)
 		if isCommand(line) {
 			if isCdCommand(line) {
 				target := getTargetDirectory(line)
 				if target == ".." {
 					currentNode = currentNode.parent
-					fmt.Println("cd ..: " + line)
 				} else {
-					fmt.Println("cd : " + target)
-
 					if value, ok := test[target]; ok {
 						test[target] = value + 1
 					} else {
 						test[target] = 1
 					}
-
 					n := &Node{files: make(map[string]File), name: target, children: []*Node{}, parent: currentNode}
 					currentNode.children = append(currentNode.children, n)
 					currentNode = n
@@ -59,73 +55,91 @@ func SolvePartOne(input []string) int64 {
 			}
 		} else if isLsOutput(line) {
 			size, fileName := getLsOutput(line)
-			fmt.Printf("ls output %d : \n", size)
 			// File size does not change in the input, no need to check for updates (handle ok path)
 			if _, ok := currentNode.files[fileName]; !ok {
 				currentNode.files[fileName] = File{name: fileName, size: size}
 			}
 		}
 	}
-	dirMap := map[string]int64{}
-	fmt.Println("Ok Leeeets Go")
-	rootNode = *rootNode.children[0]
-	rootNode.parent = nil
-	initDirMap(&rootNode, dirMap)
-	sum := getSumOfDirectories(dirMap, 100000)
-	fmt.Println(test)
-	fmt.Println(len(test))
-	fmt.Println(dirMap)
-	return sum
-}
 
-// TODO: Naming
-func getSumOfDirectories(dirMap map[string]int64, limit int64) int64 {
+	initNodeSizes(&rootNode)
 	var sum int64 = 0
-	for key, value := range dirMap {
-		if key != "root" {
-			if value <= limit {
-				fmt.Printf("Adding: %s %d \n", key, value)
-				sum += value
-			}
-		}
-	}
+	getSumOfDirectories(&rootNode, 100000, &sum)
 	return sum
 }
 
-func initDirMap(node *Node, dirMap map[string]int64) {
-	if node.name != "root" {
-		dirSize := getDirSize(node)
-		fmt.Printf("Currently at Node: %s with Dirsize %d \n", node.name, dirSize)
-		_, ok := dirMap[node.name]
-		if !ok {
-			fmt.Printf("Node: %s has empty dirMap, enter Dirsize %d \n", node.name, dirSize)
-			dirMap[node.name] = dirSize
-		}
-
-		for _, c := range node.children {
-			fmt.Printf("Child %s of %s \n", c.name, node.name)
-			initDirMap(c, dirMap)
-		}
-		addDirSizeToParent(node, dirMap)
-	}
-}
-
-func addDirSizeToParent(node *Node, dirMap map[string]int64) {
-	if node.parent != nil {
-		nodeValue, ok := dirMap[node.name]
-		if ok {
-			if node.parent != nil {
-				value, ok := dirMap[node.parent.name]
-				if ok {
-					fmt.Printf("Parent Node: %s of %s has dirMap value %d, add Dirsize %d \n", node.parent.name, node.name, value, nodeValue)
-					dirMap[node.parent.name] = nodeValue + value
+func SolvePartTwo(input []string) int64 {
+	rootNode := Node{files: make(map[string]File), name: "root", children: []*Node{}, parent: nil}
+	currentNode := &rootNode
+	var test = make(map[string]int)
+	for _, line := range input {
+		if isCommand(line) {
+			if isCdCommand(line) {
+				target := getTargetDirectory(line)
+				if target == ".." {
+					currentNode = currentNode.parent
 				} else {
-					fmt.Printf("Parent Node: %s of %s has empty dirMap, enter Dirsize %d \n", node.parent.name, node.name, nodeValue)
-					dirMap[node.parent.name] = nodeValue
+					if value, ok := test[target]; ok {
+						test[target] = value + 1
+					} else {
+						test[target] = 1
+					}
+					n := &Node{files: make(map[string]File), name: target, children: []*Node{}, parent: currentNode}
+					currentNode.children = append(currentNode.children, n)
+					currentNode = n
 				}
 			}
+		} else if isLsOutput(line) {
+			size, fileName := getLsOutput(line)
+			// File size does not change in the input, no need to check for updates (handle ok path)
+			if _, ok := currentNode.files[fileName]; !ok {
+				currentNode.files[fileName] = File{name: fileName, size: size}
+			}
 		}
-		//addDirSizeToParent(node.parent, dirMap)
+	}
+
+	initNodeSizes(&rootNode)
+	var size int64 = 70000000
+	var counter int64 = 0
+	var usedSpace int64 = rootNode.dirSize
+	var requiredSpace int64 = 30000000
+	sumOfDeleted(&rootNode, requiredSpace, &usedSpace, &size)
+	fmt.Println(counter)
+	return size
+}
+
+func sumOfDeleted(node *Node, requiredSpace int64, usedSpace *int64, size *int64) {
+	if *usedSpace-node.dirSize < 70000000-requiredSpace {
+		if node.dirSize < *size {
+			*size = node.dirSize
+		}
+	}
+	for _, c := range node.children {
+		sumOfDeleted(c, requiredSpace, usedSpace, size)
+	}
+}
+
+func getSumOfDirectories(node *Node, limit int64, sum *int64) {
+	if node.dirSize < limit {
+		*sum += node.dirSize
+	}
+	for _, c := range node.children {
+		getSumOfDirectories(c, limit, sum)
+	}
+}
+
+func initNodeSizes(node *Node) {
+	dirSize := getDirSize(node)
+	node.dirSize += dirSize
+	for _, c := range node.children {
+		initNodeSizes(c)
+	}
+	addDirSizeToParent(node)
+}
+
+func addDirSizeToParent(node *Node) {
+	if node.parent != nil {
+		node.parent.dirSize += node.dirSize
 	}
 }
 
@@ -135,10 +149,6 @@ func getDirSize(node *Node) int64 {
 		size += f.size
 	}
 	return size
-}
-
-func SolvePartTwo(input []string) int64 {
-	return -1
 }
 
 // utilize strings.Split?
