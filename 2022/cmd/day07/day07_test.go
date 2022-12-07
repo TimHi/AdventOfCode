@@ -24,14 +24,15 @@ func init() {
 func TestSolvePartOne(t *testing.T) {
 	input := fileutil.GetPuzzleInput(true, 7)
 	result := day07.SolvePartOne(input)
-	var expected int64 = 95637
+	var expected int64 = 95437
 	assert.Equal(t, expected, result, "Result was not matching")
 }
 
 func TestSolvePartTwo(t *testing.T) {
 	input := fileutil.GetPuzzleInput(true, 7)
 	result := day07.SolvePartTwo(input)
-	assert.Equal(t, 19, result, "Result was not matching")
+	var expected int64 = 24933642
+	assert.Equal(t, expected, result, "Result was not matching")
 }
 
 var IsCommandTestData = []struct {
