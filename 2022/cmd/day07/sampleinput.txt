@@ -1,0 +1,22 @@
+$ cd /
+$ ls
+30 b.txt
+$ cd a
+$ ls
+200 f
+$ cd e
+$ ls
+100 i
+$ cd g
+$ ls
+50 i
+$ cd ..
+$ cd ..
+$ cd e2
+$ ls
+10 i
+$ cd ..
+$ cd ..
+$ cd e
+$ ls
+1 j

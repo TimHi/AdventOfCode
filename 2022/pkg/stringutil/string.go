@@ -24,3 +24,12 @@ func ParseNumber(s string) int {
 	}
 	return number
 }
+
+func ParseInt64(s string) int64 {
+	number := ParseNumber(s)
+	return int64(number)
+}
+
+func NotEmpty(s string) bool {
+	return len(s) > 0
+}
