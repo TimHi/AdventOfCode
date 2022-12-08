@@ -47,10 +47,8 @@ func SolvePartTwo(input []string) int {
 	for row, line := range input {
 		for column := 0; column < len(line); column++ {
 			value := stringutil.ParseNumber(string(line[column]))
-			fmt.Printf("Calc input[%d][%d] %d\n", row, column, value)
 			scenicViewScore := getScenicViewscore(row, column, value, &input)
 			if scenicViewScore > highestScenicView {
-				fmt.Printf("New Highscore at input[%d][%d] %d\n", row, column, scenicViewScore)
 				highestScenicView = scenicViewScore
 			}
 		}
@@ -69,7 +67,6 @@ func getScenicViewscore(row, column, value int, input *[]string) int {
 
 	downScore := getDownScore(row, column, edge, bottom, value, input)
 
-	fmt.Printf("R:%d, L:%d, U:%d, D:%d\n", rightScore, leftScore, upScore, downScore)
 	return rightScore * leftScore * upScore * downScore
 }
 
