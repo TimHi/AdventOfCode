@@ -23,13 +23,13 @@ func init() {
 }
 
 func TestSolvePartOne(t *testing.T) {
-	input := fileutil.GetPuzzleInput(true, 6)
+	input := fileutil.GetStringInputs(true, 6)
 	result := day06.SolvePartOne(input)
 	assert.Equal(t, 7, result, "Result was not matching")
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetPuzzleInput(true, 6)
+	input := fileutil.GetStringInputs(true, 6)
 	result := day06.SolvePartTwo(input)
 	assert.Equal(t, 19, result, "Result was not matching")
 }

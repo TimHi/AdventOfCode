@@ -22,13 +22,30 @@ func init() {
 }
 
 func TestSolvePartOne(t *testing.T) {
-	input := fileutil.GetPuzzleInput(true, 8)
+	input := fileutil.GetStringInputs(true, 8)
 	result := day08.SolvePartOne(input)
 	assert.Equal(t, 21, result, "Result was not matching")
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetPuzzleInput(true, 8)
+	input := fileutil.GetStringInputs(true, 8)
 	result := day08.SolvePartTwo(input)
 	assert.Equal(t, 8, result, "Result was not matching")
+}
+
+var IsCommandTestData = []struct {
+	in  string
+	out bool
+}{
+	{"$ cd", true},
+	{"$", true},
+	{"$ ", true},
+	{" $", false},
+	{"a$", false},
+	{"a $ a", false},
+	{"", false},
+}
+
+func TestGetCoordinate(t *testing.T) {
+
 }

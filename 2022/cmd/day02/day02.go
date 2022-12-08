@@ -36,7 +36,7 @@ var Cards = map[string]int{
 	"X": 1, "Y": 2, "Z": 3}
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
-	input := fileutil.GetPuzzleInput(useSampleFlag, day)
+	input := fileutil.GetStringInputs(useSampleFlag, day)
 
 	partOne := SolvePartOne(input)
 	log.Printf("Day 02 Part 01: Rock, Paper, Scissor Tournament Points: %d", partOne)

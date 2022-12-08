@@ -38,8 +38,7 @@ func ReadLines(path string) []string {
 const sampleFileName = "sampleinput.txt"
 const fullFileName = "fullinput.txt"
 
-func GetPuzzleInput(useSampleFlag bool, day int) []string {
-
+func GetStringInputs(useSampleFlag bool, day int) []string {
 	prefix := fmt.Sprintf("cmd/day%d/", day)
 	if day < 10 {
 		prefix = fmt.Sprintf("cmd/day0%d/", day)
