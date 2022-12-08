@@ -14,7 +14,7 @@ func Solve(start time.Time, useSampleFlag bool, day int) {
 	fmt.Printf("Day 07 Part 01: Size of all directories with a total size of at most 100000: %d \n", SolvePartOne(input))
 	elapsed := time.Since(start)
 	fmt.Printf("Day 07 Part 01: finished in: %s \n", elapsed)
-	fmt.Printf("Day 07 Part 02: Message marker at Position: %d \n", SolvePartTwo(input))
+	fmt.Printf("Day 07 Part 02: Size of directory to delete: %d \n", SolvePartTwo(input))
 	elapsed = time.Since(start)
 	fmt.Printf("Day 07 Part 02: finished in: %s \n", elapsed)
 }
