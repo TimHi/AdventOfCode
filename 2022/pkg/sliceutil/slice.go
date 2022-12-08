@@ -1,7 +1,6 @@
 package sliceutil
 
 import (
-	"log"
 	"strconv"
 )
 
@@ -38,15 +37,22 @@ func StringToIntSlice(stringSlice []string) []int {
 	for _, s := range stringSlice {
 		i, e := strconv.Atoi(s)
 		if e != nil {
-			log.Fatal(e)
+			panic(e)
 		}
 		intSlice = append(intSlice, i)
 	}
 	return intSlice
 }
 
+// Creates a slice with the size max-min+1 and fills
+// the slice with ascending numbers starting from min
+// if max < min is passed a empty slice is returned
 func BloatSlice(min, max int) []int {
+	if max < min {
+		return make([]int, 0)
+	}
 	a := make([]int, max-min+1)
+
 	for i := range a {
 		a[i] = min + i
 	}
