@@ -25,6 +25,14 @@ func ParseNumber(s string) int {
 	return number
 }
 
+func ParseFloat64(s string) float64 {
+	number, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return number
+}
+
 func ParseInt64(s string) int64 {
 	number := ParseNumber(s)
 	return int64(number)
