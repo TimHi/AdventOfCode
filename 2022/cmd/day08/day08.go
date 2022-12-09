@@ -141,91 +141,77 @@ func getDownScore(row, column, edge, bottom, value int, input *[]string) int {
 func isTreeVisible(row int, column int, value int, input *[]string) bool {
 	edge := len((*input)[0])
 	bottom := len(*input)
-	isVisible := false
-	isVisible = visibleRight(row, column, edge, bottom, value, input)
-	if isVisible {
-		return isVisible
+
+	directions := []string{"down", "right", "left", "up"}
+
+	for _, direction := range directions {
+		isVisible := checkDirection(row, column, edge, bottom, value, input, direction, 1)
+		if isVisible {
+			return true
+		}
 	}
-	isVisible = visibleLeft(row, column, edge, bottom, value, input)
-	if isVisible {
-		return isVisible
-	}
-	isVisible = visibleUp(row, column, edge, bottom, value, input)
-	if isVisible {
-		return isVisible
-	}
-	isVisible = visibleDown(row, column, edge, bottom, value, input)
-	if isVisible {
-		return isVisible
-	}
+
 	return false
 }
 
-func visibleRight(row int, column int, edge int, bottom int, value int, input *[]string) bool {
+func checkDirection(row int, column int, edge int, bottom int, value int, input *[]string, direction string, steps int) bool {
 	isVisible := false
-	for cColumn := column; cColumn < edge; cColumn++ {
-		if cColumn+1 < edge {
-			treeHeight := getCoordinate(row, cColumn+1, input)
-			if treeHeight >= value {
-				isVisible = false
-				break
-			}
-			if treeHeight < value {
-				isVisible = true
-			}
-		}
-	}
-	return isVisible
-}
 
-func visibleLeft(row int, column int, edge int, bottom int, value int, input *[]string) bool {
-	isVisible := false
-	for cColumn := column; cColumn >= 0; cColumn-- {
-		if cColumn-1 >= 0 {
-			treeHeight := getCoordinate(row, cColumn-1, input)
-			if treeHeight >= value {
-				isVisible = false
-				break
+	switch direction {
+	case "right":
+		for cColumn := column; cColumn < edge; cColumn += steps {
+			if cColumn+1 < edge {
+				treeHeight := getCoordinate(row, cColumn+1, input)
+				if treeHeight >= value {
+					isVisible = false
+					break
+				}
+				if treeHeight < value {
+					isVisible = true
+				}
 			}
-			if treeHeight < value {
-				isVisible = true
+		}
+	case "left":
+		for cColumn := column; cColumn >= 0; cColumn -= steps {
+			if cColumn-1 >= 0 {
+				treeHeight := getCoordinate(row, cColumn-1, input)
+				if treeHeight >= value {
+					isVisible = false
+					break
+				}
+				if treeHeight < value {
+					isVisible = true
+				}
+			}
+		}
+	case "up":
+		for rRow := row; rRow >= 0; rRow -= steps {
+			if rRow-1 >= 0 {
+				treeHeight := getCoordinate(rRow-1, column, input)
+				if treeHeight >= value {
+					isVisible = false
+					break
+				}
+				if treeHeight < value {
+					isVisible = true
+				}
+			}
+		}
+	case "down":
+		for rRow := row; rRow < bottom; rRow += steps {
+			if rRow+1 < bottom {
+				treeHeight := getCoordinate(rRow+1, column, input)
+				if treeHeight >= value {
+					isVisible = false
+					break
+				}
+				if treeHeight < value {
+					isVisible = true
+				}
 			}
 		}
 	}
-	return isVisible
-}
 
-func visibleUp(row int, column int, edge int, bottom int, value int, input *[]string) bool {
-	isVisible := false
-	for rRow := row; rRow >= 0; rRow-- {
-		if rRow-1 >= 0 {
-			treeHeight := getCoordinate(rRow-1, column, input)
-			if treeHeight >= value {
-				isVisible = false
-				break
-			}
-			if treeHeight < value {
-				isVisible = true
-			}
-		}
-	}
-	return isVisible
-}
-
-func visibleDown(row int, column int, edge int, bottom int, value int, input *[]string) bool {
-	isVisible := false
-	for rRow := row; rRow < bottom; rRow++ {
-		if rRow+1 < bottom {
-			treeHeight := getCoordinate(rRow+1, column, input)
-			if treeHeight >= value {
-				isVisible = false
-				break
-			}
-			if treeHeight < value {
-				isVisible = true
-			}
-		}
-	}
 	return isVisible
 }
 
