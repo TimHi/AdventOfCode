@@ -25,7 +25,7 @@ func Solve(start time.Time, useSampleFlag bool, day int) {
 	fmt.Printf("Day 09 Part 01: Fields visited by the Tail at least once: %d \n", SolvePartOne(input))
 	elapsed := time.Since(start)
 	fmt.Printf("Day 09 Part 01: finished in: %s \n", elapsed)
-	fmt.Printf("Day 0 Part 02: Highest Scenic View Score: %d \n", SolvePartTwo(input))
+	fmt.Printf("Day 0 Part 02: Fields visited by the Tail at least once: %d \n", SolvePartTwo(input))
 	elapsed = time.Since(start)
 	fmt.Printf("Day 09 Part 02: finished in: %s \n", elapsed)
 }
@@ -33,86 +33,118 @@ func Solve(start time.Time, useSampleFlag bool, day int) {
 var visitedFields = map[Point]int{}
 
 func SolvePartOne(input []string) int {
-
+	nodes := 2
 	instructions := parseInstructions(input)
-	head := Point{0, 0}
-	tail := Point{0, 0}
+
 	visitedFields[Point{0, 0}] = 1
+	ropePoints := setUpRope(nodes)
 	for _, instruction := range instructions {
-		head, tail = moveRope(instruction, head, tail)
+		fmt.Printf("Move %s %f\n", instruction.direction, instruction.length)
+		moveRope(instruction, ropePoints)
 	}
 	return len(visitedFields)
 }
 
-func moveTail(instruction Instruction, head, tail Point) Point {
-	switch instruction.direction {
+func SolvePartTwo(input []string) int {
+	nodes := 9
+	instructions := parseInstructions(input)
+	visitedFields = nil             //Reset map
+	visitedFields = map[Point]int{} //Reset map
+	fmt.Println(visitedFields)
+	visitedFields[Point{0, 0}] = 1
+	ropePoints := setUpRope(nodes)
+	fmt.Println(ropePoints)
+	for _, instruction := range instructions {
+		fmt.Printf("Move %s %f\n", instruction.direction, instruction.length)
+		moveRope(instruction, ropePoints)
+	}
+	return len(visitedFields)
+}
+
+func moveRope(instruction Instruction, ropePoints []Point) {
+	for i := 0; i < int(instruction.length); i++ {
+		ropePoints[0] = movePoint(instruction.direction, ropePoints[0])
+		for p := 1; p < len(ropePoints); p++ { //Check tail points
+			distance := calcPointDistance(ropePoints[p-1], ropePoints[p])
+			if distance > 1 {
+				ropePoints[p] = moveTail(instruction.direction, ropePoints[p-1], ropePoints[p])
+				if p == len(ropePoints)-1 {
+					if value, ok := visitedFields[ropePoints[p]]; ok {
+						visitedFields[ropePoints[p]] = value + 1
+					} else {
+						visitedFields[ropePoints[p]] = 1
+					}
+				}
+			}
+		}
+		fmt.Println(ropePoints)
+
+	}
+}
+
+func moveTail(direction string, head, tail Point) Point {
+	switch direction {
 	case "R":
-		tail.x = head.x - 1
-		tail.y = head.y
+		tail.x = tail.x + 1
+		if tail.x != head.x {
+			tail.y = head.y
+		} else {
+			tail.y = head.y - 1
+		}
 	case "L":
-		tail.x = head.x + 1
-		tail.y = head.y
+		tail.x = tail.x - 1
+		if tail.x != head.x {
+			tail.y = head.y
+		} else {
+			tail.y = head.y + 1
+		}
 	case "U":
-		tail.x = head.x
-		tail.y = head.y - 1
+		tail.y = tail.y + 1
+		if tail.y != head.y {
+			tail.x = head.x
+		} else {
+			tail.x = head.x - 1
+		}
 	case "D":
-		tail.x = head.x
-		tail.y = head.y + 1
+		tail.y = tail.y - 1
+		if tail.y != head.y {
+			tail.x = head.x
+		} else {
+			tail.x = head.x + 1
+		}
 	default:
 		panic("Direction not recognized")
 	}
 
-	if value, ok := visitedFields[tail]; ok {
-		visitedFields[tail] = value + 1
-	} else {
-		visitedFields[tail] = 1
-	}
-
 	return tail
+}
+
+func movePoint(direction string, point Point) Point {
+	switch direction {
+	case "R":
+		point.x = point.x + 1
+	case "L":
+		point.x = point.x - 1
+	case "U":
+		point.y = point.y + 1
+	case "D":
+		point.y = point.y - 1
+	default:
+		panic("Direction not recognized")
+	}
+	return point
+}
+
+func setUpRope(nodes int) []Point {
+	ropePoints := []Point{}
+	for i := 0; i < nodes; i++ {
+		ropePoints = append(ropePoints, Point{0, 0})
+	}
+	return ropePoints
 }
 
 func calcPointDistance(head, tail Point) float64 {
 	return math.Round(math.Sqrt(math.Pow((tail.x-head.x), 2) + math.Pow((tail.y-head.y), 2)))
-}
-
-func SolvePartTwo(input []string) int {
-	return 0
-}
-
-func moveRope(instruction Instruction, head Point, tail Point) (Point, Point) {
-	switch instruction.direction {
-	case "R":
-		for i := 0; i < int(instruction.length); i++ {
-			head.x += 1
-			tail = moveTailIfNeeded(instruction, head, tail)
-		}
-	case "L":
-		for i := 0; i < int(instruction.length); i++ {
-			head.x -= 1
-			tail = moveTailIfNeeded(instruction, head, tail)
-		}
-	case "U":
-		for i := 0; i < int(instruction.length); i++ {
-			head.y += 1
-			tail = moveTailIfNeeded(instruction, head, tail)
-		}
-	case "D":
-		for i := 0; i < int(instruction.length); i++ {
-			head.y -= 1
-			tail = moveTailIfNeeded(instruction, head, tail)
-		}
-	default:
-		panic("Direction not recognized")
-	}
-	return head, tail
-}
-
-func moveTailIfNeeded(instruction Instruction, head, tail Point) Point {
-	distanceHeadTail := calcPointDistance(head, tail)
-	if distanceHeadTail > 1 {
-		tail = moveTail(instruction, head, tail)
-	}
-	return tail
 }
 
 func parseInstructions(input []string) []Instruction {
