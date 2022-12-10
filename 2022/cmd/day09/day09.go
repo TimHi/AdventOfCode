@@ -120,9 +120,7 @@ func setUpRope(nodes int) []Point {
 // Distance between two points in a 2D space
 // https://de.serlo.org/mathe/1783/abstand-zweier-punkte-berechnen
 func calcPointDistance(head, tail Point) float64 {
-	c := math.Round(math.Sqrt(math.Pow((tail.x-head.x), 2) + math.Pow((tail.y-head.y), 2)))
-	fmt.Println(c)
-	return c
+	return math.Round(math.Sqrt(math.Pow((tail.x-head.x), 2) + math.Pow((tail.y-head.y), 2)))
 }
 
 func parseInstructions(input []string) []Instruction {
