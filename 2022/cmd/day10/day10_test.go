@@ -4,11 +4,6 @@ import (
 	"os"
 	"path"
 	"runtime"
-	"testing"
-
-	"github.com/TimHi/AdventOfCode/m/v2/cmd/day10"
-	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
-	"github.com/stretchr/testify/assert"
 )
 
 func init() {
@@ -19,16 +14,4 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func TestSolvePartOne(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 9)
-	result := day10.SolvePartOne(input)
-	assert.Equal(t, 13140, result, "Result was not matching")
-}
-
-func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 9)
-	result := day10.SolvePartTwo(input)
-	assert.Equal(t, 1, result, "Result was not matching")
 }

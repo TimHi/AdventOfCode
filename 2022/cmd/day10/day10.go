@@ -2,6 +2,7 @@ package day10
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -11,18 +12,12 @@ import (
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
 	input := fileutil.GetStringInputs(useSampleFlag, day)
-	fmt.Printf("Day 10 Part 01: Sum of Cycles: %d \n", SolvePartOne(input))
-	elapsed := time.Since(start)
-	fmt.Printf("Day 10 Part 01: finished in: %s \n", elapsed)
-	fmt.Printf("Day 10 Part 02: Fields visited by the Tail at least once: %d \n", SolvePartTwo(input))
-	elapsed = time.Since(start)
-	fmt.Printf("Day 10 Part 02: finished in: %s \n", elapsed)
-}
-
-func SolvePartOne(input []string) int {
 	program := loadProgram(input)
 	cycleSum := executeProgram(program)
-	return cycleSum
+	fmt.Printf("Day 10 Part 01: Sum of Cycles: %d \n", cycleSum)
+	elapsed := time.Since(start)
+	fmt.Printf("Day 10 finished in: %s \n", elapsed)
+
 }
 
 func loadProgram(input []string) []int {
@@ -41,12 +36,11 @@ func loadProgram(input []string) []int {
 
 func executeProgram(instructions []int) int {
 	crtLines := []string{}
-	crtLine := "........................................"
+	crtLine := "                                        "
 	cycleSum := 0
 	x := 1
 	for c := 1; c < len(instructions); c++ {
-		if x >= 0 && x <= 40 {
-			//TODO: Off by one somehow
+		if math.Abs(float64(x)) >= 0 && math.Abs(float64(x)) < 40 {
 			crtPrinter := (c) % 40
 			if crtPrinter == x-1 {
 				crtLine = crtLine[:x-1] + "#" + crtLine[x:]
@@ -59,27 +53,23 @@ func executeProgram(instructions []int) int {
 			}
 		}
 
-		if ((c)%39) == 0 && c > 0 {
-			crtLines = append(crtLines, crtLine)
-			crtLine = "........................................"
-		}
 		if c == 19 || c == 59 || c == 99 || c == 139 || c == 179 || c == 219 {
 			cycleSum = cycleSum + ((c + 1) * x) //Add + 1 to get the "clean" cycle, hacky way
-			fmt.Printf("Cycle %d Cyclesum %d x %d\n", c, cycleSum, x)
 		}
+
 		x += instructions[c]
+		if ((c) % 39) == 0 {
+			crtLines = append(crtLines, crtLine)
+			crtLine = "                                        "
+		}
 	}
 	printCrt(crtLines)
 	return cycleSum
 }
 
+// Part 2 Simply print the result
 func printCrt(crtLines []string) {
 	for _, crt := range crtLines {
 		fmt.Println(crt)
 	}
-}
-
-func SolvePartTwo(input []string) int {
-	return 0
-
 }
