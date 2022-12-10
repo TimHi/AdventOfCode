@@ -46,7 +46,7 @@ func SolvePartOne(input []string) int {
 }
 
 func SolvePartTwo(input []string) int {
-	nodes := 9
+	nodes := 10
 	instructions := parseInstructions(input)
 	visitedFields = nil             //Reset map
 	visitedFields = map[Point]int{} //Reset map
@@ -55,7 +55,6 @@ func SolvePartTwo(input []string) int {
 	ropePoints := setUpRope(nodes)
 	fmt.Println(ropePoints)
 	for _, instruction := range instructions {
-		fmt.Printf("Move %s %f\n", instruction.direction, instruction.length)
 		moveRope(instruction, ropePoints)
 	}
 	return len(visitedFields)
@@ -67,55 +66,30 @@ func moveRope(instruction Instruction, ropePoints []Point) {
 		for p := 1; p < len(ropePoints); p++ { //Check tail points
 			distance := calcPointDistance(ropePoints[p-1], ropePoints[p])
 			if distance > 1 {
-				ropePoints[p] = moveTail(instruction.direction, ropePoints[p-1], ropePoints[p])
-				if p == len(ropePoints)-1 {
-					if value, ok := visitedFields[ropePoints[p]]; ok {
-						visitedFields[ropePoints[p]] = value + 1
-					} else {
-						visitedFields[ropePoints[p]] = 1
-					}
-				}
+				ropePoints[p] = moveTail(instruction.direction, ropePoints[p-1], ropePoints[p], distance)
 			}
 		}
-		fmt.Println(ropePoints)
-
+		p := len(ropePoints) - 1
+		if _, ok := visitedFields[ropePoints[p]]; !ok {
+			visitedFields[ropePoints[p]] = 1
+		}
 	}
 }
 
-func moveTail(direction string, head, tail Point) Point {
-	switch direction {
-	case "R":
-		tail.x = tail.x + 1
-		if tail.x != head.x {
-			tail.y = head.y
-		} else {
-			tail.y = head.y - 1
-		}
-	case "L":
-		tail.x = tail.x - 1
-		if tail.x != head.x {
-			tail.y = head.y
-		} else {
-			tail.y = head.y + 1
-		}
-	case "U":
-		tail.y = tail.y + 1
-		if tail.y != head.y {
-			tail.x = head.x
-		} else {
-			tail.x = head.x - 1
-		}
-	case "D":
-		tail.y = tail.y - 1
-		if tail.y != head.y {
-			tail.x = head.x
-		} else {
-			tail.x = head.x + 1
-		}
-	default:
-		panic("Direction not recognized")
+func moveTail(direction string, head, tail Point, distance float64) Point {
+	//Head 4:2 T 3:0
+	rel_x := head.x - tail.x // 1
+	rel_y := head.y - tail.y // 2
+
+	if math.Abs(rel_x) == 2 {
+		rel_x = math.Floor(rel_x / 2) // Dont move on top
+	}
+	if math.Abs(rel_y) == 2 {
+		rel_y = math.Floor(rel_y / 2) // Dont move on top
 	}
 
+	tail.x = tail.x + rel_x
+	tail.y = tail.y + rel_y
 	return tail
 }
 
@@ -143,8 +117,12 @@ func setUpRope(nodes int) []Point {
 	return ropePoints
 }
 
+// Distance between two points in a 2D space
+// https://de.serlo.org/mathe/1783/abstand-zweier-punkte-berechnen
 func calcPointDistance(head, tail Point) float64 {
-	return math.Round(math.Sqrt(math.Pow((tail.x-head.x), 2) + math.Pow((tail.y-head.y), 2)))
+	c := math.Round(math.Sqrt(math.Pow((tail.x-head.x), 2) + math.Pow((tail.y-head.y), 2)))
+	fmt.Println(c)
+	return c
 }
 
 func parseInstructions(input []string) []Instruction {
