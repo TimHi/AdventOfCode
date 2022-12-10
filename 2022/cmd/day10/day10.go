@@ -40,18 +40,46 @@ func loadProgram(input []string) []int {
 }
 
 func executeProgram(instructions []int) int {
+	crtLines := []string{}
+	crtLine := "........................................"
 	cycleSum := 0
 	x := 1
-	for c := 0; c < len(instructions); c++ {
+	for c := 1; c < len(instructions); c++ {
+		if x >= 0 && x <= 40 {
+			//TODO: Off by one somehow
+			crtPrinter := (c) % 40
+			if crtPrinter == x-1 {
+				crtLine = crtLine[:x-1] + "#" + crtLine[x:]
+			}
+			if crtPrinter == x {
+				crtLine = crtLine[:x] + "#" + crtLine[x+1:]
+			}
+			if crtPrinter == x+1 {
+				crtLine = crtLine[:x+1] + "#" + crtLine[x+2:]
+			}
+		}
+
+		if ((c)%39) == 0 && c > 0 {
+			crtLines = append(crtLines, crtLine)
+			crtLine = "........................................"
+		}
 		if c == 19 || c == 59 || c == 99 || c == 139 || c == 179 || c == 219 {
 			cycleSum = cycleSum + ((c + 1) * x) //Add + 1 to get the "clean" cycle, hacky way
 			fmt.Printf("Cycle %d Cyclesum %d x %d\n", c, cycleSum, x)
 		}
 		x += instructions[c]
 	}
+	printCrt(crtLines)
 	return cycleSum
+}
+
+func printCrt(crtLines []string) {
+	for _, crt := range crtLines {
+		fmt.Println(crt)
+	}
 }
 
 func SolvePartTwo(input []string) int {
 	return 0
+
 }
