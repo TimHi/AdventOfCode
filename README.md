@@ -21,7 +21,7 @@ Simply open a terminal and run:
 ## Running the tests
 
 Simple run: `go test ./...`   
-Get coverage: `go test -coverprofile cover.out`   
+Get coverage: `go test ./... -coverprofile cover.out`   
 View the coverage: `go tool cover -html=cover.out`   
 
 Language: Go
@@ -36,6 +36,7 @@ Language: Go
 | 06 | ⭐⭐ |
 | 07 | ⭐⭐ |
 | 08 | ⭐⭐ |
+| 09 | ⭐⭐ |
 
 ## 2021
 

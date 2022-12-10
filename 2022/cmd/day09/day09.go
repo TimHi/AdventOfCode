@@ -39,7 +39,6 @@ func SolvePartOne(input []string) int {
 	visitedFields[Point{0, 0}] = 1
 	ropePoints := setUpRope(nodes)
 	for _, instruction := range instructions {
-		fmt.Printf("Move %s %f\n", instruction.direction, instruction.length)
 		moveRope(instruction, ropePoints)
 	}
 	return len(visitedFields)
@@ -48,12 +47,11 @@ func SolvePartOne(input []string) int {
 func SolvePartTwo(input []string) int {
 	nodes := 10
 	instructions := parseInstructions(input)
-	visitedFields = nil             //Reset map
-	visitedFields = map[Point]int{} //Reset map
-	fmt.Println(visitedFields)
+	visitedFields = nil             //Reset map from Part 1
+	visitedFields = map[Point]int{} //Reset map from Part 1
 	visitedFields[Point{0, 0}] = 1
 	ropePoints := setUpRope(nodes)
-	fmt.Println(ropePoints)
+
 	for _, instruction := range instructions {
 		moveRope(instruction, ropePoints)
 	}
@@ -62,21 +60,23 @@ func SolvePartTwo(input []string) int {
 
 func moveRope(instruction Instruction, ropePoints []Point) {
 	for i := 0; i < int(instruction.length); i++ {
+		//Manually move the head as it has no restrictions
 		ropePoints[0] = movePoint(instruction.direction, ropePoints[0])
+		//Move the children
 		for p := 1; p < len(ropePoints); p++ { //Check tail points
-			distance := calcPointDistance(ropePoints[p-1], ropePoints[p])
-			if distance > 1 {
-				ropePoints[p] = moveTail(instruction.direction, ropePoints[p-1], ropePoints[p], distance)
+			if calcPointDistance(ropePoints[p-1], ropePoints[p]) > 1 {
+				ropePoints[p] = moveTail(ropePoints[p-1], ropePoints[p])
 			}
 		}
-		p := len(ropePoints) - 1
-		if _, ok := visitedFields[ropePoints[p]]; !ok {
-			visitedFields[ropePoints[p]] = 1
+		//Head and all children have moved, add the point to the map if it wasnt visited
+		tail := len(ropePoints) - 1
+		if _, ok := visitedFields[ropePoints[tail]]; !ok {
+			visitedFields[ropePoints[tail]] = 1
 		}
 	}
 }
 
-func moveTail(direction string, head, tail Point, distance float64) Point {
+func moveTail(head, tail Point) Point {
 	//Head 4:2 T 3:0
 	rel_x := head.x - tail.x // 1
 	rel_y := head.y - tail.y // 2
