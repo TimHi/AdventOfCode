@@ -68,3 +68,8 @@ func ReverseSlice[T any](s []T) {
 		last--
 	}
 }
+
+// TODO: Test
+func Remove(slice []int, s int) []int {
+	return append(slice[:s], slice[s+1:]...)
+}
