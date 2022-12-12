@@ -3,6 +3,7 @@ package stringutil
 import (
 	"log"
 	"strconv"
+	"unicode"
 )
 
 func Reverse(s string) (result string) {
@@ -48,4 +49,13 @@ func ParseInt64WithError(s string) (int64, error) {
 
 func NotEmpty(s string) bool {
 	return len(s) > 0
+}
+
+func IsUpper(s string) bool {
+	for _, r := range s {
+		if !unicode.IsUpper(r) && unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
 }
