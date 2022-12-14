@@ -17,6 +17,8 @@ import (
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/day10"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/day11"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/day12"
+	"github.com/TimHi/AdventOfCode/m/v2/cmd/day13"
+	"github.com/TimHi/AdventOfCode/m/v2/cmd/day14"
 )
 
 var dayFlag int
@@ -67,6 +69,12 @@ func main() {
 	case 12:
 		day12.Solve(start, useSampleFlag, dayFlag)
 		log.Printf("Day 12 took: %s", time.Since(start))
+	case 13:
+		day13.Solve(start, useSampleFlag, dayFlag)
+		log.Printf("Day 13 took: %s", time.Since(start))
+	case 14:
+		day14.Solve(start, useSampleFlag, dayFlag)
+		log.Printf("Day 14 took: %s", time.Since(start))
 	default:
 		log.Fatalf("Day %d not found.", dayFlag)
 	}
