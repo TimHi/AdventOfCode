@@ -8,6 +8,7 @@ import (
 	"github.com/JamesLMilner/pip-go"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/distance"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
+	"github.com/TimHi/AdventOfCode/m/v2/pkg/numbers"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/stringutil"
 )
 
@@ -16,7 +17,7 @@ func Solve(start time.Time, useSampleFlag bool, day int) {
 	fmt.Printf("Day 15 Part 01: Covered area from beacons %d \n", SolvePartOne(input, useSampleFlag))
 	elapsed := time.Since(start)
 	fmt.Printf("Day 15 Part 01: finished in: %s \n", elapsed)
-	fmt.Printf("Day 15 Part 02: TODO: %d \n", SolvePartTwo(input))
+	fmt.Printf("Day 15 Part 02: Beacon frequency: %d \n", SolvePartTwo(input, useSampleFlag))
 	elapsed = time.Since(start)
 	fmt.Printf("Day 15 Part 02: finished in: %s \n", elapsed)
 }
@@ -30,10 +31,6 @@ type Sensor struct {
 	location         Point
 	beacon           Point
 	distanceToBeacon int
-}
-
-func (s Sensor) getDistanceToBeacon() {
-
 }
 
 var Cave map[Point]int = map[Point]int{}
@@ -53,6 +50,38 @@ func SolvePartOne(input []string, isSample bool) int {
 	}
 
 	return coveredArea
+}
+
+func SolvePartTwo(input []string, isSample bool) int64 {
+	sensors := parseSensors(input)
+	max := 20
+	if !isSample {
+		max = 4000000
+	}
+	for y := 0; y <= max; y++ {
+		x := 0
+		for x < max {
+			found := true
+			point := Point{x, y}
+			for _, sensor := range sensors {
+				sensorPointDistance := distance.GetManhattanDistance(sensor.location.X, sensor.location.Y, point.X, point.Y)
+				if sensorPointDistance <= sensor.distanceToBeacon { //Sensor covers the current Point
+					shiftBack := numbers.Abs(sensor.location.Y-point.Y) - 1       //Without this (X,Y) Would be too far out
+					x = (sensor.location.X + sensor.distanceToBeacon) - shiftBack //Since x is covered by the sensor, add the covered area and take the shift back into account
+					found = false
+				}
+			}
+			if found {
+				return getTuningFrequency(point)
+			}
+		}
+	}
+	return -1
+}
+
+func getTuningFrequency(point Point) int64 {
+	var xTune int64 = int64(point.X) * 4000000
+	return xTune + int64(point.Y)
 }
 
 func getLeftMostSensor(sensors []Sensor) Sensor {
@@ -118,10 +147,6 @@ func isPointInPolygon(sensor Sensor, point Point) bool {
 	return pip.PointInPolygon(pt1, rectangle)
 }
 
-func SolvePartTwo(input []string) int {
-	return 0
-}
-
 func parseSensors(sensors []string) []Sensor {
 	parsedSensors := []Sensor{}
 	for _, s := range sensors {
@@ -130,6 +155,7 @@ func parseSensors(sensors []string) []Sensor {
 	return parsedSensors
 }
 
+// 4.000.000
 func parseSensor(s string) Sensor {
 	//Sensor at x=2, y=0: closest beacon is at x=2, y=10
 	split := strings.Split(s, ": ")

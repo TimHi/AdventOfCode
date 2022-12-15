@@ -6,7 +6,6 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/TimHi/AdventOfCode/m/v2/cmd/day14"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/day15"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +28,7 @@ func TestSolvePartOne(t *testing.T) {
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 14)
-	result := day14.SolvePartTwo(input)
+	input := fileutil.GetStringInputs(true, 15)
+	result := day15.SolvePartTwo(input, true)
 	assert.Equal(t, 2713310158, result, "Result was not matching")
 }
