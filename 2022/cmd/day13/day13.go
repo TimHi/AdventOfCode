@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
+	"github.com/TimHi/AdventOfCode/m/v2/pkg/gen"
 )
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
@@ -47,8 +48,35 @@ type Package struct {
 }
 
 func checkSignal(leftSide, rightSide string) bool {
+	var left []interface{}
+	var right []interface{}
+	unMarshalUnknown(leftSide, &left)
+	unMarshalUnknown(rightSide, &right)
+	didCompare := false
+	isOk := false
 
-	return true
+	for !didCompare {
+		result, finished := compare(left, right)
+		didCompare = finished
+		isOk = result
+	}
+
+	return isOk
+}
+
+func compare(left, right interface{}) (bool, bool) {
+
+	if gen.IsSlice(left) && gen.IsSlice(right) {
+		fmt.Println(left)
+		fmt.Println(right)
+	} else if !gen.IsSlice(left) {
+
+	} else if !gen.IsSlice(right) {
+
+	} else {
+
+	}
+	return true, true
 }
 
 func unMarshalSides(row string, leftSide *[]interface{}, rightSide *[]interface{}) {
