@@ -204,7 +204,7 @@ func getLowestWall() Point {
 
 func getLowestX() Point {
 	lowestPoint := Point{numbers.MaxInt(), 0}
-	for point, _ := range WorldMap {
+	for point := range WorldMap {
 		if point.X < lowestPoint.X {
 			lowestPoint = point
 		}

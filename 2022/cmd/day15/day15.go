@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/JamesLMilner/pip-go"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/distance"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/stringutil"
@@ -44,11 +45,6 @@ const COVERED = 0
 func SolvePartOne(input []string, isSample bool) int {
 	sensors := parseSensors(input)
 
-	for i, sensor := range sensors {
-		fmt.Printf("Expanding Sensor %d of %d \n", i, len(sensors))
-		coverScanArea(sensor)
-	}
-
 	coveredArea := 0
 	if isSample {
 		coveredArea = getCoveredInRow(sensors, 10)
@@ -80,90 +76,50 @@ func getRightMostSensor(sensors []Sensor) Sensor {
 }
 
 func getCoveredInRow(sensors []Sensor, y int) int {
-	fmt.Println("Counting the covered area....")
 	leftBound := getLeftMostSensor(sensors)
 	rightBound := getRightMostSensor(sensors)
 	covered := 0
-	for x := leftBound.location.X - leftBound.distanceToBeacon; x <= rightBound.location.X+rightBound.distanceToBeacon; x++ {
-		value, ok := Cave[Point{x, y}]
-		if ok {
-			if value == COVERED {
-				covered++
-			}
+	for x := leftBound.location.X - leftBound.distanceToBeacon - 5; x <= rightBound.location.X+rightBound.distanceToBeacon+6; x++ {
+		isCovered := false
+		point := Point{x, y}
+		_, ok := Cave[point]
+		if !ok {
+			isCovered = isPointInRhombus(point, sensors)
+		}
+		if isCovered {
+			covered++
 		}
 	}
-	return covered
+	return covered - 1 // For some reason the lib has an one off error...
+}
+
+func isPointInRhombus(point Point, sensors []Sensor) bool {
+	isCovered := false
+	for _, sensor := range sensors {
+		isCovered = isPointInPolygon(sensor, point)
+		if isCovered {
+			return true //Early out, since one coverage is enough
+		}
+	}
+	return isCovered
+}
+
+func isPointInPolygon(sensor Sensor, point Point) bool {
+	rectangle := pip.Polygon{
+		Points: []pip.Point{
+			{X: float64(sensor.location.X-1) - float64(sensor.distanceToBeacon), Y: float64(sensor.location.Y)}, //Left
+			{X: float64(sensor.location.X), Y: float64(sensor.location.Y+1) + float64(sensor.distanceToBeacon)}, //Down
+			{X: float64(sensor.location.X+1) + float64(sensor.distanceToBeacon), Y: float64(sensor.location.Y)}, //Right
+			{X: float64(sensor.location.X), Y: float64(sensor.location.Y-1) - float64(sensor.distanceToBeacon)}, //Up
+			{X: float64(sensor.location.X-1) - float64(sensor.distanceToBeacon), Y: float64(sensor.location.Y)}, //Left, Readme states startpoint is not needed but it returns a way to high number without
+		},
+	}
+	pt1 := pip.Point{X: float64(point.X), Y: float64(point.Y)}
+	return pip.PointInPolygon(pt1, rectangle)
 }
 
 func SolvePartTwo(input []string) int {
 	return 0
-}
-
-func coverScanArea(sensor Sensor) {
-	fmt.Println(sensor)
-	fmt.Println("Cover right down")
-	coverDownRight(sensor)
-	fmt.Println("Cover right top")
-	coverTopRight(sensor)
-	fmt.Println("Cover top left")
-	coverTopLeft(sensor)
-	fmt.Println("Cover left down")
-	coverDownLeft(sensor)
-
-	//printCave()
-}
-
-// GOOOOD MORNING VIETNAM!
-func coverDownRight(sensor Sensor) {
-	tracker := 0
-	for y := sensor.location.Y; y <= sensor.location.Y+sensor.distanceToBeacon; y++ {
-		for x := sensor.location.X; x <= sensor.location.X+sensor.distanceToBeacon-tracker; x++ {
-			_, ok := Cave[Point{x, y}]
-			if !ok {
-				Cave[Point{x, y}] = COVERED
-			}
-		}
-		tracker++
-	}
-}
-
-func coverTopRight(sensor Sensor) {
-	tracker := 0
-	for y := sensor.location.Y; y >= sensor.location.Y-sensor.distanceToBeacon; y-- {
-		for x := sensor.location.X; x <= sensor.location.X+sensor.distanceToBeacon-tracker; x++ {
-			_, ok := Cave[Point{x, y}]
-			if !ok {
-				Cave[Point{x, y}] = COVERED
-			}
-		}
-		tracker++
-	}
-}
-
-func coverTopLeft(sensor Sensor) {
-	tracker := 0
-	for y := sensor.location.Y; y >= sensor.location.Y-sensor.distanceToBeacon; y-- {
-		for x := sensor.location.X; x >= sensor.location.X-sensor.distanceToBeacon+tracker; x-- {
-			_, ok := Cave[Point{x, y}]
-			if !ok {
-				Cave[Point{x, y}] = COVERED
-			}
-		}
-		tracker++
-	}
-}
-
-func coverDownLeft(sensor Sensor) {
-	tracker := 0
-	for y := sensor.location.Y; y <= sensor.location.Y+sensor.distanceToBeacon; y++ {
-		for x := sensor.location.X; x >= sensor.location.X-sensor.distanceToBeacon+tracker; x-- {
-			_, ok := Cave[Point{x, y}]
-			if !ok {
-				Cave[Point{x, y}] = COVERED
-			}
-		}
-		tracker++
-	}
 }
 
 func parseSensors(sensors []string) []Sensor {
