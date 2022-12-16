@@ -23,11 +23,12 @@ type World map[int]map[int]*Tile
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
 	input := fileutil.GetStringInputs(useSampleFlag, day)
+	start2 := time.Now()
 	fmt.Printf("Day 12 Part 01: Shortest route from the Start: %f \n", SolvePartOne(input))
-	elapsed := time.Since(start)
+	elapsed := time.Since(start2)
 	fmt.Printf("Day 12 Part 01: finished in: %s \n", elapsed)
 	fmt.Printf("Day 12 Part 02: Shortest scenic hiking route: %f \n", SolvePartTwo(input))
-	elapsed = time.Since(start)
+	elapsed = time.Since(start2)
 	fmt.Printf("Day 12 Part 02: finished in: %s \n", elapsed)
 }
 
@@ -52,9 +53,9 @@ func findPath(worldInput []string, isPartOne bool) float64 {
 	}
 
 	for _, start := range startTiles {
-		p, dist, found := astar.Path(start, world.To())
+		_, dist, found := astar.Path(start, world.To())
 		if found && dist < shortestDistance {
-			pathAscii = world.RenderPath(p)
+			//pathAscii = world.RenderPath(p)
 			shortestDistance = dist
 		}
 	}

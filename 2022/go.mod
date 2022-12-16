@@ -7,6 +7,7 @@ require (
 	github.com/adam-lavrik/go-imath v0.0.0-20210910152346-265a42a96f0b // indirect
 	github.com/beefsack/go-astar v0.0.0-20200827232313-4ecf9e304482 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dominikbraun/graph v0.15.0 // indirect
 	github.com/iwpnd/piper v0.1.0 // indirect
 	github.com/juliangruber/go-intersect v1.1.0 // indirect
 	github.com/m7shapan/njson v1.0.8 // indirect

@@ -1,4 +1,4 @@
-package day15_test
+package day16_test
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/TimHi/AdventOfCode/m/v2/cmd/day15"
+	"github.com/TimHi/AdventOfCode/m/v2/cmd/day16"
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,13 +22,13 @@ func init() {
 }
 
 func TestSolvePartOne(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 15)
-	result := day15.SolvePartOne(input, true)
+	input := fileutil.GetStringInputs(true, 16)
+	result := day16.SolvePartOne(input)
 	assert.Equal(t, 26, result, "Result was not matching")
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 15)
-	result := day15.SolvePartTwo(input, true)
+	input := fileutil.GetStringInputs(true, 16)
+	result := day16.SolvePartTwo(input)
 	assert.Equal(t, int64(56000011), result, "Result was not matching")
 }
