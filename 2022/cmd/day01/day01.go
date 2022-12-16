@@ -2,7 +2,6 @@ package day01
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/fileutil"
@@ -10,16 +9,17 @@ import (
 	"github.com/TimHi/AdventOfCode/m/v2/pkg/stringutil"
 )
 
-func Solve(start time.Time, useSampleFlag bool, day int) {
+func Solve(start time.Time, useSampleFlag bool, day int) (int, int) {
 	input := fileutil.GetStringInputs(useSampleFlag, day)
 	sortedElf := SolvePartOne(input)
-	log.Printf("Day 01: Part 01 Elf %d with %d Calories", sortedElf.Key, sortedElf.Value)
-	elapsed := time.Since(start)
-	log.Printf("Day 01: Part 01 took: %s", elapsed)
+	//log.Printf("Day 01: Part 01 Elf %d with %d Calories", sortedElf.Key, sortedElf.Value)
+	//elapsed := time.Since(start)
+	//log.Printf("Day 01: Part 01 took: %s", elapsed)
 	topThreeElfCalorieSum := SolvePartTwo(input)
-	log.Printf("Day 01: Part 02 Top three elves carry %d calories", topThreeElfCalorieSum)
-	elapsed = time.Since(start)
-	log.Printf("Day 01: Part 02 took: %s", elapsed)
+	//log.Printf("Day 01: Part 02 Top three elves carry %d calories", topThreeElfCalorieSum)
+	//elapsed = time.Since(start)
+	//log.Printf("Day 01: Part 02 took: %s", elapsed)
+	return sortedElf.Value, topThreeElfCalorieSum
 }
 
 func SolvePartOne(input []string) pairs.Pair {
