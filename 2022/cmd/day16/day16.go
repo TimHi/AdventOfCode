@@ -52,16 +52,28 @@ func SolvePartOne(input []string) int {
 
 	visitedOrder := []string{}
 	minute := 0
-	cb := func(i string) {
-		minute++
-		visitedOrder = append(visitedOrder, i)
-	}
 
 	tick := func() {
 		minute++
 	}
+	for _, v := range Vertices {
+		visitedOrder := []string{}
+		endpoint := v.Key
+		minute = 0
 
-	DFS(graph, graph.Vertices["AA"], cb, tick, &minute)
+		cb := func(i string) {
+			minute++
+			visitedOrder = append(visitedOrder, i)
+			fmt.Println("Current node: " + i)
+			fmt.Println("Checking " + endpoint)
+			if endpoint == i {
+				fmt.Println("Endpoint reached lol")
+				minute = 30
+				fmt.Println(visitedOrder)
+			}
+		}
+		DFS(graph, graph.Vertices["AA"], cb, tick, &minute)
+	}
 
 	// add assertions here
 	fmt.Println(visitedOrder)
@@ -73,23 +85,31 @@ func SolvePartTwo(input []string) int {
 	return 0
 }
 
+var visited = map[string]bool{}
+
 func DFS(g *Graph, startVertex *Vertex, visitCb func(string), tick func(), minute *int) {
 	tick() // Movement
-	if startVertex == nil || *minute == 30 {
+
+	if startVertex == nil || *minute >= 30 { //add minutes
 		return
 	}
-	// Add node to list
-	visitCb(startVertex.Key)
-	fmt.Printf("Minute: %d Adding %s, Valve is closed %t \n", *minute, startVertex.Key, startVertex.IsOpen)
-	//Get the highest flow rate
-	highest := getHighestFlowRate(g, startVertex.Vertices, startVertex)
-	if !highest.IsOpen {
-		fmt.Printf("Minute: %d Opening %s \n", *minute, highest.Key)
-		startVertex.Vertices[highest.Key].IsOpen = true
-		tick() //Open Valve
-	}
 
-	DFS(g, highest, visitCb, tick, minute)
+	fmt.Printf("At %s \n", startVertex.Key)
+
+	visited[startVertex.Key] = true
+	visitCb(startVertex.Key)
+
+	// for each of the adjacent vertices, call the function recursively
+	// if it hasn't yet been visited
+	if len(startVertex.Vertices) == 1 {
+		fmt.Println("Endpoint")
+	}
+	for _, v := range startVertex.Vertices {
+		if visited[v.Key] {
+			continue
+		}
+		DFS(g, v, visitCb, tick, minute)
+	}
 }
 
 func getHighestFlowRate(g *Graph, vertices map[string]*Vertex, parent *Vertex) *Vertex {
