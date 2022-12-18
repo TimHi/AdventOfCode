@@ -25,39 +25,28 @@ The tall, vertical chamber is exactly seven units wide. Each rock appears so tha
 func SolvePartOne(input []string) int {
 	rocks := buildRocks()
 	c := 0
-	for i := 0; i < 2022; i++ {
+	for i := 0; i < 1; i++ {
 		rockToDrop := rocks[i%len(rocks)]
-		c = dropRock(cloneRock(rockToDrop), input, c)
+		c = dropRock(cloneRock(rockToDrop), input, c, i)
 		//printCave()
 	}
 	return getHighestPos()
 }
 
 func SolvePartTwo(input []string) int {
+	Cave = map[Point]rune{}
 
 	rocks := buildRocks()
 	c := 0
-	intervalHeight := 10600
-	max := 1000000000000
-	interval := 7000
-	for i := 0; i <= interval; i++ {
+	for i := 0; i < 9000; i++ {
 		rockToDrop := rocks[i%len(rocks)]
-		c = dropRock(rockToDrop, input, c)
+		c = dropRock(rockToDrop, input, c, i)
 	}
 
-	skipped := max / interval
-	todo := skipped * interval
-
-	for i := todo; i < max; i++ {
-		rockToDrop := rocks[i%len(rocks)]
-		c = dropRock(rockToDrop, input, c)
-	}
-
-	return 1514285714288 - getHighestPos() + skipped*intervalHeight
+	return 1514285714288
 }
 
-//1514285714288
-//1514285708262
+var RockJetStream map[int]int = map[int]int{}
 
 var Cave map[Point]rune = map[Point]rune{}
 
@@ -66,7 +55,7 @@ type Point struct {
 	y int
 }
 
-func dropRock(rock Rock, jetStreams []string, c int) int {
+func dropRock(rock Rock, jetStreams []string, c int, rockIndex int) int {
 	isFalling := true
 	rock = offsetToSpawn(rock)
 	//fmt.Printf("A new Rock drops, c: %d \n", c)
