@@ -28,7 +28,7 @@ func TestSolvePartOne(t *testing.T) {
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetStringInputs(false, 18)
+	input := fileutil.GetStringInputs(true, 18)
 	result := day18.SolvePartTwo(input)
-	assert.Equal(t, 1514285714288, result, "Result was not matching")
+	assert.Equal(t, 58, result, "Result was not matching")
 }
