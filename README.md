@@ -1,6 +1,6 @@
-# Advent of Code  
+# Advent of Code 🎅  
 
-Collection of my solutions to the [Advent of Code](https://adventofcode.com/) problems.
+Collection of my solutions to the [Advent of Code](https://adventofcode.com/) problems. 🎄
 
 ## 2022
 
@@ -45,6 +45,7 @@ Language: Go
 | 15 | ⭐⭐ |
 | 16 |     |
 | 17 | ⭐  |
+| 18 | ⭐⭐ |
 
 ## 2021
 
