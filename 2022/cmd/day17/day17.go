@@ -11,16 +11,11 @@ func Solve(start time.Time, useSampleFlag bool, day int) {
 	input := fileutil.GetStringInputs(useSampleFlag, day)
 	fmt.Printf("Day 17 Part 01: Height after 2022 rocks %d \n", SolvePartOne(input))
 	elapsed := time.Since(start)
-	fmt.Printf("Day 15 Part 01: finished in: %s \n", elapsed)
-	fmt.Printf("Day 15 Part 02: Beacon frequency: %d \n", SolvePartTwo(input))
+	fmt.Printf("Day 17 Part 01: finished in: %s \n", elapsed)
+	fmt.Printf("Day 17 Part 02: Height after a lot of rocks: %d \n", SolvePartTwo(input))
 	elapsed = time.Since(start)
-	fmt.Printf("Day 15 Part 02: finished in: %s \n", elapsed)
+	fmt.Printf("Day 17 Part 02: finished in: %s \n", elapsed)
 }
-
-/*
-The tall, vertical chamber is exactly seven units wide. Each rock appears so that its left edge is two units away from
- the left wall and its bottom edge is three units above the highest rock in the room (or the floor, if there isn't one).
-*/
 
 func SolvePartOne(input []string) int {
 	rocks := buildRocks()
@@ -43,7 +38,7 @@ func SolvePartTwo(input []string) int {
 		c = dropRock(rockToDrop, input, c, i)
 	}
 
-	return 1514285714288
+	return -1
 }
 
 var RockJetStream map[int]int = map[int]int{}
@@ -128,15 +123,6 @@ func canRockFall(rock Rock) bool {
 }
 
 func moveRock(stream rune, rock Rock) {
-	if stream == '>' {
-		//fmt.Printf("Jet of gas pushes rock right \n")
-	}
-	if stream == '<' {
-		//fmt.Printf("Jet of gas pushes rock left \n")
-	}
-	if stream == 'v' {
-		//fmt.Printf("Rock falls 1 unit \n")
-	}
 	for i := 0; i < len(rock.Shape); i++ {
 		if stream == '>' {
 			rock.Shape[i].x += 1
@@ -155,23 +141,19 @@ func canPushRock(stream rune, rock Rock) bool {
 		coord := rock.Shape[i]
 		if stream == '>' {
 			if rock.Shape[i].x+1 > 6 {
-				//fmt.Printf("Stream %c pushes rock right but nothing happens \n", stream)
 				return false
 			}
 			_, ok := Cave[Point{coord.x + 1, coord.y}]
 			if ok {
-				//fmt.Printf("Stream %c pushes rock right but nothing happens (Rock hits other rock) \n", stream)
 				return false
 			}
 		}
 		if stream == '<' {
 			if rock.Shape[i].x-1 < 0 {
-				//fmt.Printf("Stream %c pushes rock left but nothing happens \n", stream)
 				return false
 			}
 			_, ok := Cave[Point{coord.x - 1, coord.y}]
 			if ok {
-				//fmt.Printf("Stream %c pushes rock left but nothing happens (Rock hits other rock) \n", stream)
 				return false
 			}
 		}

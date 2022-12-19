@@ -11,12 +11,12 @@ import (
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
 	input := fileutil.GetStringInputs(useSampleFlag, day)
-	fmt.Printf("Day 15 Part 01: Covered area from beacons %d \n", SolvePartOne(input))
+	fmt.Printf("Day 16 Part 01: Covered area from beacons %d \n", SolvePartOne(input))
 	elapsed := time.Since(start)
-	fmt.Printf("Day 15 Part 01: finished in: %s \n", elapsed)
-	fmt.Printf("Day 15 Part 02: Beacon frequency: %d \n", SolvePartTwo(input))
+	fmt.Printf("Day 16 Part 01: finished in: %s \n", elapsed)
+	fmt.Printf("Day 16 Part 02: Beacon frequency: %d \n", SolvePartTwo(input))
 	elapsed = time.Since(start)
-	fmt.Printf("Day 15 Part 02: finished in: %s \n", elapsed)
+	fmt.Printf("Day 16 Part 02: finished in: %s \n", elapsed)
 }
 
 func SolvePartOne(input []string) int {
