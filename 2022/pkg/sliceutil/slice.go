@@ -73,3 +73,9 @@ func ReverseSlice[T any](s []T) {
 func Remove(slice []int, s int) []int {
 	return append(slice[:s], slice[s+1:]...)
 }
+
+func CopySlice(s []int) []int {
+	s2 := make([]int, len(s))
+	copy(s2, s)
+	return s2
+}
