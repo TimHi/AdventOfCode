@@ -69,13 +69,26 @@ func ReverseSlice[T any](s []T) {
 	}
 }
 
-// TODO: Test
 func Remove(slice []int, s int) []int {
 	return append(slice[:s], slice[s+1:]...)
+}
+
+func InsertInt(array []int, value int, index int) []int {
+	return append(array[:index], append([]int{value}, array[index:]...)...)
 }
 
 func CopySlice(s []int) []int {
 	s2 := make([]int, len(s))
 	copy(s2, s)
 	return s2
+}
+
+func GetIndexOfInt(item int, s []int) int {
+	index := -1
+	for i, value := range s {
+		if value == item {
+			return i
+		}
+	}
+	return index
 }

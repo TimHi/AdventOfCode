@@ -20,61 +20,67 @@ func Solve(start time.Time, useSampleFlag bool, day int) {
 
 func SolvePartOne(input []string) int {
 	numberList := sliceutil.StringToIntSlice(input)
+	mixedList, indexList := mix(numberList, 1)
+	sum := getSumAfterN(mixedList, indexList)
+	return sum
+}
 
-	for _, v := range numberList {
-		if isDuplicate(numberList, v) {
-			fmt.Println(v)
-			panic("Yea this doesnt work")
-		}
-	}
-
-	mcHammerSlice := sliceutil.CopySlice(numberList)
-	numberList = mix(mcHammerSlice, numberList, len(mcHammerSlice))
+func getSumAfterN(numberList []int, indexList []int) int {
 	fmt.Println(numberList)
-	return 0
+	fmt.Println(indexList)
+	zeroIndex := sliceutil.GetIndexOfInt(5, indexList) // 5 is mapped to 0
+	sum := 0
+	// After 0 means taking the 0 index + the nth number
+	for _, v := range []int{1000, 2000, 3000} {
+		afterZero := zeroIndex + v
+		afterZeroMod := afterZero % len(indexList)
+		//index := sliceutil.GetIndexOfInt(afterZeroMod, indexList)
+		value := numberList[afterZeroMod]
+		fmt.Printf("Index: %d Value: %d \n", afterZeroMod, value)
+		sum += value
+	}
+	// 4, -3, 2 = 3
+	return sum
 }
 
-func isDuplicate(s []int, num int) bool {
-	count := 0
-	for _, i := range s {
-		if i == num {
-			count += 1
+func mix(numberList []int, times int) ([]int, []int) {
+	indexSlice := sliceutil.BloatSlice(0, len(numberList)-1)
+	for i := 0; i < len(numberList); i++ {
+		index := sliceutil.GetIndexOfInt(i, indexSlice)
+		from := index
+		to := index + numberList[index]
+		valueToMove := numberList[index]
+		if valueToMove < 0 {
+			to -= 1 // idk why
 		}
-	}
-	return count > 1
-}
 
-func mix(mcHammerSlice, numberList []int, times int) []int {
-	anotherTempSlice := sliceutil.BloatSlice(0, len(mcHammerSlice))
-	fmt.Println(mcHammerSlice)
-	fmt.Println(anotherTempSlice)
-	for i := 0; i < times; i++ {
-		fmt.Printf("Moving %d \n", mcHammerSlice[i])
-		numberList = moveInt(numberList, i, mcHammerSlice[i]+anotherTempSlice)
-		fmt.Println(numberList)
+		numberList = moveInt(numberList, from, to)
+		indexSlice = moveInt(indexSlice, from, to)
 	}
-	return numberList
+	fmt.Println(numberList)
+	fmt.Println(indexSlice)
+	return numberList, indexSlice
 }
 
 func SolvePartTwo(input []string) int {
 	return 0
 }
 
-func insertInt(array []int, value int, index int) []int {
-	return append(array[:index], append([]int{value}, array[index:]...)...)
-}
-
-func removeInt(array []int, index int) []int {
-	return append(array[:index], array[index+1:]...)
-}
-
 func moveInt(array []int, srcIndex int, dstIndex int) []int {
-	if srcIndex == len(array) {
+	srcIndex = srcIndex % len(array)
+	dstIndex = dstIndex % len(array) //TODO
+	if srcIndex >= len(array) {
 		srcIndex = srcIndex % len(array)
 	}
-	if dstIndex == len(array) {
-		dstIndex = dstIndex % len(array)
+	if dstIndex >= len(array) {
+		dstIndex = dstIndex%len(array) + 1
+	}
+	if dstIndex < 0 {
+		dstIndex = dstIndex + len(array)
 	}
 	value := array[srcIndex]
-	return insertInt(removeInt(array, srcIndex), value, dstIndex)
+	return sliceutil.InsertInt(sliceutil.Remove(array, srcIndex), value, dstIndex)
 }
+
+//srcI =  1
+//dstI = -2
