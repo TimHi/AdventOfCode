@@ -30,5 +30,5 @@ func TestSolvePartOne(t *testing.T) {
 func TestSolvePartTwo(t *testing.T) {
 	input := fileutil.GetStringInputs(true, 21)
 	result := day21.SolvePartTwo(input)
-	assert.Equal(t, 1623178306, result, "Result was not matching")
+	assert.Equal(t, 302, result, "Result was not matching")
 }
