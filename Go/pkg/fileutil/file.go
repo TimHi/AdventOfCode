@@ -39,9 +39,9 @@ const sampleFileName = "sampleinput.txt"
 const fullFileName = "fullinput.txt"
 
 func GetStringInputs(useSampleFlag bool, day int, year int) []string {
-	prefix := fmt.Sprintf("%d/day%d/", year, day)
+	prefix := fmt.Sprintf("cmd/%d/day%d/", year, day)
 	if day < 10 {
-		prefix = fmt.Sprintf("%d/day0%d/", year, day)
+		prefix = fmt.Sprintf("cmd/%d/day0%d/", year, day)
 	}
 	file := prefix + fullFileName
 	if useSampleFlag {

@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"time"
 
+	day01_2017 "github.com/TimHi/AdventOfCode/m/v2/cmd/2017/day01"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day01"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day02"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day03"
@@ -42,6 +44,20 @@ func main() {
 	flag.Parse()
 	if yearFlag == 2022 {
 		run2022()
+	} else if yearFlag == 2017 {
+		run2017()
+	} else {
+		panic("Wrong year")
+	}
+}
+
+func run2017() {
+	start := time.Now()
+	switch dayFlag {
+	case 1:
+		day01_2017.Solve(start, useSampleFlag, dayFlag)
+	default:
+		fmt.Println("Aal")
 	}
 }
 
