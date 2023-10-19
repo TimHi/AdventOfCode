@@ -16,7 +16,7 @@ type instruction struct {
 }
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
-	input := fileutil.GetStringInputs(useSampleFlag, day)
+	input := fileutil.GetStringInputs(useSampleFlag, day, 2022)
 	fmt.Printf("Day 05 Part 01: Top crates from the CrateMover 9000 are: %s \n", SolvePartOne(input))
 	elapsed := time.Since(start)
 	fmt.Printf("Day 05 Part 01: finished in: %s \n", elapsed)

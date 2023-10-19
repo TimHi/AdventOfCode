@@ -38,10 +38,10 @@ func ReadLines(path string) []string {
 const sampleFileName = "sampleinput.txt"
 const fullFileName = "fullinput.txt"
 
-func GetStringInputs(useSampleFlag bool, day int) []string {
-	prefix := fmt.Sprintf("cmd/day%d/", day)
+func GetStringInputs(useSampleFlag bool, day int, year int) []string {
+	prefix := fmt.Sprintf("%d/day%d/", year, day)
 	if day < 10 {
-		prefix = fmt.Sprintf("cmd/day0%d/", day)
+		prefix = fmt.Sprintf("%d/day0%d/", year, day)
 	}
 	file := prefix + fullFileName
 	if useSampleFlag {

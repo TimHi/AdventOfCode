@@ -11,7 +11,7 @@ import (
 )
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
-	input := fileutil.GetStringInputs(useSampleFlag, day)
+	input := fileutil.GetStringInputs(useSampleFlag, day, 2022)
 	sortedElf := SolvePartOne(input)
 	log.Printf("Day 01: Part 01 Elf %d with %d Calories", sortedElf.Key, sortedElf.Value)
 	elapsed := time.Since(start)

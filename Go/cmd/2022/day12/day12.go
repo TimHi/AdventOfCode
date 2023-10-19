@@ -22,7 +22,7 @@ type Tile struct {
 type World map[int]map[int]*Tile
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
-	input := fileutil.GetStringInputs(useSampleFlag, day)
+	input := fileutil.GetStringInputs(useSampleFlag, day, 2022)
 	start2 := time.Now()
 	fmt.Printf("Day 12 Part 01: Shortest route from the Start: %f \n", SolvePartOne(input))
 	elapsed := time.Since(start2)

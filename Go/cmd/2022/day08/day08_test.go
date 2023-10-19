@@ -23,13 +23,13 @@ func init() {
 }
 
 func TestSolvePartOne(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 8)
+	input := fileutil.GetStringInputs(true, 8, 2022)
 	result := day08.SolvePartOne(input)
 	assert.Equal(t, 21, result, "Result was not matching")
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 8)
+	input := fileutil.GetStringInputs(true, 8, 2022)
 	result := day08.SolvePartTwo(input)
 	assert.Equal(t, 8, result, "Result was not matching")
 }
@@ -49,7 +49,7 @@ var GetCoordinateTestData = []struct {
 }
 
 func TestGetCoordinate(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 8)
+	input := fileutil.GetStringInputs(true, 8, 2022)
 	for _, testData := range GetCoordinateTestData {
 		r := day08.GetCoordinate(testData.row, testData.column, &input)
 		m := fmt.Sprintf("GetCoordinate: [%d][%d] Expected: %d, Got: %d", testData.row, testData.column, r, testData.out)

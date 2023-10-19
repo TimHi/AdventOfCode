@@ -25,13 +25,13 @@ func init() {
 func TestSolvePartOne(t *testing.T) {
 	//	log.Printf("Day 01: Part 01 Elf %d with %d Calories", sortedElfs[0].Key, sortedElfs[0].Value)
 
-	input := fileutil.GetStringInputs(true, 1)
+	input := fileutil.GetStringInputs(true, 1, 2022)
 	result := day01.SolvePartOne(input)
 	assert.Equal(t, pairs.Pair{Key: 3, Value: 24000}, result, "Result was not matching")
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	input := fileutil.GetStringInputs(true, 1)
+	input := fileutil.GetStringInputs(true, 1, 2022)
 	result := day01.SolvePartTwo(input)
 	assert.Equal(t, 45000, result, "Result was not matching")
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
-	input := fileutil.GetStringInputs(useSampleFlag, day)
+	input := fileutil.GetStringInputs(useSampleFlag, day, 2022)
 	program := loadProgram(input)
 	cycleSum := executeProgram(program)
 	fmt.Printf("Day 10 Part 01: Sum of Cycles: %d \n", cycleSum)

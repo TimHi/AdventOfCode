@@ -10,7 +10,7 @@ import (
 )
 
 func Solve(start time.Time, useSampleFlag bool, day int) {
-	input := fileutil.GetStringInputs(useSampleFlag, day)
+	input := fileutil.GetStringInputs(useSampleFlag, day, 2022)
 	fmt.Printf("Day 08 Part 01: Visible Trees: %d \n", SolvePartOne(input))
 	elapsed := time.Since(start)
 	fmt.Printf("Day 08 Part 01: finished in: %s \n", elapsed)
