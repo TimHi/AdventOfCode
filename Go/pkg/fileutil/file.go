@@ -49,3 +49,19 @@ func GetStringInputs(useSampleFlag bool, day int, year int) []string {
 	}
 	return ReadLines(file)
 }
+
+func GetStringInput(useSampleFlag bool, day int, year int) string {
+	prefix := fmt.Sprintf("cmd/%d/day%d/", year, day)
+	if day < 10 {
+		prefix = fmt.Sprintf("cmd/%d/day0%d/", year, day)
+	}
+	file := prefix + fullFileName
+	if useSampleFlag {
+		file = prefix + sampleFileName
+	}
+	lines := ReadLines(file)
+	if len(lines) != 1 {
+		panic(fmt.Sprintf("Expected 1 line, got %d lines for day %d.%d!", len(lines), day, year))
+	}
+	return lines[0]
+}

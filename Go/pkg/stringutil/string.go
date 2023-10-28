@@ -59,3 +59,11 @@ func IsUpper(s string) bool {
 	}
 	return true
 }
+
+func ParseDigitsFromString(digits string) []int {
+	digitSlice := []int{}
+	for _, digit := range digits {
+		digitSlice = append(digitSlice, int(digit-'0'))
+	}
+	return digitSlice
+}

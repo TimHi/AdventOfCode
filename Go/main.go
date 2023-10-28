@@ -57,7 +57,7 @@ func run2017() {
 	case 1:
 		day01_2017.Solve(start, useSampleFlag, dayFlag)
 	default:
-		fmt.Println("Aal")
+		fmt.Println("Day not recognized")
 	}
 }
 
