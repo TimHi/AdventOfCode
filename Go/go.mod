@@ -2,6 +2,8 @@ module github.com/TimHi/AdventOfCode/m/v2
 
 go 1.19
 
+require github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
+
 require (
 	github.com/JamesLMilner/pip-go v0.0.0-20180711171552-99c4cbbc7deb // indirect
 	github.com/adam-lavrik/go-imath v0.0.0-20210910152346-265a42a96f0b // indirect
@@ -14,6 +16,8 @@ require (
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/iwpnd/piper v0.1.0 // indirect
 	github.com/juliangruber/go-intersect v1.1.0 // indirect
+	github.com/kr/pretty v0.2.0 // indirect
+	github.com/kr/text v0.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/m7shapan/njson v1.0.8 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
