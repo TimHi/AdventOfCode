@@ -25,9 +25,8 @@ func TestSolvePartOne(t *testing.T) {
 	assert.Equal(t, 18, result, "Result was not matching")
 }
 
-// func TestSolvePartTwo(t *testing.T) {
-// 	input := fileutil.GetStringInput(true, 2, 2017)
-// 	digits := stringutil.ParseDigitsFromString(input)
-// 	result := day02_2017.SolvePartTwo(digits)
-// 	assert.Equal(t, 0, result, "Result was not matching")
-// }
+func TestSolvePartTwo(t *testing.T) {
+	rows := []string{"5 9 2 8", "9 4 7 3", "3 8 6 5"}
+	result := day02_2017.CalculateDividingChecksum(rows, true)
+	assert.Equal(t, 9, result, "Result was not matching")
+}
