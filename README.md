@@ -83,3 +83,12 @@ Attempted to use Rust, not very succesfull.
 | 04 | ⭐⭐ |
 | 05 | ⭐⭐ |
 | 06 | ⭐⭐ |
+
+## 2017
+
+Also in Go, see [2022](#2022).
+
+| Day | Stars |
+|-----|-------|
+| 01 | ⭐⭐ |
+| 02 | ⭐⭐ |
