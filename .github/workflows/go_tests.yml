@@ -1,4 +1,4 @@
-name: Test 2022
+name: Go
 
 on: [push]
 
