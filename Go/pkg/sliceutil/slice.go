@@ -2,6 +2,7 @@ package sliceutil
 
 import (
 	"strconv"
+	"strings"
 )
 
 func Intersection(s1, s2 []string) (inter []string) {
@@ -91,4 +92,21 @@ func GetIndexOfInt(item int, s []int) int {
 		}
 	}
 	return index
+}
+
+// Splits the slice elements of a given slice by a seperator.
+// This transforms the given slice into a 2D slice.
+//
+// Usage example:
+//
+//	input := ["1 2 3", "4 5 6", "7 8 9"]
+//	result := SplitSliceBySeperator(input)
+//	result: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+func SplitSliceBySeperator(slice []string, seperator string) [][]string {
+	result := [][]string{}
+	for _, line := range slice {
+		splits := strings.Split(line, seperator)
+		result = append(result, splits)
+	}
+	return result
 }
