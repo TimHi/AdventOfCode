@@ -2,6 +2,8 @@
 
 Collection of my solutions to the [Advent of Code](https://adventofcode.com/) problems. 🎄
 
+
+
 ## 2022
 
 ![Go Tests](https://github.com/TimHi/AdventOfCode/actions/workflows/2022.yml/badge.svg)  
