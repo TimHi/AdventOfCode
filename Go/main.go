@@ -8,6 +8,7 @@ import (
 
 	day01_2017 "github.com/TimHi/AdventOfCode/m/v2/cmd/2017/day01"
 	day02_2017 "github.com/TimHi/AdventOfCode/m/v2/cmd/2017/day02"
+	day04_2017 "github.com/TimHi/AdventOfCode/m/v2/cmd/2017/day04"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day01"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day02"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day03"
@@ -59,6 +60,8 @@ func run2017() {
 		day01_2017.Solve(start, useSampleFlag, dayFlag)
 	case 2:
 		day02_2017.Solve(start, useSampleFlag, dayFlag)
+	case 4:
+		day04_2017.Solve(start, useSampleFlag, dayFlag)
 	default:
 		fmt.Println("Day not recognized")
 	}
