@@ -1,4 +1,4 @@
-name: CI
+name: Typescript-2023
 
 on:
   push:
