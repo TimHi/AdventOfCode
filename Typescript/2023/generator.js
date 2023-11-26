@@ -73,10 +73,8 @@ if (args.length < 1) {
 
 const dayValue = args[0];
 
-createDirectories(path.join("src", "days", `day${dayValue}`));
-createDirectories(
-  path.join("src", "days", "__test__", `day${dayValue}.test.ts`)
-);
+createDirectories(path.join("src", "days", `${dayValue}`));
+createDirectories(path.join("src", "days", "__test__", `${dayValue}.test.ts`));
 
 createTypeScriptFile(dayValue);
 createTestFile(dayValue);
