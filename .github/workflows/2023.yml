@@ -14,16 +14,15 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
-
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+      - name: Use pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
       - name: Execute Unit tests
         working-directory: ./Typescript/2023
       - run: pnpm ci
