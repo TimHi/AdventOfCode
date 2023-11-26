@@ -1,4 +1,4 @@
-name: 2023
+name: CI
 
 on:
   push:
@@ -28,7 +28,10 @@ jobs:
       - name: Use pnpm
         run: |
           npm install -g pnpm
+          cd Typescript/2023
           pnpm install
 
       - name: Execute Unit tests
-        run: pnpm run test
+        run: |
+          cd Typescript/2023
+          pnpm run test
