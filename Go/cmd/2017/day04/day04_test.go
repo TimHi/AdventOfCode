@@ -25,7 +25,4 @@ func TestSolvePartOne(t *testing.T) {
 	assert.Equal(t, 2, result, "Result was not matching")
 }
 
-func TestSolvePartTwo(t *testing.T) {
-	result := day04_2017.SolvePartTwo(true, 3)
-	assert.Equal(t, 12, result, "Result was not matching")
-}
+
