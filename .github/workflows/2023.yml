@@ -1,8 +1,12 @@
+name: 2023
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
@@ -11,19 +15,20 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js and pnpm
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Use pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+        run: |
+          npm install -g pnpm
+          pnpm install
+
       - name: Execute Unit tests
-        working-directory: ./Typescript/2023
-      - run: pnpm ci
-      - run: pnpm run test
+        run: pnpm run test
