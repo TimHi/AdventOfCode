@@ -20,7 +20,7 @@ export function SolvePartTwo(): number {
 
 const createTypeScriptFile = (day) => {
   const renderedTemplate = nunjucks.renderString(dayTemplate, { day: day }); // Pass day as an object with key 'day'
-  const filename = path.join("src", "days", `day${day}.ts`);
+  const filename = path.join("src", `day${day}`, `day${day}.ts`);
   console.log(filename);
   fs.writeFileSync(filename, renderedTemplate);
   console.log(`Created TypeScript file: day${day}.ts`);

@@ -3,7 +3,7 @@
 ## Installation
 
 Node is required, e.g through [nvm](https://github.com/nvm-sh/nvm).  
-After cloning the repository run `pnpm i`. After this you're done.
+After cloning the repository run `npm i`. After this you're done.
 
 ## Running
 
