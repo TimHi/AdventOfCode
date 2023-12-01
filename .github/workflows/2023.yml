@@ -25,13 +25,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Use pnpm
-        run: |
-          npm install -g pnpm
-          cd Typescript/2023
-          pnpm install
-
       - name: Execute Unit tests
         run: |
           cd Typescript/2023
-          pnpm run test
+          npm run test
