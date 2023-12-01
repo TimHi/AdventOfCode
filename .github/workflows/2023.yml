@@ -28,4 +28,5 @@ jobs:
       - name: Execute Unit tests
         run: |
           cd Typescript/2023
+          npm i
           npm run test
