@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { isNumber } from "../../util/numbers";
 
-const isSample = false;
+const isSample = true;
 
 const digits = [
   "one",
