@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { isNumber } from "../../util/numbers";
 
-const isSample = true;
+const isSample = false;
 
 const digits = [
   "one",
@@ -15,20 +15,20 @@ const digits = [
   "nine"
 ];
 const digitMap = new Map<string, string>([
-  ["one", "1"],
-  ["two", "2"],
-  ["three", "3"],
-  ["four", "4"],
-  ["five", "5"],
-  ["six", "6"],
-  ["seven", "7"],
-  ["eight", "8"],
-  ["nine", "9"]
+  ["one", "o1e"],
+  ["two", "t2o"],
+  ["three", "t3e"],
+  ["four", "f4r"],
+  ["five", "f5e"],
+  ["six", "s6x"],
+  ["seven", "s7n"],
+  ["eight", "e8t"],
+  ["nine", "n9n"]
 ]);
 
 export function SolvePartOne(): number {
   const fileName = isSample
-    ? "/src//days/day01/sample1.txt"
+    ? "/src/days/day01/sample1.txt"
     : "/src/days/day01/full.txt";
   const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
   let sum = 0;
@@ -44,7 +44,7 @@ export function SolvePartOne(): number {
 
 export function SolvePartTwo(): number {
   const fileName = isSample
-    ? "/src//days/day01/sample2.txt"
+    ? "/src/days/day01/sample2.txt"
     : "/src/days/day01/full.txt";
   const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
   let sum = 0;
@@ -53,14 +53,20 @@ export function SolvePartTwo(): number {
     const numbersInLine: string[] = replacedLine
       .split("")
       .filter((c) => isNumber(c));
-    sum +=
+
+    const add =
       numbersInLine.length === 1
         ? Number(numbersInLine[0] + numbersInLine[0])
         : Number(numbersInLine[0] + numbersInLine[numbersInLine.length - 1]);
+    sum += add;
   });
   return sum;
 }
 
 function replaceInLine(line: string): string {
-  return "";
+  let replaceLine = line;
+  digits.forEach((d) => {
+    replaceLine = replaceLine.replaceAll(d, digitMap.get(d) ?? "");
+  });
+  return replaceLine;
 }
