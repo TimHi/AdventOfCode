@@ -2,9 +2,6 @@ import * as fs from "fs";
 import { isNumber } from "../../util/numbers";
 
 const isSample = true;
-const fileName = isSample
-  ? "/src//days/day01/sample.txt"
-  : "/src/days/day01/full.txt";
 
 const digits = [
   "one",
@@ -30,6 +27,9 @@ const digitMap = new Map<string, string>([
 ]);
 
 export function SolvePartOne(): number {
+  const fileName = isSample
+    ? "/src//days/day01/sample1.txt"
+    : "/src/days/day01/full.txt";
   const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
   let sum = 0;
   lines.forEach((line) => {
@@ -43,6 +43,9 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
+  const fileName = isSample
+    ? "/src//days/day01/sample2.txt"
+    : "/src/days/day01/full.txt";
   const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
   let sum = 0;
   lines.forEach((line) => {
