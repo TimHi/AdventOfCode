@@ -20,7 +20,7 @@ export function SolvePartTwo(): number {
 
 const createTypeScriptFile = (day) => {
   const renderedTemplate = nunjucks.renderString(dayTemplate, { day: day }); // Pass day as an object with key 'day'
-  const filename = path.join("src", `day${day}`, `day${day}.ts`);
+  const filename = path.join("src", "days", `day${day}`, `day${day}.ts`);
   console.log(filename);
   fs.writeFileSync(filename, renderedTemplate);
   console.log(`Created TypeScript file: day${day}.ts`);
@@ -28,7 +28,7 @@ const createTypeScriptFile = (day) => {
 
 const createTestFile = (day) => {
   const testTemplate = `
-import { SolvePartOne, SolvePartTwo } from "../day{{ day }}";
+import { SolvePartOne, SolvePartTwo } from "../day{{ day }}/day{{ day }}";
 import { describe, expect, test } from "vitest";
 
 describe("Day {{ day }} Part 01", () => {
@@ -58,7 +58,9 @@ describe("Day {{ day }} Part 02", () => {
 
 const createDirectories = (filename) => {
   const dir = path.dirname(filename);
+  console.log("Dir: " + dir);
   if (!fs.existsSync(dir)) {
+    console.log("Does not exist");
     fs.mkdirSync(dir, { recursive: true });
   }
 };
@@ -72,9 +74,12 @@ if (args.length < 1) {
 }
 
 const dayValue = args[0];
+const folderPath = path.join("src", "days", `day${dayValue}`, `day${dayValue}.ts`);
 
-createDirectories(path.join("src", "days", `${dayValue}`));
+createDirectories(folderPath);
 createDirectories(path.join("src", "days", "__test__", `${dayValue}.test.ts`));
 
 createTypeScriptFile(dayValue);
 createTestFile(dayValue);
+fs.writeFileSync(path.join("src", "days", `day${dayValue}`, `full.txt`), "");
+fs.writeFileSync(path.join("src", "days", `day${dayValue}`, `sample.txt`), "");
