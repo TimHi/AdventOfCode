@@ -1,10 +1,9 @@
-
 import { SolvePartOne, SolvePartTwo } from "../day02/day02";
 import { describe, expect, test } from "vitest";
 
 describe("Day 02 Part 01", () => {
   test("Expected result", () => {
-    expect(SolvePartOne()).toBe(-1);
+    expect(SolvePartOne()).toBe(8);
   });
 });
 
