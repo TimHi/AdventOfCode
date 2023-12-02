@@ -8,6 +8,10 @@ interface Colors {
   Blue: number;
 }
 
+const GREEN_REGEX = /(\d+) green/;
+const BLUE_REGEX = /(\d+) blue/;
+const RED_REGEX = /(\d+) red/;
+
 export function SolvePartOne(): number {
   const fileName = isSample
     ? "/src/days/day02/sample.txt"
@@ -17,20 +21,11 @@ export function SolvePartOne(): number {
   return fs
     .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
-    .map((line) => checkGame(line, limits))
+    .map((line) => checkGameValidity(line, limits))
     .reduce((sum, current) => sum + current);
 }
 
-export function SolvePartTwo(): number {
-  console.log("TBD");
-  return 0;
-}
-
-const green = /(\d+) green/;
-const blue = /(\d+) blue/;
-const red = /(\d+) red/;
-
-function checkGame(gameData: string, limits: Colors): number {
+function checkGameValidity(gameData: string, limits: Colors): number {
   let isValid = true;
   const id = Number(
     gameData.substring(gameData.indexOf(" ") + 1, gameData.indexOf(":"))
@@ -39,15 +34,15 @@ function checkGame(gameData: string, limits: Colors): number {
     .substring(gameData.indexOf(": "))
     .split(";")
     .forEach((set) => {
-      if (!isValidColor(set, green, limits.Green)) {
+      if (!isValidColor(set, GREEN_REGEX, limits.Green)) {
         isValid = false;
         return;
       }
-      if (!isValidColor(set, blue, limits.Blue)) {
+      if (!isValidColor(set, BLUE_REGEX, limits.Blue)) {
         isValid = false;
         return;
       }
-      if (!isValidColor(set, red, limits.Red)) {
+      if (!isValidColor(set, RED_REGEX, limits.Red)) {
         isValid = false;
         return;
       }
@@ -63,8 +58,49 @@ function isValidColor(
 ): boolean {
   const matchedColor = game.match(colorRegex);
   if (matchedColor) {
-    const red = parseInt(matchedColor[0], 10);
-    return red <= limit;
+    const color = parseInt(matchedColor[0], 10);
+    return color <= limit;
   }
   return true;
+}
+
+export function SolvePartTwo(): number {
+  const fileName = isSample
+    ? "/src/days/day02/sample.txt"
+    : "/src/days/day02/full.txt";
+
+  return fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((line) => getMinCubes(line))
+    .reduce((sum, current) => sum + current);
+}
+
+function getMinCubes(gameData: string): number {
+  const green: number[] = [];
+  const blue: number[] = [];
+  const red: number[] = [];
+
+  gameData
+    .substring(gameData.indexOf(": "))
+    .split(";")
+    .forEach((set) => {
+      green.push(getColorValue(set, GREEN_REGEX));
+      blue.push(getColorValue(set, BLUE_REGEX));
+      red.push(getColorValue(set, RED_REGEX));
+    });
+
+  return (
+    Math.max.apply(Math, green) *
+    Math.max.apply(Math, blue) *
+    Math.max.apply(Math, red)
+  );
+}
+
+function getColorValue(game: string, colorRegex: RegExp): number {
+  const matchedColor = game.match(colorRegex);
+  if (matchedColor) {
+    return parseInt(matchedColor[0], 10);
+  }
+  return 0;
 }
