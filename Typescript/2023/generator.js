@@ -3,10 +3,6 @@ const fs = require("fs");
 const path = require("path");
 
 const dayTemplate = `
-/// AOC 2023 Day {{ day }}
-console.log("Day {{ day }} Part 01:" + SolvePartOne());
-console.log("Day {{ day }} Part 02:" + SolvePartTwo());
-
 export function SolvePartOne(): number {
   console.log("TBD");
   return 0;
@@ -74,7 +70,12 @@ if (args.length < 1) {
 }
 
 const dayValue = args[0];
-const folderPath = path.join("src", "days", `day${dayValue}`, `day${dayValue}.ts`);
+const folderPath = path.join(
+  "src",
+  "days",
+  `day${dayValue}`,
+  `day${dayValue}.ts`
+);
 
 createDirectories(folderPath);
 createDirectories(path.join("src", "days", "__test__", `${dayValue}.test.ts`));
