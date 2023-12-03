@@ -2,11 +2,17 @@
 
 Collection of my solutions to the [Advent of Code](https://adventofcode.com/) problems. 🎄
 
-
+## 2023
+![Tests](https://github.com/TimHi/AdventOfCode/actions/workflows/2023.yml/badge.svg)  
+| Day | Stars |
+|-----|-------|
+| 01 | ⭐⭐ |
+| 02 | ⭐⭐ |
+| 03 | ⭐⭐ |
 
 ## 2022
 
-![Go Tests](https://github.com/TimHi/AdventOfCode/actions/workflows/2022.yml/badge.svg)  
+![Go Tests](https://github.com/TimHi/AdventOfCode/actions/workflows/go_tests.yml/badge.svg)  
 
 ## Running the different days
 
