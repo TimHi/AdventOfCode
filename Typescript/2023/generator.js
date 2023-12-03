@@ -2,8 +2,14 @@ const nunjucks = require("nunjucks");
 const fs = require("fs");
 const path = require("path");
 
-const dayTemplate = `
+const dayTemplate = `import * as fs from "fs";
+
+const isSample = true;
+
 export function SolvePartOne(): number {
+  const fileName = isSample ? "/src/days/day{{ day }}/sample.txt" : "/src/days/day{{ day }}/full.txt";
+  const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\\n");
+
   console.log("TBD");
   return 0;
 }
