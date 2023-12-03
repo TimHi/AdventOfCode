@@ -1,12 +1,6 @@
 import { SolvePartOne, SolvePartTwo } from "./days/day01/day01";
-import {
-  SolvePartOne as SolvePartOneD2,
-  SolvePartTwo as SolvePartTwoD2
-} from "./days/day02/day02";
-import {
-  SolvePartOne as SolvePartOneD3,
-  SolvePartTwo as SolvePartTwoD3
-} from "./days/day03/day03";
+import { SolvePartOne as SolvePartOneD2, SolvePartTwo as SolvePartTwoD2 } from "./days/day02/day02";
+import { SolvePartOne as SolvePartOneD3, SolvePartTwo as SolvePartTwoD3 } from "./days/day03/day03";
 
 const day: number = 3;
 

@@ -13,9 +13,7 @@ const BLUE_REGEX = /(\d+) blue/;
 const RED_REGEX = /(\d+) red/;
 
 export function SolvePartOne(): number {
-  const fileName = isSample
-    ? "/src/days/day02/sample.txt"
-    : "/src/days/day02/full.txt";
+  const fileName = isSample ? "/src/days/day02/sample.txt" : "/src/days/day02/full.txt";
 
   const limits: Colors = { Red: 12, Green: 13, Blue: 14 };
   return fs
@@ -27,9 +25,7 @@ export function SolvePartOne(): number {
 
 function checkGameValidity(gameData: string, limits: Colors): number {
   let isValid = true;
-  const id = Number(
-    gameData.substring(gameData.indexOf(" ") + 1, gameData.indexOf(":"))
-  );
+  const id = Number(gameData.substring(gameData.indexOf(" ") + 1, gameData.indexOf(":")));
   gameData
     .substring(gameData.indexOf(": "))
     .split(";")
@@ -51,11 +47,7 @@ function checkGameValidity(gameData: string, limits: Colors): number {
   return isValid ? id : 0;
 }
 
-function isValidColor(
-  game: string,
-  colorRegex: RegExp,
-  limit: number
-): boolean {
+function isValidColor(game: string, colorRegex: RegExp, limit: number): boolean {
   const matchedColor = game.match(colorRegex);
   if (matchedColor) {
     const color = parseInt(matchedColor[0], 10);
@@ -65,9 +57,7 @@ function isValidColor(
 }
 
 export function SolvePartTwo(): number {
-  const fileName = isSample
-    ? "/src/days/day02/sample.txt"
-    : "/src/days/day02/full.txt";
+  const fileName = isSample ? "/src/days/day02/sample.txt" : "/src/days/day02/full.txt";
 
   return fs
     .readFileSync(process.cwd() + fileName, "utf8")
@@ -90,11 +80,7 @@ function getMinCubes(gameData: string): number {
       red.push(getColorValue(set, RED_REGEX));
     });
 
-  return (
-    Math.max.apply(Math, green) *
-    Math.max.apply(Math, blue) *
-    Math.max.apply(Math, red)
-  );
+  return Math.max.apply(Math, green) * Math.max.apply(Math, blue) * Math.max.apply(Math, red);
 }
 
 function getColorValue(game: string, colorRegex: RegExp): number {

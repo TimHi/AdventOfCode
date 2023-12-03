@@ -3,17 +3,7 @@ import { isNumber } from "../../util/numbers";
 
 const isSample = true;
 
-const digits = [
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine"
-];
+const digits = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 const digitMap = new Map<string, string>([
   ["one", "o1e"],
   ["two", "t2o"],
@@ -27,9 +17,7 @@ const digitMap = new Map<string, string>([
 ]);
 
 export function SolvePartOne(): number {
-  const fileName = isSample
-    ? "/src/days/day01/sample1.txt"
-    : "/src/days/day01/full.txt";
+  const fileName = isSample ? "/src/days/day01/sample1.txt" : "/src/days/day01/full.txt";
   const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
   let sum = 0;
   lines.forEach((line) => {
@@ -43,16 +31,12 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
-  const fileName = isSample
-    ? "/src/days/day01/sample2.txt"
-    : "/src/days/day01/full.txt";
+  const fileName = isSample ? "/src/days/day01/sample2.txt" : "/src/days/day01/full.txt";
   const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
   let sum = 0;
   lines.forEach((line) => {
     const replacedLine = replaceInLine(line);
-    const numbersInLine: string[] = replacedLine
-      .split("")
-      .filter((c) => isNumber(c));
+    const numbersInLine: string[] = replacedLine.split("").filter((c) => isNumber(c));
 
     const add =
       numbersInLine.length === 1
