@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-const isSample = false;
+const isSample = true;
 
 interface Point {
   X: number;

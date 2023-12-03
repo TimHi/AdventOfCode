@@ -3,12 +3,13 @@ import { describe, expect, test } from "vitest";
 
 describe("Day 03 Part 01", () => {
   test("Expected result", () => {
-    expect(SolvePartOne()).toBe(-1);
+    expect(SolvePartOne()).toBe(4361);
   });
 });
 
 describe("Day 03 Part 02", () => {
   test("Expected result", () => {
-    expect(SolvePartTwo()).toBe(-1);
+    SolvePartOne();
+    expect(SolvePartTwo()).toBe(467835);
   });
 });
