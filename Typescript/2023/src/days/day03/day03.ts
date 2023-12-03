@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import { isNumber } from "../../util/numbers";
 
 const isSample = true;
 
@@ -12,7 +11,6 @@ interface Part {
   Start: Point;
   End: Point;
   Value: string;
-  Used: boolean;
 }
 
 const ENGINE_SYMBOLS = ["*", "#", "$", "+", "&", "-", "/", "@", "=", "%"];
@@ -27,8 +25,8 @@ export function SolvePartOne(): number {
 
   const engine = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
   parseField(engine);
-  checkSymbols();
-  return 0;
+
+  return checkSymbols();
 }
 
 export function SolvePartTwo(): number {
@@ -45,27 +43,99 @@ function parseField(lines: string[]) {
     });
 
     const numberMatch = line.match(numberRegex);
+    let tempLine = line;
+    let offSet = 0;
     if (numberMatch) {
       numberMatch.forEach((foundNumber) => {
-        const startPoint = line.indexOf(foundNumber);
-        if (NUMBER_MAP.has({ X: startPoint, Y: yIndex }))
+        const startPoint = tempLine.indexOf(foundNumber);
+        if (checkNumberMapByProperty({ X: startPoint + offSet, Y: yIndex }))
           console.error("Duplicate numbers in map, this approach wont work");
-        NUMBER_MAP.set(
-          { X: startPoint, Y: yIndex },
-          {
-            Start: { X: startPoint, Y: yIndex },
-            End: { X: startPoint + foundNumber.length - 1, Y: yIndex },
-            Value: foundNumber,
-            Used: false
-          }
+        const num: Part = {
+          Start: { X: startPoint + offSet, Y: yIndex },
+          End: { X: startPoint + foundNumber.length - 1 + offSet, Y: yIndex },
+          Value: foundNumber
+        };
+        NUMBER_MAP.set({ X: startPoint + offSet, Y: yIndex }, num);
+        tempLine = tempLine.substring(
+          startPoint + foundNumber.length,
+          tempLine.length - 1
         );
+        offSet += startPoint + foundNumber.length;
       });
     }
   });
 }
 
-function checkSymbols() {
-  NUMBER_MAP.forEach((num, position) => {
-    for (let i = num.Start.X; i <= num.End.X; i++) {}
+function checkSymbols(): number {
+  let sum = 0;
+  NUMBER_MAP.forEach((num) => {
+    for (let i = num.Start.X; i <= num.End.X; i++) {
+      if (checkMapByProperty({ X: i + 1, Y: num.Start.Y })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+      if (checkMapByProperty({ X: i + 1, Y: num.Start.Y + 1 })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+      if (checkMapByProperty({ X: i + 1, Y: num.Start.Y - 1 })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+      if (checkMapByProperty({ X: i, Y: num.Start.Y - 1 })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+      if (checkMapByProperty({ X: i, Y: num.Start.Y + 1 })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+      if (checkMapByProperty({ X: i - 1, Y: num.Start.Y })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+      if (checkMapByProperty({ X: i - 1, Y: num.Start.Y + 1 })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+      if (checkMapByProperty({ X: i - 1, Y: num.Start.Y - 1 })) {
+        console.log("Valid Number: " + num.Value);
+        sum += Number(num.Value);
+        break;
+      }
+    }
   });
+  return sum;
 }
+
+function checkMapByProperty(targetKey: Point): boolean {
+  let hasKey = false;
+  SYMBOL_MAP.forEach((_, key) => {
+    if (key.X === targetKey.X && key.Y === targetKey.Y) {
+      hasKey = true;
+      return;
+    }
+  });
+  return hasKey;
+}
+
+function checkNumberMapByProperty(targetKey: Point): boolean {
+  let hasKey = false;
+  NUMBER_MAP.forEach((_, key) => {
+    if (key.X === targetKey.X && key.Y === targetKey.Y) {
+      hasKey = true;
+      return;
+    }
+  });
+  return hasKey;
+}
+
+//543466 too low
+//541173 too low
