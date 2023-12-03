@@ -28,7 +28,7 @@ export function SolvePartTwo(): number {
 }
 
 function parseField(lines: string[]): number {
-  let sum = 0;
+  const sum = 0;
   const numberRegex = new RegExp("[0-9]+", "g");
   lines.forEach((line, yIndex) => {
     line.split("").forEach((char, xIndex) => {
@@ -38,7 +38,6 @@ function parseField(lines: string[]): number {
   });
   lines.forEach((line, yIndex) => {
     const numberMatch = line.match(numberRegex);
-
     if (numberMatch) {
       numberMatch.forEach((foundNumber) => {});
     }
@@ -89,28 +88,6 @@ function checkMapByProperty(targetKey: Point): boolean {
   });
   return hasKey;
 }
-
-// function checkMapByProperty(targetKey: Point): boolean {
-//   let hasKey = false;
-//   SYMBOL_MAP.forEach((_, key) => {
-//     if (key.X === targetKey.X && key.Y === targetKey.Y) {
-//       hasKey = true;
-//       return;
-//     }
-//   });
-//   return hasKey;
-// }
-
-// function checkNumberMapByProperty(targetKey: Point): boolean {
-//   let hasKey = false;
-//   NUMBER_MAP.forEach((_, key) => {
-//     if (key.X === targetKey.X && key.Y === targetKey.Y) {
-//       hasKey = true;
-//       return;
-//     }
-//   });
-//   return hasKey;
-// }
 
 //543466 too low
 //541173 too low
