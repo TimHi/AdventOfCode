@@ -17,9 +17,7 @@ export function SolvePartOne(): number {
     : "/src/days/day03/full.txt";
 
   const engine = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
-  parseField(engine);
-
-  return 0;
+  return parseField(engine);
 }
 
 export function SolvePartTwo(): number {
@@ -28,7 +26,7 @@ export function SolvePartTwo(): number {
 }
 
 function parseField(lines: string[]): number {
-  const sum = 0;
+  let sum = 0;
   const numberRegex = new RegExp("[0-9]+", "g");
   lines.forEach((line, yIndex) => {
     line.split("").forEach((char, xIndex) => {
@@ -37,10 +35,29 @@ function parseField(lines: string[]): number {
     });
   });
   lines.forEach((line, yIndex) => {
-    //Cleveres Regex?
     const numberMatch = line.match(numberRegex);
+
     if (numberMatch) {
-      numberMatch.forEach((foundNumber) => {});
+      const filteredNums = numberMatch.filter(
+        (elem, index, self) => index === self.indexOf(elem)
+      );
+
+      filteredNums.forEach((foundNumber) => {
+        let index = line.indexOf(foundNumber);
+        while (index !== -1) {
+          const isValid =
+            (index === 0 || !/\d/.test(line[index - 1])) &&
+            (!/\d/.test(line[index + foundNumber.length]) ||
+              index + foundNumber.length === line.length);
+          if (isValid) {
+            const end = index + foundNumber.length - 1;
+            if (checkSymbols(index, end, yIndex)) {
+              sum += Number(foundNumber);
+            }
+          }
+          index = line.indexOf(foundNumber, index + 1);
+        }
+      });
     }
   });
   return sum;
@@ -89,6 +106,3 @@ function checkMapByProperty(targetKey: Point): boolean {
   });
   return hasKey;
 }
-
-//543466 too low
-//541173 too low
