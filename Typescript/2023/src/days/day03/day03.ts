@@ -142,6 +142,7 @@ function checkMapByProperty(targetKey: Point): string {
   });
   return value;
 }
+
 function calculateGears(): number {
   let gearSum = 0;
   GEAR_MAP.forEach((v) => {
