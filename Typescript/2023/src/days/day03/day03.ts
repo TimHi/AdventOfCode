@@ -37,6 +37,7 @@ function parseField(lines: string[]): number {
     });
   });
   lines.forEach((line, yIndex) => {
+    //Cleveres Regex?
     const numberMatch = line.match(numberRegex);
     if (numberMatch) {
       numberMatch.forEach((foundNumber) => {});
