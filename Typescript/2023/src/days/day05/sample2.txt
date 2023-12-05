@@ -1,0 +1,18 @@
+destination | source | length
+
+seed-to-soil map:
+50 98 2
+52 50 48
+
+seedToSoil(seed)
+
+ist seed in range source + length
+wenn ja:
+destination ausrechnen:
+source + length - seed
+return destination + offset
+wenn nein:
+return seed
+
+seed 99:
+98 <= 99 && 99 <= (98 + 2)
