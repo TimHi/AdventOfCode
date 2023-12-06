@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { getAllNumbersInString } from "../../util/regex";
 
-const isSample = false;
+const isSample = true;
 
 interface Race {
   distRecord: number;
