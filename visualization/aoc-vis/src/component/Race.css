@@ -1,0 +1,15 @@
+#root {
+  height: 100vh;
+  width: 100vh;
+}
+
+.canvas {
+  position: absolute;
+  width: 1000px;
+  background-image: url("../assets/water.png");
+  background-repeat: repeat;
+}
+
+.line {
+  border-left: 5px solid red; /* or use border-right for the right side */
+}

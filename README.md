@@ -3,12 +3,15 @@
 Collection of my solutions to the [Advent of Code](https://adventofcode.com/) problems. 🎄
 
 ## 2023
+
 ![Tests](https://github.com/TimHi/AdventOfCode/actions/workflows/2023.yml/badge.svg)  
 | Day | Stars |
 |-----|-------|
 | 01 | ⭐⭐ |
 | 02 | ⭐⭐ |
 | 03 | ⭐⭐ |
+| 05 | ⭐⭐ |
+| 06 | ⭐⭐ |
 
 ## 2022
 
@@ -28,9 +31,9 @@ Simply open a terminal and run:
 
 ## Running the tests
 
-Simple run: `go test ./...`   
-Get coverage: `go test ./... -coverprofile cover.out`   
-View the coverage: `go tool cover -html=cover.out`   
+Simple run: `go test ./...`
+Get coverage: `go test ./... -coverprofile cover.out`
+View the coverage: `go tool cover -html=cover.out`
 
 Language: Go
 
