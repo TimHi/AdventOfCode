@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { getAllNumbersInString } from "../../util/regex";
 
-const isSample = true;
+const isSample = false;
 
 interface Race {
   distRecord: number;
@@ -18,6 +18,18 @@ function parseRaces(): Race[] {
     games.push({ distRecord: distances[i], duration: times[i] });
   }
   return games;
+}
+
+function parseRace(): Race {
+  const fileName = isSample ? "/src/days/day06/sample.txt" : "/src/days/day06/full.txt";
+  const lines = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((s) => s.replaceAll(" ", ""));
+  const times = getAllNumbersInString(lines[0]);
+  const distances = getAllNumbersInString(lines[1]);
+
+  return { distRecord: distances[0], duration: times[0] };
 }
 
 export function SolvePartOne(): number {
@@ -37,6 +49,6 @@ function getPossible(race: Race): number {
 }
 
 export function SolvePartTwo(): number {
-  const race = isSample ? ({ distRecord: 940200, duration: 71530 } as Race) : ({ distRecord: 553101014731074, duration: 62649190 } as Race);
+  const race = parseRace();
   return getPossible(race);
 }
