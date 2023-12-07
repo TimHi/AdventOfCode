@@ -67,7 +67,7 @@ export function SolvePartOne(): number {
   hands.forEach((hand) => {
     hand.type = getHandType(hand);
   });
-  hands.sort((a, b) => getWinningHand(a, b));
+  hands.sort((a, b) => getWinningHand(a, b, true));
   let sum = 0;
   hands.forEach((h, i) => {
     sum = sum + h.bid * (i + 1);
@@ -80,7 +80,7 @@ export function SolvePartTwo(): number {
   hands.forEach((hand) => {
     hand.type = getHandTypeWithJoker(hand);
   });
-  hands.sort((a, b) => getWinningHandP2(a, b));
+  hands.sort((a, b) => getWinningHand(a, b, false));
   let sum = 0;
   hands.forEach((h, i) => {
     sum = sum + h.bid * (i + 1);
@@ -88,25 +88,11 @@ export function SolvePartTwo(): number {
   return sum;
 }
 
-export function getWinningHand(a: Hand, b: Hand): number {
+export function getWinningHand(a: Hand, b: Hand, isPartOne: boolean): number {
   if (a.type === b.type) {
     for (let i = 0; i < a.cards.length; i++) {
-      const aCard = CARD_VALUES.get(a.cards[i]);
-      const bCard = CARD_VALUES.get(b.cards[i]);
-      if (aCard === undefined || bCard === undefined) throw new Error("Card not found");
-      if (aCard !== bCard) return aCard - bCard;
-    }
-    throw new Error("No winner found");
-  } else {
-    return a.type - b.type;
-  }
-}
-//TODO Refactor
-export function getWinningHandP2(a: Hand, b: Hand): number {
-  if (a.type === b.type) {
-    for (let i = 0; i < a.cards.length; i++) {
-      const aCard = CARD_VALUES_P2.get(a.cards[i]);
-      const bCard = CARD_VALUES_P2.get(b.cards[i]);
+      const aCard = isPartOne ? CARD_VALUES.get(a.cards[i]) : CARD_VALUES_P2.get(a.cards[i]);
+      const bCard = isPartOne ? CARD_VALUES.get(b.cards[i]) : CARD_VALUES_P2.get(b.cards[i]);
       if (aCard === undefined || bCard === undefined) throw new Error("Card not found");
       if (aCard !== bCard) return aCard - bCard;
     }
