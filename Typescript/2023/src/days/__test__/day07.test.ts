@@ -30,14 +30,14 @@ describe("Sorting of Hands", () => {
   ];
   test("Part 1: Sorting determined by highest card", () => {
     testData.forEach((data) => {
-      const winner = getWinningHand(data[0], data[1]);
+      const winner = getWinningHand(data[0], data[1], true);
       expect(winner > 0).toBeTruthy();
     });
   });
 
   test("Part 2: Sorting determined by highest card", () => {
     testData.forEach((data) => {
-      const winner = getWinningHandP2(data[0], data[1]);
+      const winner = getWinningHand(data[0], data[1], false);
       expect(winner > 0).toBeTruthy();
     });
   });
