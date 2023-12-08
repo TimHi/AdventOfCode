@@ -9,7 +9,6 @@ interface Node {
 interface DessertMap {
   directions: string[];
   map: Map<string, Node>;
-  startPointDurationMap: Map<string, number>;
 }
 type FinalCondition = (n: string) => boolean;
 
@@ -27,15 +26,13 @@ export function SolvePartTwo(): number {
   const fileName = isSample ? "/src/days/day08/sample_p2.txt" : "/src/days/day08/full.txt";
   const map = parseDessertMap(fileName);
   const finalCondition = (i: string) => i.split("")[2] === "Z";
+  const resultSteps: number[] = [];
   map.map.forEach((n) => {
     if (n.start.split("")[2] === "A") {
-      const steps = getStepCountForStart(n.start, map, finalCondition);
-      map.startPointDurationMap.set(n.start, steps);
+      resultSteps.push(getStepCountForStart(n.start, map, finalCondition));
     }
   });
 
-  const resultSteps: number[] = [];
-  map.startPointDurationMap.forEach((v) => resultSteps.push(v));
   return lcmOfList(resultSteps) ?? 0;
 }
 
@@ -84,7 +81,7 @@ function parseDessertMap(fileName: string): DessertMap {
         }
       }
     });
-  return { directions: directions, map: nodeMap, startPointDurationMap: new Map<string, number>() };
+  return { directions: directions, map: nodeMap };
 }
 
 function gcd(a: number, b: number): number {
