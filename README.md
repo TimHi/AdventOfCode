@@ -12,6 +12,8 @@ Collection of my solutions to the [Advent of Code](https://adventofcode.com/) pr
 | 03 | ⭐⭐ |
 | 05 | ⭐⭐ |
 | 06 | ⭐⭐ |
+| 07 | ⭐⭐ |
+| 08 | ⭐⭐ |
 
 ## 2022
 
