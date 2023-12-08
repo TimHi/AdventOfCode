@@ -1,4 +1,4 @@
-import { HandType, SolvePartOne, SolvePartTwo, getHandTypeWithJoker, getWinningHand, getWinningHandP2 } from "../day07/day07";
+import { HandType, SolvePartOne, SolvePartTwo, getHandTypeWithJoker, getWinningHand } from "../day07/day07";
 import { describe, expect, test } from "vitest";
 
 describe("Day 07 Part 01", () => {
