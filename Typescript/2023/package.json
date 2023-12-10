@@ -24,6 +24,7 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
+    "data-structure-typed": "^1.48.9",
     "lodash": "^4.17.21",
     "nunjucks": "^3.2.4"
   }

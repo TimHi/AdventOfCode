@@ -1,11 +1,7 @@
 import * as fs from "fs";
+import { Point } from "../../util/coords";
 
 const isSample = true;
-
-interface Point {
-  X: number;
-  Y: number;
-}
 
 interface EngineNumber {
   StartPos: Point;
