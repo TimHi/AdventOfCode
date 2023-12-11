@@ -9,7 +9,7 @@ import { SolvePartOne as SolvePartOneD8, SolvePartTwo as SolvePartTwoD8 } from "
 import { SolvePartOne as SolvePartOneD9, SolvePartTwo as SolvePartTwoD9 } from "./days/day09/day09";
 import { SolvePartOne as SolvePartOneD10, SolvePartTwo as SolvePartTwoD10 } from "./days/day10/day10";
 import { SolvePartOne as SolvePartOneD11, SolvePartTwo as SolvePartTwoD11 } from "./days/day11/day11";
-const day: number = 11;
+const day: number = 10;
 
 if (day === 1) {
   console.log("Day 01 Part 01: " + SolvePartOne());
