@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import { Point } from "../../util/coords";
 import { Queue } from "data-structure-typed";
-
 interface PipePosition {
   currentCoordinate: Point;
   pipe: string;
@@ -9,14 +8,65 @@ interface PipePosition {
   isStart: boolean;
 }
 
+interface StupidPolygonLibraryPoint {
+  x: number;
+  y: number;
+}
+
 function parsePipes() {
-  const isSample = false;
-  const fileName = isSample ? "/src/days/day10/sample.txt" : "/src/days/day10/full.txt";
+  const isSample = true;
+  const fileName = isSample ? "/src/days/day10/sample2.txt" : "/src/days/day10/full.txt";
   const pipes = fs
     .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
     .map((l) => l.split(""));
   return pipes;
+}
+
+function parsePipesP2() {
+  const isSample = true;
+  const fileName = isSample ? "/src/days/day10/sample2.txt" : "/src/days/day10/full.txt";
+  const pipes = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => l.split(""));
+  return pipes;
+}
+
+export function SolvePartTwo(): number {
+  const pipes = parsePipesP2();
+  const pipeMap: PipePosition[][] = [];
+  const startPosition: Point = { X: 0, Y: 0 };
+
+  pipes.forEach((y, yIndex) => {
+    const parsedPipes: PipePosition[] = [];
+    y.forEach((x, xIndex) => {
+      const pos: Point = { X: xIndex, Y: yIndex };
+      if (x === "S") {
+        startPosition.X = xIndex;
+        startPosition.Y = yIndex;
+      }
+      const directions: Point[] = getDirections(x);
+      parsedPipes.push({ currentCoordinate: pos, pipe: x, directions: directions, isStart: false });
+    });
+    pipeMap.push(parsedPipes);
+  });
+  const possibleSymbols = ["|", "-", "L", "J", "7", "F"];
+  let result = 0;
+  possibleSymbols.forEach((possibleStartPipe) => {
+    const copy: PipePosition[][] = deepCopyArray(pipeMap);
+    const directions = getDirections(possibleStartPipe);
+    copy[startPosition.Y][startPosition.X] = {
+      currentCoordinate: startPosition,
+      pipe: possibleStartPipe,
+      directions: directions,
+      isStart: true
+    };
+    const steps = testStartPipes(startPosition, copy);
+    if (steps !== 0) result = steps;
+  });
+
+  return result;
 }
 
 export function SolvePartOne(): number {
@@ -75,7 +125,7 @@ function testStartPipes(startPosition: Point, pipeMap: PipePosition[][]): number
       }
     }
   }
-  const visisted = new Map<string, boolean>();
+  const visisted = new Map<string, PipePosition>();
   while (!q.isEmpty()) {
     const currentPipe = q.dequeue();
     if (currentPipe === undefined) break;
@@ -93,10 +143,15 @@ function testStartPipes(startPosition: Point, pipeMap: PipePosition[][]): number
           q.enqueue(next);
         }
       }
-      visisted.set(`${currentPipe.currentCoordinate.X}-${currentPipe.currentCoordinate.Y}`, true);
+      visisted.set(`${currentPipe.currentCoordinate.X}-${currentPipe.currentCoordinate.Y}`, currentPipe);
     }
   }
-
+  if (visisted.size > 0) {
+    const polygonPoints: StupidPolygonLibraryPoint[] = [];
+    visisted.forEach((pp) => polygonPoints.push({ x: pp.currentCoordinate.X, y: pp.currentCoordinate.Y }));
+    const area = require("area-polygon");
+    console.log(area(polygonPoints));
+  }
   return visisted.size / 2;
 }
 
@@ -134,10 +189,6 @@ function getDirections(pipe: string): Point[] {
       throw new Error("Unknown Symbol");
   }
   return directions;
-}
-
-export function SolvePartTwo(): number {
-  return 0;
 }
 
 function deepCopyArray(originalArray: PipePosition[][]): PipePosition[][] {
