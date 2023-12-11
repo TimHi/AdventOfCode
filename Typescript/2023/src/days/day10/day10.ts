@@ -1,10 +1,11 @@
 import * as fs from "fs";
 import { Point } from "../../util/coords";
 import { Queue } from "data-structure-typed";
+import { Point as geoPoint } from "ts-2d-geometry/dist";
+import gaussShoelace from "gauss-shoelace";
 
-function parsePipes(): string[][] {
-  const isSample = false;
-  const fileName = isSample ? "/src/days/day10/sample.txt" : "/src/days/day10/full.txt";
+const isSample = true;
+function parsePipes(fileName: string): string[][] {
   const pipes = fs
     .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
@@ -39,15 +40,17 @@ interface PipePosition {
   p: Point;
   symbol: string;
 }
+
 const PIPE_SYMBOLS = ["F", "|", "-", "L", "J", "7"];
 export function SolvePartOne(): number {
-  const pipes = parsePipes();
+  const fileName = isSample ? "/src/days/day10/sample.txt" : "/src/days/day10/full.txt";
+  const pipes = parsePipes(fileName);
   const startPoint = getStartPoint(pipes);
   const pipeMap = parseDetails(pipes);
   const results = new Map<string, number>();
   PIPE_SYMBOLS.forEach((possibleStart) => {
     const result = traverseMap(possibleStart, startPoint, pipeMap);
-    results.set(possibleStart, result);
+    results.set(possibleStart, result.size);
   });
   let foundValidWin = 0;
   let winningStartSymbol = "S";
@@ -60,21 +63,21 @@ export function SolvePartOne(): number {
   const half = foundValidWin / 2;
   console.log(results);
   console.log(`Start: ${winningStartSymbol} has ${half} pipes in its loop`);
-  return half / 2;
+
+  return half;
 }
 
-function traverseMap(possibleStart: string, startPoint: Point, pipeMap: PipePosition[][]) {
+function traverseMap(possibleStart: string, startPoint: Point, pipeMap: PipePosition[][]): Map<string, Point> {
   const S: Queue<PipePosition> = new Queue<PipePosition>();
   const discovered = new Map<string, Point>();
   discovered.set(getPointKey(startPoint), startPoint);
   const startDirections = PIPEMAP.get(possibleStart);
   if (startDirections === undefined) throw new Error("Startdirections undefinded");
-  for (const direction of startDirections) {
-    const delta = DELTA.get(direction);
-    if (delta === undefined) throw new Error("Delta undefined for " + direction);
-    const newPos = pipeMap[startPoint.Y + delta.Y][startPoint.X + delta.X];
-    S.enqueue(newPos);
-  }
+  const direction = startDirections[0];
+  const delta = DELTA.get(direction);
+  if (delta === undefined) throw new Error("Delta undefined for " + direction);
+  const newPos = pipeMap[startPoint.Y + delta.Y][startPoint.X + delta.X];
+  S.push(newPos);
 
   while (!S.isEmpty()) {
     const w = S.dequeue();
@@ -89,19 +92,59 @@ function traverseMap(possibleStart: string, startPoint: Point, pipeMap: PipePosi
             const delta = DELTA.get(direction);
             if (delta === undefined) throw new Error("Delta undefined for " + direction);
             const newPos = pipeMap[w.p.Y + delta.Y][w.p.X + delta.X];
-            S.enqueue(newPos);
+            S.push(newPos);
           }
         }
       }
     } else {
-      S.dequeue();
+      S.shift();
     }
   }
-  return discovered.size;
+  return discovered;
 }
 
 export function SolvePartTwo(): number {
-  return 0;
+  const fileName = isSample ? "/src/days/day10/sample2.txt" : "/src/days/day10/full.txt";
+  const pipes = parsePipes(fileName);
+  const startPoint = getStartPoint(pipes);
+  const pipeMap = parseDetails(pipes);
+  const results = new Map<string, number>();
+  const groundPoints: geoPoint[] = [];
+  pipeMap.forEach((v, y) => {
+    v.forEach((r, x) => {
+      if (r.symbol === ".") groundPoints.push(new geoPoint(x, y));
+    });
+  });
+  PIPE_SYMBOLS.forEach((possibleStart) => {
+    const result = traverseMap(possibleStart, startPoint, pipeMap);
+    results.set(possibleStart, result.size);
+  });
+  let foundValidWin = 0;
+  let winningStartSymbol = "S";
+  results.forEach((r, k) => {
+    if (r % 2 === 0 && r > foundValidWin) {
+      foundValidWin = r;
+      winningStartSymbol = k;
+    }
+  });
+
+  const result = traverseMap(winningStartSymbol, startPoint, pipeMap);
+  const points: Array<[number, number]> = [];
+  result.forEach((v) => {
+    points.push([v.X, v.Y]);
+  });
+
+  return getPolyArea(result);
+}
+
+function getPolyArea(map: Map<string, Point>): number {
+  const shoelacePoints: Array<[number, number]> = [];
+  map.forEach((v) => {
+    shoelacePoints.push([v.X, v.Y]);
+  });
+  const shoelace = gaussShoelace(shoelacePoints);
+  const innerPoints = -shoelacePoints.length / 2 + 1 + shoelace;
+  return innerPoints;
 }
 
 function getStartPoint(map: string[][]): Point {
