@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { Point } from "../../util/coords";
+import { Queue } from "data-structure-typed";
 
 interface PipePosition {
   currentCoordinate: Point;
@@ -9,7 +10,7 @@ interface PipePosition {
 }
 
 function parsePipes() {
-  const isSample = true;
+  const isSample = false;
   const fileName = isSample ? "/src/days/day10/sample.txt" : "/src/days/day10/full.txt";
   const pipes = fs
     .readFileSync(process.cwd() + fileName, "utf8")
@@ -18,27 +19,16 @@ function parsePipes() {
   return pipes;
 }
 
-// | is a vertical pipe connecting north and south.
-// - is a horizontal pipe connecting east and west.
-// L is a 90-degree bend connecting north and east.
-// J is a 90-degree bend connecting north and west.
-// 7 is a 90-degree bend connecting south and west.
-// F is a 90-degree bend connecting south and east.
-
 export function SolvePartOne(): number {
   const pipes = parsePipes();
   const pipeMap: PipePosition[][] = [];
-  const groundList: Point[] = [];
-
   const startPosition: Point = { X: 0, Y: 0 };
 
   pipes.forEach((y, yIndex) => {
     const parsedPipes: PipePosition[] = [];
     y.forEach((x, xIndex) => {
       const pos: Point = { X: xIndex, Y: yIndex };
-      if (x === ".") {
-        groundList.push(pos);
-      } else if (x === "S") {
+      if (x === "S") {
         startPosition.X = xIndex;
         startPosition.Y = yIndex;
       }
@@ -47,8 +37,8 @@ export function SolvePartOne(): number {
     });
     pipeMap.push(parsedPipes);
   });
-  //const possibleSymbols = ["|", "-", "L", "J", "7", "F"];
-  const possibleSymbols = ["L"];
+  const possibleSymbols = ["|", "-", "L", "J", "7", "F"];
+  let result = 0;
   possibleSymbols.forEach((possibleStartPipe) => {
     const copy: PipePosition[][] = deepCopyArray(pipeMap);
     const directions = getDirections(possibleStartPipe);
@@ -58,63 +48,62 @@ export function SolvePartOne(): number {
       directions: directions,
       isStart: true
     };
-    console.log(possibleStartPipe);
-    const steps = testStartPipes(startPosition, copy, groundList, copy[0].length, copy.length);
-    console.log(steps);
+    const steps = testStartPipes(startPosition, copy);
+    if (steps !== 0) result = steps;
   });
 
-  return 0;
+  return result;
 }
-
-function testStartPipes(startPosition: Point, pipeMap: PipePosition[][], groundList: Point[], maxX: number, maxY: number): number {
-  const visited: boolean[][] = Array.from({ length: pipeMap.length }, () => Array(pipeMap[0].length).fill(false));
-
-  function dfs(x: number, y: number): void {
-    if (visited[startPosition.Y][startPosition.X] === true && x === startPosition.X && y === startPosition.Y) {
-      console.log("Found it?");
-    }
-    if (x <= 0 || x >= pipeMap[0].length || y <= 0 || y >= pipeMap.length || visited[y][x]) {
-      return;
-    }
-
-    visited[y][x] = true;
-    console.log(`Visiting position: (${x}, ${y})`);
-
-    const currentPipe = pipeMap[y][x];
-
-    for (const direction of currentPipe.directions) {
-      const newPipePos = pipeMap[y + direction.Y][x + direction.X];
-      if (canMove(newPipePos, currentPipe, maxX, maxY, groundList, direction)) {
-        const newX = x + direction.X;
-        const newY = y + direction.Y;
-        dfs(newX, newY);
-      }
-    }
-  }
-
-  dfs(startPosition.X, startPosition.Y);
-  return 0; // Update this return value based on your requirements
-}
-
-const north: Point = { X: 0, Y: -1 };
-const east: Point = { X: 1, Y: 0 };
-const south: Point = { X: 0, Y: 1 };
-const west: Point = { X: -1, Y: 0 };
-
-const PIPES: Map<string, Point[]> = new Map<string, Point[]>([
-  ["|", [north, south]],
-  ["-", [east, west]],
-  ["L", [north, east]],
-  ["J", [north, west]],
-  ["7", [south, west]],
-  ["F", [east, south]]
-]);
 const DELTAS: Point[] = [
   { X: -1, Y: 0 },
   { X: 1, Y: 0 },
   { X: 0, Y: -1 },
   { X: 0, Y: 1 }
 ];
+
+//https://en.wikipedia.org/wiki/Depth-first_search#Pseudocode
+function testStartPipes(startPosition: Point, pipeMap: PipePosition[][]): number {
+  const q = new Queue<PipePosition>();
+  for (const delta of DELTAS) {
+    const start = pipeMap[startPosition.Y + delta.Y] && pipeMap[startPosition.Y + delta.Y][startPosition.X + delta.X];
+    if (start !== undefined) {
+      const startPipePosition = pipeMap[startPosition.Y + delta.Y][startPosition.X + delta.X];
+      for (const dir of startPipePosition.directions) {
+        if (dir.X - delta.X === 0 && dir.Y - delta.Y === 0) {
+          q.enqueue(startPipePosition);
+        }
+      }
+    }
+  }
+  const visisted = new Map<string, boolean>();
+  while (!q.isEmpty()) {
+    const currentPipe = q.dequeue();
+    if (currentPipe === undefined) break;
+    const hasVisited = visisted.has(`${currentPipe.currentCoordinate.X}-${currentPipe.currentCoordinate.Y}`);
+    if (hasVisited) continue;
+    const hasPipe = pipeMap[currentPipe.currentCoordinate.Y] && pipeMap[currentPipe.currentCoordinate.Y][currentPipe.currentCoordinate.X];
+    if (hasPipe) {
+      const pipe = pipeMap[currentPipe.currentCoordinate.Y][currentPipe.currentCoordinate.X];
+      for (const dir of pipe.directions) {
+        const hasNext =
+          pipeMap[currentPipe.currentCoordinate.Y + dir.Y] &&
+          pipeMap[currentPipe.currentCoordinate.Y + dir.Y][currentPipe.currentCoordinate.X + dir.X];
+        if (hasNext) {
+          const next = pipeMap[currentPipe.currentCoordinate.Y + dir.Y][currentPipe.currentCoordinate.X + dir.X];
+          q.enqueue(next);
+        }
+      }
+      visisted.set(`${currentPipe.currentCoordinate.X}-${currentPipe.currentCoordinate.Y}`, true);
+    }
+  }
+
+  return visisted.size / 2;
+}
+
+const north: Point = { X: 0, Y: -1 };
+const east: Point = { X: 1, Y: 0 };
+const south: Point = { X: 0, Y: 1 };
+const west: Point = { X: -1, Y: 0 };
 
 function getDirections(pipe: string): Point[] {
   const directions: Point[] = [];
@@ -153,46 +142,4 @@ export function SolvePartTwo(): number {
 
 function deepCopyArray(originalArray: PipePosition[][]): PipePosition[][] {
   return originalArray.map((row) => row.slice());
-}
-function canMove(
-  direction: PipePosition,
-  currentPipe: PipePosition,
-  maxX: number,
-  maxY: number,
-  groundList: Point[],
-  newDirection: Point
-): boolean {
-  const isGround = groundList.find((g) => g.X === direction.currentCoordinate.X && g.Y === direction.currentCoordinate.Y);
-  if (isGround !== undefined) return false;
-  if (
-    0 <= direction.currentCoordinate.X &&
-    direction.currentCoordinate.X < maxX &&
-    0 <= direction.currentCoordinate.Y &&
-    direction.currentCoordinate.Y < maxY
-  ) {
-    console.log("Are " + currentPipe.pipe + " and " + direction.pipe + " connected");
-    if (arePipesConnecting(currentPipe.pipe, newDirection)) {
-      console.log("True");
-      return true;
-    } else {
-      console.log("False");
-      return false;
-    }
-  } else {
-    return false;
-  }
-}
-function arePipesConnecting(pipe1: string, pipe2: Point): boolean {
-  const directions1 = PIPES.get(pipe1);
-
-  if (!directions1) {
-    throw new Error("Invalid pipe type");
-  }
-  for (const dir1 of directions1) {
-    if (pipe2.X - dir1.X === 0 && pipe2.Y - dir1.Y === 0) {
-      return true;
-    }
-  }
-
-  return false;
 }
