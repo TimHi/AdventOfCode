@@ -101,7 +101,7 @@ function parseGroups(input: string): Group[] {
 
 function getPossibleCombinations(reading: Reading): number {
   const valid: string[] = [];
-  const combinatios: string[] = getCombinations(reading.rawData);
+  const combinatios: string[] = getCombinations(reading.rawData, reading.springsToFill);
   combinatios.forEach((c) => {
     const split = getSpringGroupLengths(c);
     let isValid = true;
@@ -142,25 +142,36 @@ function getSpringGroupLengths(input: string): number[] {
   return groupLengths;
 }
 
-//Split into two for . and #? Cache?
-function getCombinations(input: string, currentIndex: number = 0, currentCombination: string = ""): string[] {
+function getCombinations(input: string, springGroups: number[], currentIndex: number = 0, currentCombination: string = ""): string[] {
   if (currentIndex === input.length) {
     return [currentCombination];
   }
   const char = input[currentIndex];
   if (char === "?") {
-    const combinationsWithHash = getCombinations(input, currentIndex + 1, currentCombination + "#");
-    const combinationsWithDot = getCombinations(input, currentIndex + 1, currentCombination + ".");
-    console.log("Combs with has");
-    console.log(combinationsWithHash);
-    console.log("Combs with dot");
-    console.log(combinationsWithDot);
-    return combinationsWithHash.concat(combinationsWithDot);
+    const combinationsWithHash = getCombinations(input, springGroups, currentIndex + 1, currentCombination + "#");
+    const combinationsWithDot = getCombinations(input, springGroups, currentIndex + 1, currentCombination + ".");
+    const combined = combinationsWithHash.concat(combinationsWithDot);
+    const filtered = combined.filter((c) => isCombinationValid(c, springGroups));
+    return filtered;
   } else {
-    return getCombinations(input, currentIndex + 1, currentCombination + char);
+    return getCombinations(input, springGroups, currentIndex + 1, currentCombination + char);
   }
 }
 
+function isCombinationValid(combination: string, springsToFill: number[]) {
+  const split = getSpringGroupLengths(combination);
+  if (split.length === springsToFill.length) {
+    for (let i = 0; i < split.length; i++) {
+      const element = split[i];
+      if (element !== springsToFill[i]) {
+        return false;
+      }
+    }
+  } else {
+    return false;
+  }
+  return true;
+}
 // ???.### 1,1,3
 // .??..??...?##. 1,1,3
 // ?#?#?#?#?#?#?#? 1,3,1,6
