@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { memoize } from "functools";
 
 const isSample = true;
 
@@ -20,19 +21,17 @@ interface Group {
   length: number;
 }
 
-function parseReadings(shouldExpand: boolean): Reading[] {
+function parseReadings(): Reading[] {
   const fileName = isSample ? "/src/days/day12/sample.txt" : "/src/days/day12/full.txt";
   const readings: Reading[] = [];
   fs.readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
     .forEach((line) => {
       const splits = line.split(" ");
-      let rawData = splits[0];
-      if (shouldExpand) {
-        //TODO move to combinations?
-        rawData = rawData + "?" + rawData + "?" + rawData + "?" + rawData + "?" + rawData;
-      }
+      const rawData = splits[0];
+
       const groups = parseGroups(rawData);
+
       const springsToFill = splits[1].split(",").map((n) => Number(n));
 
       readings.push({ rawData: rawData, groups: groups, springsToFill: springsToFill, combinations: 0 });
@@ -41,10 +40,10 @@ function parseReadings(shouldExpand: boolean): Reading[] {
 }
 
 export function SolvePartOne(): number {
-  const readings: Reading[] = parseReadings(false);
+  const readings: Reading[] = parseReadings();
   let combinationPossibilities = 0;
   const start = performance.now();
-  readings.forEach((reading, i) => {
+  readings.forEach((reading) => {
     const newPossibilities = getPossibleCombinations(reading);
     //console.log(`Reading: ${i}: ${newPossibilities} found`);
     combinationPossibilities += newPossibilities;
@@ -56,12 +55,14 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
-  const readings: Reading[] = parseReadings(true);
+  const readings: Reading[] = parseReadings();
   let combinationPossibilities = 0;
 
   readings.forEach((reading, i) => {
     const start = performance.now();
-    combinationPossibilities = combinationPossibilities + getPossibleCombinations(reading);
+
+    combinationPossibilities = combinationPossibilities + getUnfoldedCombinations(reading);
+
     const end = performance.now();
     const executionTime = end - start;
     console.log(`Execution time for Reading, ${i}: ${executionTime / 1000} seconds`);
@@ -109,8 +110,54 @@ function parseGroups(input: string): Group[] {
 }
 
 function getPossibleCombinations(reading: Reading): number {
-  const combinatios: string[] = getCombinations(reading.rawData, reading.springsToFill);
-  return combinatios.length;
+  return getCombinations(reading.rawData, reading.springsToFill).length;
+}
+
+function getUnfoldedCombinations(reading: Reading): number {
+  const foldCount = 6;
+  let possibleCombinations = 0;
+  const foldedInput = reading.rawData + "?";
+  const repeat = (arr: number[], n: number) => [].concat(...Array(n).fill(arr));
+
+  let foundCombinations: string[] = [];
+  for (let index = 0; index < foldCount - 1; index++) {
+    if (index < foldCount - 2) {
+      const combinationBlock = getCombinationsWithoutFilter(foldedInput);
+      if (index === 0) {
+        foundCombinations.push(...combinationBlock);
+      } else {
+        const finalNewCombinations: string[] = [];
+        combinationBlock.forEach((c) => {
+          const newCombinationInLoop: string[] = [];
+          foundCombinations.forEach((fC) => {
+            newCombinationInLoop.push(fC + c);
+          });
+          finalNewCombinations.push(...newCombinationInLoop);
+        });
+        foundCombinations = finalNewCombinations;
+      }
+    } else {
+      const lastCombinations = getCombinationsWithoutFilter(reading.rawData);
+      const finalNewCombinations: string[] = [];
+      lastCombinations.forEach((c) => {
+        const newCombinationInLoop: string[] = [];
+        foundCombinations.forEach((fC) => {
+          newCombinationInLoop.push(fC + c);
+        });
+        finalNewCombinations.push(...newCombinationInLoop);
+      });
+      foundCombinations = finalNewCombinations;
+      console.log(foundCombinations[0].length);
+    }
+  }
+
+  foundCombinations.forEach((c) => {
+    if (c.length !== 39) {
+      console.log("Wtf");
+    }
+    if (isCombinationValid(c, reading.springsToFill)) possibleCombinations++;
+  });
+  return possibleCombinations;
 }
 
 function getSpringGroupLengths(input: string): number[] {
@@ -135,6 +182,33 @@ function getSpringGroupLengths(input: string): number[] {
   }
 
   return groupLengths;
+}
+const getCombinationsWithoutFilter = memoize((input: string, currentIndex: number = 0, currentCombination: string = ""): string[] => {
+  if (currentIndex === input.length) {
+    return [currentCombination];
+  }
+  const char = input[currentIndex];
+  if (char === "?") {
+    const combinationsWithHash = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + "#");
+    const combinationsWithDot = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + ".");
+    return combinationsWithHash.concat(combinationsWithDot);
+  } else {
+    return uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + char);
+  }
+});
+
+function uncachedGetCombinationsWithoutFilter(input: string, currentIndex: number = 0, currentCombination: string = ""): string[] {
+  if (currentIndex === input.length) {
+    return [currentCombination];
+  }
+  const char = input[currentIndex];
+  if (char === "?") {
+    const combinationsWithHash = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + "#");
+    const combinationsWithDot = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + ".");
+    return combinationsWithHash.concat(combinationsWithDot);
+  } else {
+    return uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + char);
+  }
 }
 
 function getCombinations(input: string, springGroups: number[], currentIndex: number = 0, currentCombination: string = ""): string[] {
