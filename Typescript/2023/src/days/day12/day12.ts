@@ -49,7 +49,14 @@ export function SolvePartOne(): number {
 export function SolvePartTwo(): number {
   const readings: Reading[] = parseReadings(true);
   let combinationPossibilities = 0;
-  readings.forEach((reading) => (combinationPossibilities = combinationPossibilities + getPossibleCombinations(reading)));
+
+  readings.forEach((reading, i) => {
+    const start = performance.now();
+    combinationPossibilities = combinationPossibilities + getPossibleCombinations(reading);
+    const end = performance.now();
+    const executionTime = end - start;
+    console.log(`Execution time for Reading, ${i}: ${executionTime / 1000} seconds`);
+  });
   return combinationPossibilities;
 }
 
@@ -94,7 +101,7 @@ function parseGroups(input: string): Group[] {
 
 function getPossibleCombinations(reading: Reading): number {
   const valid: string[] = [];
-  const combinatios: string[] = generateCombinations(reading.rawData);
+  const combinatios: string[] = getCombinations(reading.rawData);
   combinatios.forEach((c) => {
     const split = getSpringGroupLengths(c);
     let isValid = true;
@@ -135,16 +142,28 @@ function getSpringGroupLengths(input: string): number[] {
   return groupLengths;
 }
 
-function generateCombinations(input: string, currentIndex: number = 0, currentCombination: string = ""): string[] {
+//Split into two for . and #? Cache?
+function getCombinations(input: string, currentIndex: number = 0, currentCombination: string = ""): string[] {
   if (currentIndex === input.length) {
     return [currentCombination];
   }
   const char = input[currentIndex];
   if (char === "?") {
-    const combinationsWithHash = generateCombinations(input, currentIndex + 1, currentCombination + "#");
-    const combinationsWithDot = generateCombinations(input, currentIndex + 1, currentCombination + ".");
+    const combinationsWithHash = getCombinations(input, currentIndex + 1, currentCombination + "#");
+    const combinationsWithDot = getCombinations(input, currentIndex + 1, currentCombination + ".");
+    console.log("Combs with has");
+    console.log(combinationsWithHash);
+    console.log("Combs with dot");
+    console.log(combinationsWithDot);
     return combinationsWithHash.concat(combinationsWithDot);
   } else {
-    return generateCombinations(input, currentIndex + 1, currentCombination + char);
+    return getCombinations(input, currentIndex + 1, currentCombination + char);
   }
 }
+
+// ???.### 1,1,3
+// .??..??...?##. 1,1,3
+// ?#?#?#?#?#?#?#? 1,3,1,6
+// ????.#...#... 4,1,1
+// ????.######..#####. 1,6,5
+// ?###???????? 3,2,1

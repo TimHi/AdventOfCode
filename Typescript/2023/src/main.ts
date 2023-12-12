@@ -47,5 +47,5 @@ if (day === 1) {
   console.log("Day 11 Part 02: " + SolvePartTwoD11());
 } else if (day === 12) {
   console.log("Day 12 Part 01: " + SolvePartOneD12());
-  console.log("Day 12 Part 02: " + SolvePartTwoD12());
+  //console.log("Day 12 Part 02: " + SolvePartTwoD12());
 }
