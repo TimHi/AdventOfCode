@@ -29,6 +29,7 @@ function parseReadings(shouldExpand: boolean): Reading[] {
       const splits = line.split(" ");
       let rawData = splits[0];
       if (shouldExpand) {
+        //TODO move to combinations?
         rawData = rawData + "?" + rawData + "?" + rawData + "?" + rawData + "?" + rawData;
       }
       const groups = parseGroups(rawData);
@@ -42,7 +43,15 @@ function parseReadings(shouldExpand: boolean): Reading[] {
 export function SolvePartOne(): number {
   const readings: Reading[] = parseReadings(false);
   let combinationPossibilities = 0;
-  readings.forEach((reading) => (combinationPossibilities = combinationPossibilities + getPossibleCombinations(reading)));
+  const start = performance.now();
+  readings.forEach((reading, i) => {
+    const newPossibilities = getPossibleCombinations(reading);
+    //console.log(`Reading: ${i}: ${newPossibilities} found`);
+    combinationPossibilities += newPossibilities;
+  });
+  const end = performance.now();
+  console.log(`Part 1: ${end - start} ms`);
+
   return combinationPossibilities;
 }
 
@@ -100,22 +109,8 @@ function parseGroups(input: string): Group[] {
 }
 
 function getPossibleCombinations(reading: Reading): number {
-  const valid: string[] = [];
   const combinatios: string[] = getCombinations(reading.rawData, reading.springsToFill);
-  combinatios.forEach((c) => {
-    const split = getSpringGroupLengths(c);
-    let isValid = true;
-    if (split.length === reading.springsToFill.length) {
-      for (let i = 0; i < split.length; i++) {
-        const element = split[i];
-        if (element !== reading.springsToFill[i]) {
-          isValid = false;
-        }
-      }
-      if (isValid) valid.push(c);
-    }
-  });
-  return valid.length;
+  return combinatios.length;
 }
 
 function getSpringGroupLengths(input: string): number[] {
@@ -172,9 +167,3 @@ function isCombinationValid(combination: string, springsToFill: number[]) {
   }
   return true;
 }
-// ???.### 1,1,3
-// .??..??...?##. 1,1,3
-// ?#?#?#?#?#?#?#? 1,3,1,6
-// ????.#...#... 4,1,1
-// ????.######..#####. 1,6,5
-// ?###???????? 3,2,1
