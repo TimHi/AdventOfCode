@@ -183,6 +183,7 @@ function getSpringGroupLengths(input: string): number[] {
 
   return groupLengths;
 }
+//Memorize das mit filter?
 const getCombinationsWithoutFilter = memoize((input: string, currentIndex: number = 0, currentCombination: string = ""): string[] => {
   if (currentIndex === input.length) {
     return [currentCombination];
