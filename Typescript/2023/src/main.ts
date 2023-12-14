@@ -11,7 +11,8 @@ import { SolvePartOne as SolvePartOneD10, SolvePartTwo as SolvePartTwoD10 } from
 import { SolvePartOne as SolvePartOneD11, SolvePartTwo as SolvePartTwoD11 } from "./days/day11/day11";
 import { SolvePartOne as SolvePartOneD12, SolvePartTwo as SolvePartTwoD12 } from "./days/day12/day12";
 import { SolvePartOne as SolvePartOneD13, SolvePartTwo as SolvePartTwoD13 } from "./days/day13/day13";
-const day: number = 13;
+import { SolvePartOne as SolvePartOneD14, SolvePartTwo as SolvePartTwoD14 } from "./days/day14/day14";
+const day: number = 14;
 
 if (day === 1) {
   console.log("Day 01 Part 01: " + SolvePartOne());
@@ -52,4 +53,7 @@ if (day === 1) {
 } else if (day === 13) {
   console.log("Day 13 Part 01: " + SolvePartOneD13());
   console.log("Day 13 Part 02: " + SolvePartTwoD13());
+} else if (day === 14) {
+  console.log("Day 14 Part 01: " + SolvePartOneD14());
+  console.log("Day 14 Part 02: " + SolvePartTwoD14());
 }
