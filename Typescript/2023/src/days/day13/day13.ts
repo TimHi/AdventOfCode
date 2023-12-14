@@ -45,9 +45,24 @@ interface SmudgeResult {
   wasHorizontal: boolean;
 }
 
+interface Field {
+  original: string[];
+  transposedOriginal: string[];
+  smudgeFixedHorizontal: string[];
+  smugeFixedVertical: string[];
+}
+
 export function SolvePartTwo(): number {
   const fields = parseFields();
+  // Implement new interface for field which has transposed field and original field and repaired smudge field, Input looks short enough?
+  // Unit test to verify transpose works (same array transposed again should be the original)
+  // Modify testHorizontalReflection to return list of found reflections
+  // Store Field>Reflectionrow from Part 1
+  // Take Field
+  // Go through lines to find smudge and replace it immediatly -> if horizontal is not found?
 
+  // Use new Field with testHorizontalReflection
+  // Pick new row
   return 0;
 }
 
