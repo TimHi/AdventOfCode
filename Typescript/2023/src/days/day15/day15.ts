@@ -29,25 +29,19 @@ export function SolvePartTwo(): number {
   const fileName = isSample ? "/src/days/day15/sample.txt" : "/src/days/day15/full.txt";
   //Key is index 0....256
   const boxes = new Map<number, Lens[]>();
-  const lenses: Lens[] = fs
-    .readFileSync(process.cwd() + fileName, "utf8")
+  fs.readFileSync(process.cwd() + fileName, "utf8")
     .split(",")
-    .map((block) => ParseLens(block));
-  lenses.forEach((l) => {
-    processLens(l, boxes);
-  });
-  const result = VerifyLenses(boxes);
-  return result;
+    .map((block) => ParseLens(block))
+    .forEach((l) => processLens(l, boxes));
+
+  return VerifyLenses(boxes);
 }
 
 function HASH(input: string): number {
   let currentValue = 0;
-  input.split("").forEach((c) => {
-    const ASCII = c.charCodeAt(0);
-    currentValue += ASCII;
-    currentValue *= 17;
-    currentValue = currentValue % 256;
-  });
+  for (const char of input) {
+    currentValue = ((currentValue + char.charCodeAt(0)) * 17) % 256;
+  }
   return currentValue;
 }
 
