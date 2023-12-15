@@ -22,7 +22,6 @@ export function SolvePartTwo(): number {
   return calculateLoad(result);
 }
 
-//fuck this
 function cycleN(field: string[], times: number): string[] {
   let east = [...field];
   const collision = new Map<string, number>();
@@ -31,23 +30,21 @@ function cycleN(field: string[], times: number): string[] {
     const west = rotateRight(rotateRight(tilt(rotateLeft(rotateLeft(north)))));
     const south = rotateRight(tilt(rotateLeft(west)));
     east = tilt(south);
-
     const col = collision.get(hashGrid(east));
     if (col !== undefined) {
       const loopOrigin = collision.get(hashGrid(east));
       const loopLength = i - loopOrigin!;
-      if (loopLength > 5) {
-        const remaining = 1000000000 - 1 - i;
-        const remainingIterations = remaining % loopLength;
-        for (let i = 0; i < remainingIterations; i++) {
-          const north = rotateLeft(tilt(rotateRight(east)));
-          const west = rotateRight(rotateRight(tilt(rotateLeft(rotateLeft(north)))));
-          const south = rotateRight(tilt(rotateLeft(west)));
-          east = tilt(south);
-        }
-        return east;
+      const remaining = 1000000000 - 1 - i;
+      const remainingIterations = remaining % loopLength;
+      for (let i = 0; i < remainingIterations; i++) {
+        const north = rotateLeft(tilt(rotateRight(east)));
+        const west = rotateRight(rotateRight(tilt(rotateLeft(rotateLeft(north)))));
+        const south = rotateRight(tilt(rotateLeft(west)));
+        east = tilt(south);
       }
+      return east;
     }
+
     collision.set(hashGrid([...east]), i);
   }
   return east;
