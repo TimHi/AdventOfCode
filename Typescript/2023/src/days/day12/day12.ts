@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { getUnfoldedCombinations } from "./part2";
 
 const isSample = true;
 
@@ -8,7 +9,7 @@ enum Tile {
   Ground = "."
 }
 
-interface Reading {
+export interface Reading {
   rawData: string;
   groups: Group[];
   springsToFill: number[];
@@ -54,15 +55,9 @@ export function SolvePartOne(): number {
 
 export function SolvePartTwo(): number {
   const readings: Reading[] = parseReadings(true);
-  let combinationPossibilities = 0;
-
-  readings.forEach((reading, i) => {
-    const start = performance.now();
-    combinationPossibilities = combinationPossibilities + getUnfoldedCombinations(reading);
-    const end = performance.now();
-    const executionTime = end - start;
-    console.log(`Execution time for Reading, ${i}: ${executionTime / 1000} seconds`);
-  });
+  const combinationPossibilities: number = readings
+    .map((reading) => getUnfoldedCombinations(reading))
+    .reduce((prev, cur) => (cur = prev + cur));
   return combinationPossibilities;
 }
 
@@ -107,11 +102,6 @@ function parseGroups(input: string): Group[] {
 
 function getPossibleCombinations(reading: Reading): number {
   return getCombinations(reading.rawData, reading.springsToFill, 0, "").length;
-}
-
-function getUnfoldedCombinations(reading: Reading): number {
-  const aalR = getCombinations(reading.rawData, reading.springsToFill, 0, "").length;
-  return aalR;
 }
 
 function getSpringGroupLengths(input: string): number[] {

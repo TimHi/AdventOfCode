@@ -1,14 +1,14 @@
 import { SolvePartOne, SolvePartTwo } from "../day12/day12";
-import { describe, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 describe("Day 12 Part 01", () => {
   test("Expected result", () => {
-    test.skip;
+    expect(SolvePartOne()).toBe(21);
   });
 });
 
 describe("Day 12 Part 02", () => {
   test("Expected result", () => {
-    test.skip;
+    expect(SolvePartTwo()).toBe(525152);
   });
 });

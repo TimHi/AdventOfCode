@@ -53,11 +53,6 @@ function hashGrid(grid: string[]): string {
   return grid.join(",");
 }
 
-function printField(field: string[]) {
-  field.forEach((l) => console.log(l));
-  console.log("\n");
-}
-
 function calculateLoad(field: string[]): number {
   let load = 0;
   field.reverse().forEach((l, i) => {

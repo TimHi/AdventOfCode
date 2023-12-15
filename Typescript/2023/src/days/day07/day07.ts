@@ -219,27 +219,6 @@ function getHandType(hand: Hand): HandType {
   return foundType;
 }
 
-function handTypeToReadable(handType: HandType) {
-  switch (handType) {
-    case HandType.FIVE_OF_KIND:
-      return "Five of a Kind";
-    case HandType.FOUR_OF_KIND:
-      return "Four of a Kind";
-    case HandType.FULL_HOUSE:
-      return "Full House";
-    case HandType.THREE_OF_KIND:
-      return "Three of a Kind";
-    case HandType.TWO_PAIR:
-      return "Two Pairs";
-    case HandType.ONE_PAIR:
-      return "One Pair";
-    case HandType.HIGH_CARD:
-      return "High Card";
-    case HandType.UNKOWN:
-      return "Fucked";
-  }
-}
-
 function getSortedCopy(original: string[]): string[] {
   const copy = [...original];
   return copy.sort((a, b) => {
