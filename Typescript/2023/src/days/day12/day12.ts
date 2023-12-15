@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import { memoize } from "functools";
 
 const isSample = true;
 
@@ -21,31 +20,30 @@ interface Group {
   length: number;
 }
 
-function parseReadings(): Reading[] {
+function parseReadings(expand: boolean): Reading[] {
   const fileName = isSample ? "/src/days/day12/sample.txt" : "/src/days/day12/full.txt";
   const readings: Reading[] = [];
   fs.readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
     .forEach((line) => {
       const splits = line.split(" ");
-      const rawData = splits[0];
+      const rawData = expand ? splits[0] + "?" + splits[0] + "?" + splits[0] + "?" + splits[0] + "?" + splits[0] : splits[0];
 
       const groups = parseGroups(rawData);
 
-      const springsToFill = splits[1].split(",").map((n) => Number(n));
-
+      let springsToFill = splits[1].split(",").map((n) => Number(n));
+      if (expand) springsToFill = [...springsToFill, ...springsToFill, ...springsToFill, ...springsToFill, ...springsToFill];
       readings.push({ rawData: rawData, groups: groups, springsToFill: springsToFill, combinations: 0 });
     });
   return readings;
 }
 
 export function SolvePartOne(): number {
-  const readings: Reading[] = parseReadings();
+  const readings: Reading[] = parseReadings(false);
   let combinationPossibilities = 0;
   const start = performance.now();
   readings.forEach((reading) => {
     const newPossibilities = getPossibleCombinations(reading);
-    //console.log(`Reading: ${i}: ${newPossibilities} found`);
     combinationPossibilities += newPossibilities;
   });
   const end = performance.now();
@@ -55,14 +53,12 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
-  const readings: Reading[] = parseReadings();
+  const readings: Reading[] = parseReadings(true);
   let combinationPossibilities = 0;
 
   readings.forEach((reading, i) => {
     const start = performance.now();
-
     combinationPossibilities = combinationPossibilities + getUnfoldedCombinations(reading);
-
     const end = performance.now();
     const executionTime = end - start;
     console.log(`Execution time for Reading, ${i}: ${executionTime / 1000} seconds`);
@@ -110,54 +106,12 @@ function parseGroups(input: string): Group[] {
 }
 
 function getPossibleCombinations(reading: Reading): number {
-  return getCombinations(reading.rawData, reading.springsToFill).length;
+  return getCombinations(reading.rawData, reading.springsToFill, 0, "").length;
 }
 
 function getUnfoldedCombinations(reading: Reading): number {
-  const foldCount = 6;
-  let possibleCombinations = 0;
-  const foldedInput = reading.rawData + "?";
-  const repeat = (arr: number[], n: number) => [].concat(...Array(n).fill(arr));
-
-  let foundCombinations: string[] = [];
-  for (let index = 0; index < foldCount - 1; index++) {
-    if (index < foldCount - 2) {
-      const combinationBlock = getCombinationsWithoutFilter(foldedInput);
-      if (index === 0) {
-        foundCombinations.push(...combinationBlock);
-      } else {
-        const finalNewCombinations: string[] = [];
-        combinationBlock.forEach((c) => {
-          const newCombinationInLoop: string[] = [];
-          foundCombinations.forEach((fC) => {
-            newCombinationInLoop.push(fC + c);
-          });
-          finalNewCombinations.push(...newCombinationInLoop);
-        });
-        foundCombinations = finalNewCombinations;
-      }
-    } else {
-      const lastCombinations = getCombinationsWithoutFilter(reading.rawData);
-      const finalNewCombinations: string[] = [];
-      lastCombinations.forEach((c) => {
-        const newCombinationInLoop: string[] = [];
-        foundCombinations.forEach((fC) => {
-          newCombinationInLoop.push(fC + c);
-        });
-        finalNewCombinations.push(...newCombinationInLoop);
-      });
-      foundCombinations = finalNewCombinations;
-      console.log(foundCombinations[0].length);
-    }
-  }
-
-  foundCombinations.forEach((c) => {
-    if (c.length !== 39) {
-      console.log("Wtf");
-    }
-    if (isCombinationValid(c, reading.springsToFill)) possibleCombinations++;
-  });
-  return possibleCombinations;
+  const aalR = cachedGetCombinations(reading.rawData, reading.springsToFill, 0, "").length;
+  return aalR;
 }
 
 function getSpringGroupLengths(input: string): number[] {
@@ -183,50 +137,90 @@ function getSpringGroupLengths(input: string): number[] {
 
   return groupLengths;
 }
-//Memorize das mit filter?
-const getCombinationsWithoutFilter = memoize((input: string, currentIndex: number = 0, currentCombination: string = ""): string[] => {
-  if (currentIndex === input.length) {
-    return [currentCombination];
-  }
-  const char = input[currentIndex];
-  if (char === "?") {
-    const combinationsWithHash = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + "#");
-    const combinationsWithDot = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + ".");
-    return combinationsWithHash.concat(combinationsWithDot);
-  } else {
-    return uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + char);
-  }
-});
 
-function uncachedGetCombinationsWithoutFilter(input: string, currentIndex: number = 0, currentCombination: string = ""): string[] {
+const getCombinations = function (input: string, springGroups: number[], currentIndex: number, currentCombination: string): string[] {
   if (currentIndex === input.length) {
     return [currentCombination];
   }
   const char = input[currentIndex];
   if (char === "?") {
-    const combinationsWithHash = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + "#");
-    const combinationsWithDot = uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + ".");
-    return combinationsWithHash.concat(combinationsWithDot);
-  } else {
-    return uncachedGetCombinationsWithoutFilter(input, currentIndex + 1, currentCombination + char);
-  }
-}
-
-function getCombinations(input: string, springGroups: number[], currentIndex: number = 0, currentCombination: string = ""): string[] {
-  if (currentIndex === input.length) {
-    return [currentCombination];
-  }
-  const char = input[currentIndex];
-  if (char === "?") {
-    const combinationsWithHash = getCombinations(input, springGroups, currentIndex + 1, currentCombination + "#");
-    const combinationsWithDot = getCombinations(input, springGroups, currentIndex + 1, currentCombination + ".");
+    const combinationsWithHash = cachedGetCombinations(input, springGroups, currentIndex + 1, currentCombination + "#");
+    const combinationsWithDot = cachedGetCombinations(input, springGroups, currentIndex + 1, currentCombination + ".");
     const combined = combinationsWithHash.concat(combinationsWithDot);
     const filtered = combined.filter((c) => isCombinationValid(c, springGroups));
     return filtered;
   } else {
-    return getCombinations(input, springGroups, currentIndex + 1, currentCombination + char);
+    return cachedGetCombinations(input, springGroups, currentIndex + 1, currentCombination + char);
   }
+};
+
+type MemoizeCache<T> = {
+  has(key: string): boolean;
+  get(key: string): T | undefined;
+  set(key: string, value: T): void;
+};
+
+type MemoizeOptions<T> = {
+  cache: {
+    create(): MemoizeCache<T>;
+  };
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function memoize<T>(fn: (...args: any[]) => T, options: MemoizeOptions<T>): (...args: any[]) => T {
+  const { cache } = options;
+  const memoCache = cache.create();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (...args: any[]): T => {
+    const key = JSON.stringify(args);
+
+    if (memoCache.has(key)) {
+      return memoCache.get(key) as T;
+    }
+
+    const result = fn(...args);
+    memoCache.set(key, result);
+    return result;
+  };
 }
+const store: Map<string, string[]> = new Map<string, string[]>();
+const cachedGetCombinations = memoize(
+  (input: string, springGroups: number[], currentIndex: number, currentCombination: string) =>
+    getCombinations(input, springGroups, currentIndex, currentCombination),
+  {
+    cache: {
+      create() {
+        return {
+          has(key) {
+            return store.has(key);
+          },
+          get(key) {
+            return store.get(key);
+          },
+          set(key, value) {
+            store.set(key, value);
+          }
+        };
+      }
+    }
+  }
+);
+// function getCombinations(input: string, springGroups: number[], currentIndex: number, currentCombination: string): string[] {
+//   if (currentIndex === input.length) {
+//     return [currentCombination];
+//   }
+//   const char = input[currentIndex];
+//   if (char === "?") {
+//     const combinationsWithHash = getCombinations(input, springGroups, currentIndex + 1, currentCombination + "#");
+//     const combinationsWithDot = getCombinations(input, springGroups, currentIndex + 1, currentCombination + ".");
+//     const combined = combinationsWithHash.concat(combinationsWithDot);
+//     const filtered = combined.filter((c) => isCombinationValid(c, springGroups));
+//     return filtered;
+//   } else {
+//     return getCombinations(input, springGroups, currentIndex + 1, currentCombination + char);
+//   }
+// }
 
 function isCombinationValid(combination: string, springsToFill: number[]) {
   const split = getSpringGroupLengths(combination);
