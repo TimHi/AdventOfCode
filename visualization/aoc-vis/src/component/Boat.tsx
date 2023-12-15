@@ -16,3 +16,4 @@ function Boat({ id, initialPosition }) {
 }
 
 export default Boat
+
