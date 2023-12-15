@@ -110,7 +110,7 @@ function getPossibleCombinations(reading: Reading): number {
 }
 
 function getUnfoldedCombinations(reading: Reading): number {
-  const aalR = cachedGetCombinations(reading.rawData, reading.springsToFill, 0, "").length;
+  const aalR = getCombinations(reading.rawData, reading.springsToFill, 0, "").length;
   return aalR;
 }
 
@@ -138,89 +138,21 @@ function getSpringGroupLengths(input: string): number[] {
   return groupLengths;
 }
 
-const getCombinations = function (input: string, springGroups: number[], currentIndex: number, currentCombination: string): string[] {
+function getCombinations(input: string, springGroups: number[], currentIndex: number, currentCombination: string): string[] {
   if (currentIndex === input.length) {
     return [currentCombination];
   }
   const char = input[currentIndex];
   if (char === "?") {
-    const combinationsWithHash = cachedGetCombinations(input, springGroups, currentIndex + 1, currentCombination + "#");
-    const combinationsWithDot = cachedGetCombinations(input, springGroups, currentIndex + 1, currentCombination + ".");
+    const combinationsWithHash = getCombinations(input, springGroups, currentIndex + 1, currentCombination + "#");
+    const combinationsWithDot = getCombinations(input, springGroups, currentIndex + 1, currentCombination + ".");
     const combined = combinationsWithHash.concat(combinationsWithDot);
     const filtered = combined.filter((c) => isCombinationValid(c, springGroups));
     return filtered;
   } else {
-    return cachedGetCombinations(input, springGroups, currentIndex + 1, currentCombination + char);
+    return getCombinations(input, springGroups, currentIndex + 1, currentCombination + char);
   }
-};
-
-type MemoizeCache<T> = {
-  has(key: string): boolean;
-  get(key: string): T | undefined;
-  set(key: string, value: T): void;
-};
-
-type MemoizeOptions<T> = {
-  cache: {
-    create(): MemoizeCache<T>;
-  };
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function memoize<T>(fn: (...args: any[]) => T, options: MemoizeOptions<T>): (...args: any[]) => T {
-  const { cache } = options;
-  const memoCache = cache.create();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (...args: any[]): T => {
-    const key = JSON.stringify(args);
-
-    if (memoCache.has(key)) {
-      return memoCache.get(key) as T;
-    }
-
-    const result = fn(...args);
-    memoCache.set(key, result);
-    return result;
-  };
 }
-const store: Map<string, string[]> = new Map<string, string[]>();
-const cachedGetCombinations = memoize(
-  (input: string, springGroups: number[], currentIndex: number, currentCombination: string) =>
-    getCombinations(input, springGroups, currentIndex, currentCombination),
-  {
-    cache: {
-      create() {
-        return {
-          has(key) {
-            return store.has(key);
-          },
-          get(key) {
-            return store.get(key);
-          },
-          set(key, value) {
-            store.set(key, value);
-          }
-        };
-      }
-    }
-  }
-);
-// function getCombinations(input: string, springGroups: number[], currentIndex: number, currentCombination: string): string[] {
-//   if (currentIndex === input.length) {
-//     return [currentCombination];
-//   }
-//   const char = input[currentIndex];
-//   if (char === "?") {
-//     const combinationsWithHash = getCombinations(input, springGroups, currentIndex + 1, currentCombination + "#");
-//     const combinationsWithDot = getCombinations(input, springGroups, currentIndex + 1, currentCombination + ".");
-//     const combined = combinationsWithHash.concat(combinationsWithDot);
-//     const filtered = combined.filter((c) => isCombinationValid(c, springGroups));
-//     return filtered;
-//   } else {
-//     return getCombinations(input, springGroups, currentIndex + 1, currentCombination + char);
-//   }
-// }
 
 function isCombinationValid(combination: string, springsToFill: number[]) {
   const split = getSpringGroupLengths(combination);
