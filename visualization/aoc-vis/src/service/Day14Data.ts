@@ -1,28 +1,45 @@
 // import * as fs from "fs";
 
+import { rotateLeft, rotateRight } from '../util/array';
+import { initialField } from './rocks';
+
 // import { rotateLeft, rotateRight } from "../../util/array";
 
 // const isSample = true;
 
-// function parseStoneMap() {
-//   const fileName = isSample
-//     ? "/src/days/day14/sample.txt"
-//     : "/src/days/day14/full.txt";
-//   const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
-//   return lines;
-// }
+export function GetInitialField(): string[] {
+	return initialField.split('\n');
+}
 
-// export function SolvePartOne(): number {
-//   const field = parseStoneMap();
-//   const tilted = rotateLeft(tilt(rotateRight(field)));
-//   return calculateLoad(tilted);
-// }
+export function GetNorth(field: string[]): string[] {
+	return rotateLeft(tilt(rotateRight(field)));
+}
 
-// export function SolvePartTwo(): number {
-//   const field: string[] = parseStoneMap();
-//   const result = cycleN(field, 1000000000);
-//   return calculateLoad(result);
-// }
+export function GetSouth(field: string[]): string[] {
+	return rotateRight(tilt(rotateLeft(field)));
+}
+export function GetEast(field: string[]): string[] {
+	return tilt(field);
+}
+export function GetWest(field: string[]): string[] {
+	return rotateRight(rotateRight(tilt(rotateLeft(rotateLeft(field)))));
+}
+
+function tilt(field: string[]): string[] {
+	const tiltedTowers: string[] = [];
+	for (let y = 0; y < field.length; y++) {
+		let loop = true;
+		let replaced = field[y].replaceAll('O.', '.O');
+		while (loop) {
+			replaced = replaced.replaceAll('O.', '.O');
+			loop = replaced.includes('O.');
+		}
+
+		tiltedTowers.push(replaced);
+	}
+
+	return tiltedTowers;
+}
 
 // function cycleN(field: string[], times: number): string[] {
 //   let east = [...field];
@@ -64,20 +81,4 @@
 //     load = load + foundRockInLine.length * (i + 1);
 //   });
 //   return load;
-// }
-
-// function tilt(field: string[]): string[] {
-//   const tiltedTowers: string[] = [];
-//   for (let y = 0; y < field.length; y++) {
-//     let loop = true;
-//     let replaced = field[y].replaceAll("O.", ".O");
-//     while (loop) {
-//       replaced = replaced.replaceAll("O.", ".O");
-//       loop = replaced.includes("O.");
-//     }
-
-//     tiltedTowers.push(replaced);
-//   }
-
-//   return tiltedTowers;
 // }

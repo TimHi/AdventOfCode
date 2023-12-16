@@ -1,0 +1,11 @@
+/* Day14.module.css */
+
+.textWithTrans {
+	font-family: monospace;
+	font-size: 22px; /* Add the unit (e.g., pixels) */
+	transition: opacity 0.5s ease-in-out;
+}
+
+.textWithTrans.hidden {
+	opacity: 0;
+}
