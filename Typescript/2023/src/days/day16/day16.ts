@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { GetPointKey, Point } from "../../util/coords";
 import { Queue } from "data-structure-typed";
 
-const isSample = false;
+const isSample = true;
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day16/sample.txt" : "/src/days/day16/full.txt";
@@ -13,14 +13,56 @@ export function SolvePartOne(): number {
 
   const grid = extendGrid(lines);
 
-  const energizedMap = traverseGrid(grid);
-  // printGrid(grid, energizedMap);
-  return energizedMap.size;
+  const energizedMap = traverseGrid(grid, { direction: Direction.E, X: 1, Y: 1 });
+  return countEnergizedFields(energizedMap);
+}
+
+function countEnergizedFields(energizedMap: Map<string, number>): number {
+  const uniquePoints: string[] = [];
+  energizedMap.forEach((v, k) => {
+    const point = k.split("-")[0];
+    if (!uniquePoints.includes(point)) uniquePoints.push(point);
+  });
+
+  return uniquePoints.length;
 }
 
 export function SolvePartTwo(): number {
-  console.log("TBD");
-  return 0;
+  const fileName = isSample ? "/src/days/day16/sample.txt" : "/src/days/day16/full.txt";
+  const lines = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => l.split(""));
+
+  const grid = extendGrid(lines);
+  let highestEnergizedConfig = 0;
+  for (let y = 1; y < grid.length; y++) {
+    let energizedMap = traverseGrid(grid, { direction: Direction.E, X: 1, Y: y });
+    let result = countEnergizedFields(energizedMap);
+    if (result > highestEnergizedConfig) {
+      highestEnergizedConfig = result;
+    }
+
+    energizedMap = traverseGrid(grid, { direction: Direction.W, X: grid[0].length - 1, Y: y });
+    result = countEnergizedFields(energizedMap);
+    if (result > highestEnergizedConfig) {
+      highestEnergizedConfig = result;
+    }
+  }
+  for (let x = 1; x < grid[0].length; x++) {
+    let energizedMap = traverseGrid(grid, { direction: Direction.S, X: x, Y: 1 });
+    let result = countEnergizedFields(energizedMap);
+    if (result > highestEnergizedConfig) {
+      highestEnergizedConfig = result;
+    }
+
+    energizedMap = traverseGrid(grid, { direction: Direction.N, X: x, Y: grid.length - 1 });
+    result = countEnergizedFields(energizedMap);
+    if (result > highestEnergizedConfig) {
+      highestEnergizedConfig = result;
+    }
+  }
+  return highestEnergizedConfig;
 }
 
 enum Direction {
@@ -34,25 +76,20 @@ interface Beam extends Point {
   direction: Direction;
 }
 
-function traverseGrid(grid: string[][]): Map<string, number> {
+function traverseGrid(grid: string[][], start: Beam): Map<string, number> {
   const S: Queue<Beam> = new Queue<Beam>();
   const energizedPositions = new Map<string, number>();
-  let lolz = 0;
-  S.push({ direction: Direction.E, X: 1, Y: 1 });
-  while (!S.isEmpty()) {
-    //console.log("\n");
-    //printGrid(grid, energizedPositions);
-    //TODO: Take direction into account?
-    if (lolz === 500000000) return energizedPositions;
-    const w = S.dequeue();
 
+  S.push(start);
+  while (!S.isEmpty()) {
+    const w = S.dequeue();
     if (w !== undefined) {
       const beamSymbol = grid[w.Y][w.X];
-      if (beamSymbol !== "X") {
-        //Keep track of energized Positions
-        const ePos = energizedPositions.get(GetPointKey(w));
-        if (ePos === undefined) energizedPositions.set(GetPointKey(w), 1);
-        else energizedPositions.set(GetPointKey(w), ePos + 1);
+      const wVisited = energizedPositions.has(getBeamKey(w));
+      if (beamSymbol !== "X" && !wVisited) {
+        const ePos = energizedPositions.get(getBeamKey(w));
+        if (ePos === undefined) energizedPositions.set(getBeamKey(w), 1);
+        else energizedPositions.set(getBeamKey(w), ePos + 1);
         const nextPost = getNextPos(w, beamSymbol);
         if (nextPost !== undefined) {
           nextPost.forEach((p) => S.push(p));
@@ -61,7 +98,6 @@ function traverseGrid(grid: string[][]): Map<string, number> {
     } else {
       S.shift();
     }
-    lolz++;
   }
   return energizedPositions;
 }
@@ -169,4 +205,7 @@ function printGrid(grid: string[][], eMap: Map<string, number>) {
     });
     console.log(row);
   });
+}
+function getBeamKey(beam: Beam): string {
+  return GetPointKey(beam) + "-" + beam.direction;
 }
