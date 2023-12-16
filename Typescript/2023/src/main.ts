@@ -13,9 +13,10 @@ import { SolvePartOne as SolvePartOneD12, SolvePartTwo as SolvePartTwoD12 } from
 import { SolvePartOne as SolvePartOneD13, SolvePartTwo as SolvePartTwoD13 } from "./days/day13/day13";
 import { SolvePartOne as SolvePartOneD14, SolvePartTwo as SolvePartTwoD14 } from "./days/day14/day14";
 import { SolvePartOne as SolvePartOneD15, SolvePartTwo as SolvePartTwoD15 } from "./days/day15/day15";
-
+import { SolvePartOne as SolvePartOneD16, SolvePartTwo as SolvePartTwoD16 } from "./days/day16/day16";
 //Please don't look at this file I dont care its ugly
-const day: number = 12;
+const day: number = 16;
+
 if (day === 1) {
   console.log("Day 01 Part 01: " + SolvePartOne());
   console.log("Day 01 Part 02: " + SolvePartTwo());
@@ -50,7 +51,7 @@ if (day === 1) {
   console.log("Day 11 Part 01: " + SolvePartOneD11());
   console.log("Day 11 Part 02: " + SolvePartTwoD11());
 } else if (day === 12) {
-  //console.log("Day 12 Part 01: " + SolvePartOneD12());
+  console.log("Day 12 Part 01: " + SolvePartOneD12());
   console.log("Day 12 Part 02: " + SolvePartTwoD12());
 } else if (day === 13) {
   console.log("Day 13 Part 01: " + SolvePartOneD13());
@@ -61,4 +62,7 @@ if (day === 1) {
 } else if (day === 15) {
   console.log("Day 15 Part 01: " + SolvePartOneD15());
   console.log("Day 15 Part 02: " + SolvePartTwoD15());
+} else if (day === 16) {
+  console.log("Day 16 Part 01: " + SolvePartOneD16());
+  console.log("Day 16 Part 02: " + SolvePartTwoD16());
 }

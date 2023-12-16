@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { Point } from "../../util/coords";
+import { GetPointKey, Point } from "../../util/coords";
 import { Queue } from "data-structure-typed";
 import { Point as geoPoint } from "ts-2d-geometry/dist";
 import gaussShoelace from "gauss-shoelace";
@@ -70,7 +70,7 @@ export function SolvePartOne(): number {
 function traverseMap(possibleStart: string, startPoint: Point, pipeMap: PipePosition[][]): Map<string, Point> {
   const S: Queue<PipePosition> = new Queue<PipePosition>();
   const discovered = new Map<string, Point>();
-  discovered.set(getPointKey(startPoint), startPoint);
+  discovered.set(GetPointKey(startPoint), startPoint);
   const startDirections = PIPEMAP.get(possibleStart);
   if (startDirections === undefined) throw new Error("Startdirections undefinded");
   const direction = startDirections[0];
@@ -82,9 +82,9 @@ function traverseMap(possibleStart: string, startPoint: Point, pipeMap: PipePosi
   while (!S.isEmpty()) {
     const w = S.dequeue();
     if (w !== undefined) {
-      const wVisited = discovered.has(getPointKey(w.p));
+      const wVisited = discovered.has(GetPointKey(w.p));
       if (!wVisited) {
-        discovered.set(getPointKey(w.p), w.p);
+        discovered.set(GetPointKey(w.p), w.p);
         if (w.symbol !== ".") {
           const wDir = PIPEMAP.get(w.symbol);
           if (wDir === undefined) throw new Error("Direction undefined for point" + w.symbol);
@@ -154,10 +154,6 @@ function getStartPoint(map: string[][]): Point {
     }
   }
   throw new Error("No start point in Map");
-}
-
-function getPointKey(p: Point): string {
-  return `${p.X}:${p.Y}`;
 }
 
 function parseDetails(map: string[][]): PipePosition[][] {
