@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey } from "../../util/coords";
+import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey, getManhattanDistance } from "../../util/coords";
 import { HeapOptions, MinHeap } from "data-structure-typed";
 
 const isSample = false;
@@ -9,6 +9,15 @@ type Step = {
   moved: number;
   totalHeatLoss: number;
 };
+
+function parseGrid(): number[][] {
+  const fileName = isSample ? "/src/days/day17/sample.txt" : "/src/days/day17/full.txt";
+  return fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => l.split("").map((v) => Number(v)));
+}
+
 function constructHeatLossMap(grid: number[][]): Map<string, number> {
   const heatLossMap = new Map<string, number>();
   grid.forEach((r, y) => {
@@ -24,12 +33,7 @@ function getStepKey(step: Step): string {
 }
 
 export function SolvePartOne(): number {
-  const fileName = isSample ? "/src/days/day17/sample.txt" : "/src/days/day17/full.txt";
-  const grid = fs
-    .readFileSync(process.cwd() + fileName, "utf8")
-    .split("\n")
-    .map((l) => l.split("").map((v) => Number(v)));
-
+  const grid = parseGrid();
   const heatLossMap = constructHeatLossMap(grid);
   const options: HeapOptions<Step> = {
     comparator: (a: Step, b: Step) => {
@@ -84,8 +88,61 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
-  console.log("TBD");
-  return 0;
+  const grid = parseGrid();
+
+  const heatLossMap = constructHeatLossMap(grid);
+  const options: HeapOptions<Step> = {
+    comparator: (a: Step, b: Step) => {
+      return a.heuristic - b.heuristic;
+    }
+  };
+  const queue = new MinHeap<Step>(undefined, options);
+  const visited = new Set<string>();
+  const startPoint: DirectedPoint = { X: 0, Y: 0, direction: Direction.E };
+  const endPoint: DirectedPoint = { X: grid[0].length - 1, Y: grid.length - 1, direction: Direction.E };
+  const start: Step = { heuristic: 0, point: startPoint, totalHeatLoss: 0, moved: 0 };
+  //Go down or right
+  queue.push(start);
+  visited.add(getStepKey(start));
+  const startPointS: DirectedPoint = { X: 0, Y: 0, direction: Direction.S };
+  const startS: Step = { heuristic: 0, point: startPointS, totalHeatLoss: 0, moved: 0 };
+  visited.add(getStepKey(startS));
+  queue.push(startS);
+
+  while (queue.size > 0) {
+    const step = queue.pop();
+    if (step === undefined) throw new Error("Step undefined");
+
+    if (step.point.X === endPoint.X && step.point.Y === endPoint.Y) {
+      if (step.moved < 4) continue;
+      else return step.totalHeatLoss;
+    }
+
+    const nextSteps = getNextPositions(step.point.direction, step.point.X, step.point.Y)
+      .filter((p) => {
+        if (step.moved < 4) return p.direction === step.point.direction;
+        if (step.moved > 9) return p.direction !== step.point.direction;
+        return true;
+      })
+      .filter((p) => p.X >= 0 && p.X < grid[0].length && p.Y >= 0 && p.Y < grid.length);
+
+    nextSteps.forEach((s) => {
+      const nextHeatLoss = heatLossMap.get(GetPointKey({ X: s.X, Y: s.Y }));
+      const movedCounter = step.point.direction === s.direction ? step.moved + 1 : 1;
+      const nextStep: Step = {
+        heuristic: step.totalHeatLoss + nextHeatLoss! + getManhattanDistance(step.point, endPoint),
+        point: s,
+        moved: movedCounter,
+        totalHeatLoss: step.totalHeatLoss + nextHeatLoss!
+      };
+      if (!visited.has(getStepKey(nextStep))) {
+        queue.push(nextStep);
+        visited.add(getStepKey(nextStep));
+      }
+    });
+  }
+
+  throw new Error("No Path found");
 }
 
 function getNextPositions(direction: Direction, x: number, y: number) {
