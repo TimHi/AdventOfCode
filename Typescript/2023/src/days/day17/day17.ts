@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey, getManhattanDistance } from "../../util/coords";
+import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey } from "../../util/coords";
 import { HeapOptions, MinHeap } from "data-structure-typed";
 
 const isSample = false;
@@ -34,94 +34,72 @@ function getStepKey(step: Step): string {
 
 export function SolvePartOne(): number {
   const grid = parseGrid();
-  const heatLossMap = constructHeatLossMap(grid);
-  const options: HeapOptions<Step> = {
-    comparator: (a: Step, b: Step) => {
-      return a.heuristic - b.heuristic;
-    }
-  };
-  const queue = new MinHeap<Step>(undefined, options);
-  const visited = new Set<string>();
-  const startPoint: DirectedPoint = { X: 0, Y: 0, direction: Direction.E };
-  const endPoint: DirectedPoint = { X: grid[0].length - 1, Y: grid.length - 1, direction: Direction.E };
-  const start: Step = { heuristic: 0, point: startPoint, totalHeatLoss: 0, moved: 0 };
-  //Go down or right
-  queue.push(start);
-  visited.add(getStepKey(start));
-  const startPointS: DirectedPoint = { X: 0, Y: 0, direction: Direction.S };
-  const startS: Step = { heuristic: 0, point: startPointS, totalHeatLoss: 0, moved: 0 };
-  visited.add(getStepKey(startS));
-  queue.push(startS);
 
-  while (queue.size > 0) {
-    const step = queue.pop();
-    if (step === undefined) throw new Error("Step undefined");
-
-    if (step.point.X === endPoint.X && step.point.Y === endPoint.Y) {
-      const endHeatLoss = heatLossMap.get(GetPointKey(step.point));
-      if (endHeatLoss === undefined) throw new Error("End Heatloss undefinded");
-      return step.totalHeatLoss;
-    }
-    const nextSteps = getNextPositions(step.point.direction, step.point.X, step.point.Y)
-      .filter((p) => (step.moved >= 2 ? p.direction !== step.point.direction : true))
-      .filter((p) => p.X >= 0 && p.X < grid[0].length && p.Y >= 0 && p.Y < grid.length);
-
-    nextSteps.forEach((s) => {
-      const nextHeatLoss = heatLossMap.get(GetPointKey({ X: s.X, Y: s.Y }));
-      if (nextHeatLoss === undefined) throw new Error("Invalid Heatloss Key " + GetPointKey({ X: s.X, Y: s.Y }));
-      const movedCounter = step.point.direction === s.direction ? step.moved + 1 : 0;
-      const heur = step.totalHeatLoss + nextHeatLoss;
-      const newStep: Step = {
-        heuristic: heur,
-        point: s,
-        moved: movedCounter,
-        totalHeatLoss: step.totalHeatLoss + nextHeatLoss
-      };
-      if (!visited.has(getStepKey(newStep))) {
-        queue.push(newStep);
-        visited.add(getStepKey(newStep));
-      }
-    });
-  }
-
-  throw new Error("No Path found");
+  return searchLeastHeatLossPath(
+    1,
+    2,
+    1,
+    [
+      { X: 0, Y: 0, direction: Direction.E },
+      { X: 0, Y: 0, direction: Direction.S }
+    ],
+    { X: grid[0].length - 1, Y: grid.length - 1, direction: Direction.E },
+    grid
+  );
 }
 
 export function SolvePartTwo(): number {
   const grid = parseGrid();
+  return searchLeastHeatLossPath(
+    4,
+    9,
+    4,
+    [
+      { X: 0, Y: 0, direction: Direction.E },
+      { X: 0, Y: 0, direction: Direction.S }
+    ],
+    { X: grid[0].length - 1, Y: grid.length - 1, direction: Direction.E },
+    grid
+  );
+}
 
+function searchLeastHeatLossPath(
+  stepsBeforeTurn: number,
+  maxSteps: number,
+  endSteps: number,
+  startPoints: DirectedPoint[],
+  endPoint: DirectedPoint,
+  grid: number[][]
+) {
   const heatLossMap = constructHeatLossMap(grid);
   const options: HeapOptions<Step> = {
     comparator: (a: Step, b: Step) => {
       return a.heuristic - b.heuristic;
     }
   };
+
   const queue = new MinHeap<Step>(undefined, options);
   const visited = new Set<string>();
-  const startPoint: DirectedPoint = { X: 0, Y: 0, direction: Direction.E };
-  const endPoint: DirectedPoint = { X: grid[0].length - 1, Y: grid.length - 1, direction: Direction.E };
-  const start: Step = { heuristic: 0, point: startPoint, totalHeatLoss: 0, moved: 0 };
-  //Go down or right
-  queue.push(start);
-  visited.add(getStepKey(start));
-  const startPointS: DirectedPoint = { X: 0, Y: 0, direction: Direction.S };
-  const startS: Step = { heuristic: 0, point: startPointS, totalHeatLoss: 0, moved: 0 };
-  visited.add(getStepKey(startS));
-  queue.push(startS);
+
+  startPoints.forEach((p) => {
+    const startStep = { heuristic: 0, moved: 0, point: p, totalHeatLoss: 0 };
+    queue.push(startStep);
+    visited.add(getStepKey(startStep));
+  });
 
   while (queue.size > 0) {
     const step = queue.pop();
     if (step === undefined) throw new Error("Step undefined");
 
     if (step.point.X === endPoint.X && step.point.Y === endPoint.Y) {
-      if (step.moved < 4) continue;
+      if (step.moved < endSteps) continue;
       else return step.totalHeatLoss;
     }
 
     const nextSteps = getNextPositions(step.point.direction, step.point.X, step.point.Y)
       .filter((p) => {
-        if (step.moved < 4) return p.direction === step.point.direction;
-        if (step.moved > 9) return p.direction !== step.point.direction;
+        if (step.moved < stepsBeforeTurn) return p.direction === step.point.direction;
+        if (step.moved > maxSteps) return p.direction !== step.point.direction;
         return true;
       })
       .filter((p) => p.X >= 0 && p.X < grid[0].length && p.Y >= 0 && p.Y < grid.length);
@@ -130,7 +108,7 @@ export function SolvePartTwo(): number {
       const nextHeatLoss = heatLossMap.get(GetPointKey({ X: s.X, Y: s.Y }));
       const movedCounter = step.point.direction === s.direction ? step.moved + 1 : 1;
       const nextStep: Step = {
-        heuristic: step.totalHeatLoss + nextHeatLoss! + getManhattanDistance(step.point, endPoint),
+        heuristic: step.totalHeatLoss + nextHeatLoss!,
         point: s,
         moved: movedCounter,
         totalHeatLoss: step.totalHeatLoss + nextHeatLoss!
