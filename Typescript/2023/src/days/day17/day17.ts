@@ -1,13 +1,61 @@
 import * as fs from "fs";
-import { GetPointFromKey, GetPointKey, Point } from "../../util/coords";
+import { DirectedPoint, Direction, GetDirection } from "../../util/coords";
 
 const isSample = true;
 
-function constructHeatLossMap(grid: string[][]): Map<string, number> {
+class CruciblePoint implements DirectedPoint {
+  constructor(
+    public X: number,
+    public Y: number,
+    public direction: Direction,
+    public moved: number
+  ) {}
+
+  static getKey(point: CruciblePoint): string {
+    return `${point.X}:${point.Y}-${point.direction}.${point.moved}`;
+  }
+  static parseKey(key: string): CruciblePoint {
+    const pattern = /^(\d+):(\d+)-([A-Za-z]+).(\d+)$/;
+
+    const match = key.match(pattern);
+
+    if (match) {
+      const [, X, Y, direction, moved] = match.map((part) => (isNaN(Number(part)) ? part : Number(part)));
+
+      if (typeof X === "number" && typeof Y === "number" && typeof direction === "string" && typeof moved === "number") {
+        return new CruciblePoint(X, Y, GetDirection(direction), moved);
+      }
+    }
+
+    throw new Error("Point could not be parsed");
+  }
+}
+
+class Graph {
+  Vertices: CruciblePoint[];
+  Edges: Map<string, number>;
+
+  constructor() {
+    this.Vertices = [];
+    this.Edges = new Map();
+  }
+
+  addVertex(vertex: CruciblePoint): void {
+    this.Vertices.push(vertex);
+  }
+
+  addEdge(from: CruciblePoint, to: CruciblePoint, weight: number): void {
+    const keyFrom = CruciblePoint.getKey(from);
+    const keyTo = CruciblePoint.getKey(to);
+    this.Edges.set(`${keyFrom}-${keyTo}`, weight);
+  }
+}
+
+function constructHeatLossMap(grid: number[][]): Map<string, number> {
   const heatLossMap = new Map<string, number>();
   grid.forEach((r, y) => {
     r.forEach((c, x) => {
-      heatLossMap.set(GetPointKey({ X: x, Y: y }), Number(grid[y][x]));
+      heatLossMap.set(CruciblePoint.getKey(new CruciblePoint(x, y, Direction.E, 0)), grid[y][x]);
     });
   });
   return heatLossMap;
@@ -18,17 +66,27 @@ export function SolvePartOne(): number {
   const grid = fs
     .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
-    .map((l) => l.split(""));
-  const startPoint = { X: 0, Y: 0 };
-  const endPoint = { X: grid[0].length - 1, Y: grid.length - 1 };
+    .map((l) => l.split("").map((v) => Number(v)));
+  const startPoint = new CruciblePoint(0, 0, Direction.E, 0);
+  const endPoint = new CruciblePoint(grid[0].length - 1, grid.length - 1, Direction.S, 0);
   const heatLossMap = constructHeatLossMap(grid);
-  const h = (p: Point) => {
-    const h = heatLossMap.get(GetPointKey(p));
-    if (h !== undefined) return h;
-    else throw new Error("Heatloss for Point " + GetPointKey(p) + " is undefined");
-  };
-  const bestPath = AStar(startPoint, endPoint, h, heatLossMap);
-  return bestPath.length;
+  const graph = new Graph();
+
+  const pointA = new CruciblePoint(0, 0, Direction.N, 0);
+  const pointB = new CruciblePoint(1, 1, Direction.E, 0);
+  heatLossMap.forEach((v, k) => {
+    const point = CruciblePoint.parseKey(k);
+    graph.addVertex(point);
+  });
+  graph.addVertex(pointA);
+  graph.addVertex(pointB);
+  graph.addEdge(pointA, pointB, 1);
+
+  const [distances, predecessors] = dijkstra(graph, pointA);
+
+  console.log("Distances:", distances);
+  console.log("Predecessors:", predecessors);
+  return 0;
 }
 
 export function SolvePartTwo(): number {
@@ -36,75 +94,35 @@ export function SolvePartTwo(): number {
   return 0;
 }
 
-function reconstructPath(cameFrom: Record<string, string>, current: string): string[] {
-  const totalPath: string[] = [current];
-  while (current in cameFrom) {
-    current = cameFrom[current];
-    totalPath.unshift(current);
+//https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#Pseudocode
+function dijkstra(graph: Graph, source: CruciblePoint): [Record<string, number>, Record<string, CruciblePoint | undefined>] {
+  const dist: Record<string, number> = {};
+  const prev: Record<string, CruciblePoint | undefined> = {};
+  const Q: CruciblePoint[] = [];
+
+  for (const vertex of graph.Vertices) {
+    dist[CruciblePoint.getKey(vertex)] = Infinity;
+    prev[CruciblePoint.getKey(vertex)] = undefined;
+    Q.push(vertex);
   }
-  return totalPath;
-}
 
-// A* finds a path from start to goal.
-// h is the heuristic function. h(n) estimates the cost to reach goal from node n.
-function AStar(start: Point, goal: Point, h: (node: Point) => number, heatLossMap: Map<string, number>): string[] | string {
-  // The set of discovered nodes that may need to be (re-)expanded.
-  // Initially, only the start node is known.
-  // This is usually implemented as a min-heap or priority queue rather than a hash-set.
-  const openSet: Set<string> = new Set([GetPointKey(start)]);
+  dist[CruciblePoint.getKey(source)] = 0;
 
-  // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from the start
-  // to n currently known.
-  const cameFrom: Record<string, string> = {};
+  while (Q.length > 0) {
+    const u = Q.reduce((minVertex, vertex) =>
+      dist[CruciblePoint.getKey(vertex)] < dist[CruciblePoint.getKey(minVertex)] ? vertex : minVertex
+    );
+    Q.splice(Q.indexOf(u), 1);
 
-  // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
-  const gScore: Record<string, number> = {};
-  gScore[GetPointKey(start)] = 0;
+    for (const v of Q.filter((vertex) => graph.Edges.has(`${CruciblePoint.getKey(u)}-${CruciblePoint.getKey(vertex)}`))) {
+      const alt = dist[CruciblePoint.getKey(u)] + (graph.Edges.get(`${CruciblePoint.getKey(u)}-${CruciblePoint.getKey(v)}`) || 0);
 
-  // For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
-  // how cheap a path could be from start to finish if it goes through n.
-  const fScore: Record<string, number> = {};
-  fScore[GetPointKey(start)] = h(start);
-
-  while (openSet.size > 0) {
-    // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
-
-    const current: string | undefined = Array.from(openSet).reduce((minNode, node) => (fScore[node] < fScore[minNode] ? node : minNode));
-    const currentPoint = GetPointFromKey(current);
-    if (currentPoint === goal) {
-      return reconstructPath(cameFrom, current);
-    }
-
-    openSet.delete(current);
-
-    // Assuming neighbors is a function that returns an array of neighboring nodes
-    for (const neighbor of neighbors(currentPoint)) {
-      // d(current,neighbor) is the weight of the edge from current to neighbor
-      // tentative_gScore is the distance from start to the neighbor through current
-      const tentativeGScore = gScore[current] + d(currentPoint, neighbor);
-
-      if (tentativeGScore < (gScore[GetPointKey(neighbor)] || Infinity)) {
-        // This path to neighbor is better than any previous one. Record it!
-        cameFrom[GetPointKey(neighbor)] = current;
-        gScore[GetPointKey(neighbor)] = tentativeGScore;
-        fScore[GetPointKey(neighbor)] = tentativeGScore + h(neighbor);
-        if (!openSet.has(GetPointKey(neighbor))) {
-          openSet.add(GetPointKey(neighbor));
-        }
+      if (alt < dist[CruciblePoint.getKey(v)]) {
+        dist[CruciblePoint.getKey(v)] = alt;
+        prev[CruciblePoint.getKey(v)] = u;
       }
     }
   }
 
-  // Open set is empty but goal was never reached
-  return "failure";
-}
-
-function d(current: Point, neighbor: Point): number {
-  // Replace with actual edge weight calculation
-  return 1;
-}
-
-function neighbors(node: Point, grid: ): Point[] {
-  // Replace with actual neighbor calculation
-  return [];
+  return [dist, prev];
 }

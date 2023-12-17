@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { GetPointKey, Point } from "../../util/coords";
+import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey } from "../../util/coords";
 import { Queue } from "data-structure-typed";
 
 const isSample = true;
@@ -65,19 +65,8 @@ export function SolvePartTwo(): number {
   return highestEnergizedConfig;
 }
 
-enum Direction {
-  N = "North",
-  E = "East",
-  S = "South",
-  W = "West"
-}
-
-interface Beam extends Point {
-  direction: Direction;
-}
-
-function traverseGrid(grid: string[][], start: Beam): Map<string, number> {
-  const S: Queue<Beam> = new Queue<Beam>();
+function traverseGrid(grid: string[][], start: DirectedPoint): Map<string, number> {
+  const S: Queue<DirectedPoint> = new Queue<DirectedPoint>();
   const energizedPositions = new Map<string, number>();
 
   S.push(start);
@@ -85,11 +74,11 @@ function traverseGrid(grid: string[][], start: Beam): Map<string, number> {
     const w = S.dequeue();
     if (w !== undefined) {
       const beamSymbol = grid[w.Y][w.X];
-      const wVisited = energizedPositions.has(getBeamKey(w));
+      const wVisited = energizedPositions.has(GetDirectedPointKey(w));
       if (beamSymbol !== "X" && !wVisited) {
-        const ePos = energizedPositions.get(getBeamKey(w));
-        if (ePos === undefined) energizedPositions.set(getBeamKey(w), 1);
-        else energizedPositions.set(getBeamKey(w), ePos + 1);
+        const ePos = energizedPositions.get(GetDirectedPointKey(w));
+        if (ePos === undefined) energizedPositions.set(GetDirectedPointKey(w), 1);
+        else energizedPositions.set(GetDirectedPointKey(w), ePos + 1);
         const nextPost = getNextPos(w, beamSymbol);
         if (nextPost !== undefined) {
           nextPost.forEach((p) => S.push(p));
@@ -103,7 +92,7 @@ function traverseGrid(grid: string[][], start: Beam): Map<string, number> {
 }
 
 //Hope this works lol
-function getNextPos(beam: Beam, symbol: string): Beam[] | undefined {
+function getNextPos(beam: DirectedPoint, symbol: string): DirectedPoint[] | undefined {
   if (symbol === ".") {
     if (beam.direction == Direction.N) {
       return [{ direction: Direction.N, X: beam.X, Y: beam.Y - 1 }];
@@ -205,7 +194,4 @@ function printGrid(grid: string[][], eMap: Map<string, number>) {
     });
     console.log(row);
   });
-}
-function getBeamKey(beam: Beam): string {
-  return GetPointKey(beam) + "-" + beam.direction;
 }
