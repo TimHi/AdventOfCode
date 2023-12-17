@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey } from "../../util/coords";
 import { HeapOptions, MinHeap } from "data-structure-typed";
 
-const isSample = false;
+const isSample = true;
 type Step = {
   heuristic: number;
   point: DirectedPoint;
