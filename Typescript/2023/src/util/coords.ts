@@ -14,6 +14,19 @@ export enum Direction {
   W = "West"
 }
 
+export function IndexOfDirection(direction: Direction): number {
+  switch (direction) {
+    case Direction.N:
+      return 0;
+    case Direction.E:
+      return 1;
+    case Direction.S:
+      return 2;
+    case Direction.W:
+      return 3;
+  }
+}
+
 export function GetDirection(dir: string): Direction {
   switch (dir) {
     case "North":
