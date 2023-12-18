@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { Direction, Point } from "../../util/coords";
 import { getInnerPolygonArea } from "../../util/area";
 
-const isSample = true;
+const isSample = false;
 
 interface Dig {
   direction: Direction;
@@ -33,7 +33,7 @@ function dig(digInstructions: Dig[]): number {
     digPoints.push(...newPoints);
   });
 
-  return getInnerPolygonArea(digPoints) + stepSum;
+  return getInnerPolygonArea(digPoints, stepSum) + stepSum;
 }
 
 export function SolvePartTwo(): number {
@@ -62,25 +62,21 @@ function getDirectionFromInput(i: string): Direction {
 
 function getDirectionDelta(direction: Direction, p: Point, steps: number): Point[] {
   const pointsBetween: Point[] = [];
-  // pointsBetween.push(p);
-  let previousDigPoint: Point = p;
-  //for (let index = 0; index < steps; index++) {
+
   switch (direction) {
     case Direction.N:
-      pointsBetween.push({ X: previousDigPoint.X, Y: previousDigPoint.Y - steps });
+      pointsBetween.push({ X: p.X, Y: p.Y - steps });
       break;
     case Direction.E:
-      pointsBetween.push({ X: previousDigPoint.X + steps, Y: previousDigPoint.Y });
+      pointsBetween.push({ X: p.X + steps, Y: p.Y });
       break;
     case Direction.S:
-      pointsBetween.push({ X: previousDigPoint.X, Y: previousDigPoint.Y + steps });
+      pointsBetween.push({ X: p.X, Y: p.Y + steps });
       break;
     case Direction.W:
-      pointsBetween.push({ X: previousDigPoint.X - steps, Y: previousDigPoint.Y });
+      pointsBetween.push({ X: p.X - steps, Y: p.Y });
       break;
   }
-  //previousDigPoint = pointsBetween[pointsBetween.length - 1];
-  //}
 
   return pointsBetween;
 }
@@ -110,3 +106,4 @@ function parseHexInstruction(instruction: string): Dig {
 
   throw new Error("Failed parsing line: " + instruction);
 }
+//106941819907438 too high
