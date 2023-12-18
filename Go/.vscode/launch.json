@@ -9,9 +9,9 @@
             "program": "${workspaceFolder}/",
             "args": [
                 "-year",
-                "2017",
+                "2023",
                 "-day",
-                "1"
+                "2"
             ]
         }
     ]

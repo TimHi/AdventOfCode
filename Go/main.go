@@ -30,6 +30,7 @@ import (
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day19"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day20"
 	"github.com/TimHi/AdventOfCode/m/v2/cmd/2022/day21"
+	day02_2023 "github.com/TimHi/AdventOfCode/m/v2/cmd/2023/day02"
 )
 
 var dayFlag int
@@ -48,8 +49,21 @@ func main() {
 		run2022()
 	} else if yearFlag == 2017 {
 		run2017()
+	} else if yearFlag == 2023 {
+		run2023()
 	} else {
 		panic("Wrong year")
+	}
+}
+
+func run2023() {
+	start := time.Now()
+	switch dayFlag {
+	case 2:
+		day02_2023.Solve(start, useSampleFlag, dayFlag)
+
+	default:
+		fmt.Println("Day not recognized")
 	}
 }
 
