@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { Direction, Point } from "../../util/coords";
-import { getInnerPolygonArea } from "../../util/area";
+
+import gaussShoelace from "gauss-shoelace";
 
 const isSample = false;
 
@@ -22,6 +23,15 @@ export function SolvePartOne(): number {
   return dig(digInstructions);
 }
 
+export function SolvePartTwo(): number {
+  const fileName = isSample ? "/src/days/day18/sample.txt" : "/src/days/day18/full.txt";
+  const digInstructions: Dig[] = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => parseHexInstruction(l));
+  return dig(digInstructions);
+}
+
 function dig(digInstructions: Dig[]): number {
   const digPoints: Point[] = [];
   let previousDigPoint: Point = { X: 0, Y: 0 };
@@ -33,16 +43,17 @@ function dig(digInstructions: Dig[]): number {
     digPoints.push(...newPoints);
   });
 
-  return getInnerPolygonArea(digPoints, stepSum) + stepSum;
+  return getInnerPolygonArea(digPoints, stepSum);
 }
 
-export function SolvePartTwo(): number {
-  const fileName = isSample ? "/src/days/day18/sample.txt" : "/src/days/day18/full.txt";
-  const digInstructions: Dig[] = fs
-    .readFileSync(process.cwd() + fileName, "utf8")
-    .split("\n")
-    .map((l) => parseHexInstruction(l));
-  return dig(digInstructions);
+function getInnerPolygonArea(points: Point[], stepLength: number): number {
+  const shoelacePoints: Array<[number, number]> = [];
+  points.forEach((v) => {
+    shoelacePoints.push([v.X, v.Y]);
+  });
+  const shoelace = gaussShoelace(shoelacePoints);
+  const innerPoints = -stepLength / 2 + 1 + shoelace;
+  return innerPoints + stepLength;
 }
 
 function getDirectionFromInput(i: string): Direction {
