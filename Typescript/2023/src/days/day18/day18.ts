@@ -3,7 +3,7 @@ import { Direction, Point } from "../../util/coords";
 
 import gaussShoelace from "gauss-shoelace";
 
-const isSample = false;
+const isSample = true;
 
 interface Dig {
   direction: Direction;
@@ -43,7 +43,7 @@ function dig(digInstructions: Dig[]): number {
     digPoints.push(...newPoints);
   });
 
-  return getInnerPolygonArea(digPoints, stepSum);
+  return getInnerPolygonArea(digPoints, stepSum + 1);
 }
 
 function getInnerPolygonArea(points: Point[], stepLength: number): number {
@@ -51,9 +51,10 @@ function getInnerPolygonArea(points: Point[], stepLength: number): number {
   points.forEach((v) => {
     shoelacePoints.push([v.X, v.Y]);
   });
-
+  //Part 2 is off by one for some reason
   const shoelace = gaussShoelace(shoelacePoints);
-  //const innerPoints = -stepLength / 2 + 1 + shoelace;
+  //const innerPoints = -Math.floor(stepLength / 2) + 1 + shoelace;
+  //const result = innerPoints + stepLength;
   const result = shoelace + Math.round(stepLength / 2);
   return result;
 }
