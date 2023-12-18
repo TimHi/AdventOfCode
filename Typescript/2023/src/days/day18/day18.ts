@@ -51,9 +51,11 @@ function getInnerPolygonArea(points: Point[], stepLength: number): number {
   points.forEach((v) => {
     shoelacePoints.push([v.X, v.Y]);
   });
+
   const shoelace = gaussShoelace(shoelacePoints);
-  const innerPoints = -stepLength / 2 + 1 + shoelace;
-  return innerPoints + stepLength;
+  //const innerPoints = -stepLength / 2 + 1 + shoelace;
+  const result = shoelace + Math.round(stepLength / 2);
+  return result;
 }
 
 function getDirectionFromInput(i: string): Direction {
@@ -117,4 +119,3 @@ function parseHexInstruction(instruction: string): Dig {
 
   throw new Error("Failed parsing line: " + instruction);
 }
-//106941819907438 too high
