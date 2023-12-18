@@ -80,7 +80,7 @@ function getMinCubes(gameData: string): number {
       red.push(getColorValue(set, RED_REGEX));
     });
 
-  return Math.max.apply(Math, green) * Math.max.apply(Math, blue) * Math.max.apply(Math, red);
+  return Math.max(...green) * Math.max(...blue) * Math.max(...red);
 }
 
 function getColorValue(game: string, colorRegex: RegExp): number {
