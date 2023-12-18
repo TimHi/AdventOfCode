@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import { Direction, Point } from "../../util/coords";
-import gaussShoelace from "gauss-shoelace";
+import { getInnerPolygonArea } from "../../util/area";
 
-const isSample = false;
+const isSample = true;
 
 interface Dig {
   direction: Direction;
@@ -19,31 +19,30 @@ export function SolvePartOne(): number {
       return { direction: getDirectionFromInput(splits[0]), steps: Number(splits[1]) };
     });
 
-  //const digPoints: Point[] = [{ X: 0, Y: 0 }];
+  return dig(digInstructions);
+}
+
+function dig(digInstructions: Dig[]): number {
   const digPoints: Point[] = [];
   let previousDigPoint: Point = { X: 0, Y: 0 };
+  let stepSum = 0;
   digInstructions.forEach((instruction) => {
+    stepSum += instruction.steps;
     const newPoints = getDirectionDelta(instruction.direction, previousDigPoint, instruction.steps);
     previousDigPoint = newPoints[newPoints.length - 1];
     digPoints.push(...newPoints);
   });
 
-  return getPolyArea(digPoints) + digPoints.length;
+  return getInnerPolygonArea(digPoints) + stepSum;
 }
 
 export function SolvePartTwo(): number {
-  console.log("TBD");
-  return 0;
-}
-
-function getPolyArea(digPoints: Point[]): number {
-  const shoelacePoints: Array<[number, number]> = [];
-  digPoints.forEach((v) => {
-    shoelacePoints.push([v.X, v.Y]);
-  });
-  const shoelace = gaussShoelace(shoelacePoints);
-  const innerPoints = -shoelacePoints.length / 2 + 1 + shoelace;
-  return innerPoints;
+  const fileName = isSample ? "/src/days/day18/sample.txt" : "/src/days/day18/full.txt";
+  const digInstructions: Dig[] = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => parseHexInstruction(l));
+  return dig(digInstructions);
 }
 
 function getDirectionFromInput(i: string): Direction {
@@ -63,24 +62,51 @@ function getDirectionFromInput(i: string): Direction {
 
 function getDirectionDelta(direction: Direction, p: Point, steps: number): Point[] {
   const pointsBetween: Point[] = [];
+  // pointsBetween.push(p);
   let previousDigPoint: Point = p;
-  for (let index = 0; index < steps; index++) {
-    switch (direction) {
-      case Direction.N:
-        pointsBetween.push({ X: previousDigPoint.X, Y: previousDigPoint.Y - 1 });
-        break;
-      case Direction.E:
-        pointsBetween.push({ X: previousDigPoint.X + 1, Y: previousDigPoint.Y });
-        break;
-      case Direction.S:
-        pointsBetween.push({ X: previousDigPoint.X, Y: previousDigPoint.Y + 1 });
-        break;
-      case Direction.W:
-        pointsBetween.push({ X: previousDigPoint.X - 1, Y: previousDigPoint.Y });
-        break;
-    }
-    previousDigPoint = pointsBetween[pointsBetween.length - 1];
+  //for (let index = 0; index < steps; index++) {
+  switch (direction) {
+    case Direction.N:
+      pointsBetween.push({ X: previousDigPoint.X, Y: previousDigPoint.Y - steps });
+      break;
+    case Direction.E:
+      pointsBetween.push({ X: previousDigPoint.X + steps, Y: previousDigPoint.Y });
+      break;
+    case Direction.S:
+      pointsBetween.push({ X: previousDigPoint.X, Y: previousDigPoint.Y + steps });
+      break;
+    case Direction.W:
+      pointsBetween.push({ X: previousDigPoint.X - steps, Y: previousDigPoint.Y });
+      break;
   }
+  //previousDigPoint = pointsBetween[pointsBetween.length - 1];
+  //}
 
   return pointsBetween;
+}
+
+function parseHexInstruction(instruction: string): Dig {
+  const splits = instruction.split(" ");
+  const hex = splits[2].replaceAll("(", "").replaceAll(")", "").replaceAll("#", "");
+  const steps = parseInt(hex.substring(0, 5), 16);
+  if (isNaN(steps)) {
+    throw new Error("Invalid hexadecimal string");
+  }
+  const direction = parseInt(hex.substring(5), 16);
+  if (isNaN(direction)) {
+    throw new Error("Invalid hexadecimal string");
+  }
+
+  switch (direction) {
+    case 0:
+      return { direction: Direction.E, steps: steps };
+    case 1:
+      return { direction: Direction.S, steps: steps };
+    case 2:
+      return { direction: Direction.W, steps: steps };
+    case 3:
+      return { direction: Direction.N, steps: steps };
+  }
+
+  throw new Error("Failed parsing line: " + instruction);
 }
