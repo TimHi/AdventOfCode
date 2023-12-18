@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-const isSample = true;
+const isSample = false;
 
 interface Colors {
   Red: number;
