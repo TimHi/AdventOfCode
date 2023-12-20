@@ -1,17 +1,16 @@
 import * as fs from "fs";
 import { getAllNumbersInString } from "../../util/regex";
-import { cloneDeep } from "lodash";
 // qqz{s>2770:qs,m<1801:hdj,R}
 // gd{a>3333:R,R}
 // hdj{m>838:A,pv}
 
-interface ConditionP2 {
-  variable: string;
-  variableShouldBeBigger: boolean;
-  rangeCount: number;
+type ConditionP2 = {
+  type: "x" | "m" | "a" | "s";
+  operator: string;
+  value: number;
   isDefault: boolean;
   destination: string;
-}
+};
 interface WorkflowP2 {
   node: string;
   conditions: ConditionP2[];
@@ -19,50 +18,73 @@ interface WorkflowP2 {
 
 export function GetPossibleCombinations(): number {
   const workflowMap = parseP2Input();
-  const ranges = new Map<string, number[]>();
-  ranges.set("x", [1, 4000]);
-  ranges.set("m", [1, 4000]);
-  ranges.set("a", [1, 4000]);
-  ranges.set("s", [1, 4000]);
-  const g = getCount("in", workflowMap, ranges);
-  const result = sumMaps(g);
-  //const result = trimDuplicatesAndCalculateSum(g);
+  const result = getCount("in", workflowMap, { x: [1, 4001], m: [1, 4001], a: [1, 4001], s: [1, 4001] });
   return result;
 }
 
-function getCount(currentID: string, map: Map<string, WorkflowP2>, ranges: Map<string, number[]>): Map<string, number[]>[] {
-  const sum: Map<string, number[]>[] = [];
+function rangeSize(r: Range) {
+  return r[1] - r[0];
+}
+function calculateCombinations(batch: XMASRanges) {
+  return rangeSize(batch.x) * rangeSize(batch.m) * rangeSize(batch.a) * rangeSize(batch.s);
+}
 
+const foundRanges: XMASRanges[] = [];
+
+type Range = [number, number];
+type XMASRanges = {
+  x: Range;
+  m: Range;
+  a: Range;
+  s: Range;
+};
+function getCount(currentID: string, map: Map<string, WorkflowP2>, ranges: XMASRanges): number {
   if (currentID === "A") {
-    sum.push(ranges);
-    return sum;
+    foundRanges.push(ranges);
+    return calculateCombinations(ranges);
   }
   if (currentID === "R") {
-    return [];
+    return 0;
   }
 
+  let result = 0;
   const currentNode = map.get(currentID)!;
-  for (let index = 0; index < currentNode.conditions.length; index++) {
-    const child = currentNode.conditions[index];
-    const tempRanges = cloneDeep(ranges);
-    if (child.isDefault) {
-      getCount(child.destination, map, tempRanges);
-    } else {
-      if (child.variableShouldBeBigger) {
-        const oldRange = tempRanges.get(child.variable)!;
-        oldRange[0] = child.rangeCount;
-        tempRanges.set(child.variable, oldRange);
-      } else {
-        const oldRange = tempRanges.get(child.variable)!;
-        oldRange[1] = child.rangeCount;
-        tempRanges.set(child.variable, oldRange);
-      }
+  for (const rule of currentNode.conditions) {
+    const range = ranges[rule.type];
+    switch (rule.operator) {
+      case "<":
+        if (range[1] <= rule.value) {
+          result += getCount(rule.destination, map, ranges);
+          return result;
+        } else if (range[0] < rule.value) {
+          const matchedPart: XMASRanges = { ...ranges, [rule.type]: [range[0], rule.value] };
+          result += getCount(rule.destination, map, matchedPart);
+          ranges = { ...ranges, [rule.type]: [rule.value, range[1]] };
+          continue;
+        }
+        break;
 
-      sum.push(...getCount(child.destination, map, tempRanges));
+      case ">":
+        //Fullfilled, go further without adjusting ranges
+        if (range[0] > rule.value) {
+          result += getCount(rule.destination, map, ranges);
+          return result;
+        } else if (range[1] > rule.value + 1) {
+          //Split ranges
+          const matchedPart: XMASRanges = { ...ranges, [rule.type]: [rule.value + 1, range[1]] };
+          result += getCount(rule.destination, map, matchedPart);
+          ranges = { ...ranges, [rule.type]: [range[0], rule.value + 1] };
+          continue;
+        }
+        break;
+      default:
+        //Passthrough
+        result += getCount(rule.destination, map, ranges);
+        break;
     }
   }
 
-  return sum;
+  return result;
 }
 
 function parseP2Input() {
@@ -81,18 +103,24 @@ function parseP2Input() {
         splits.forEach((rawCondition) => {
           if (rawCondition.includes(">") || rawCondition.includes("<")) {
             const cost = getAllNumbersInString(rawCondition)[0];
-            const isBigger = rawCondition.includes(">");
+            const operator = rawCondition.includes(">") ? ">" : "<";
             const destination = rawCondition.split(":")[1];
             const variable = rawCondition[0];
             conditions.push({
-              variable: variable,
-              variableShouldBeBigger: isBigger,
-              rangeCount: cost,
+              type: variable as "x" | "m" | "a" | "s",
+              operator: operator,
+              value: cost,
               isDefault: false,
               destination: destination
             });
           } else {
-            conditions.push({ variable: "", variableShouldBeBigger: false, rangeCount: 0, isDefault: true, destination: rawCondition });
+            conditions.push({
+              type: "x" as "x" | "m" | "a" | "s",
+              operator: "",
+              value: 0,
+              isDefault: true,
+              destination: rawCondition
+            });
           }
         });
         const workflow: WorkflowP2 = { node: workFlowId, conditions: conditions };
@@ -101,59 +129,3 @@ function parseP2Input() {
     });
   return map;
 }
-function trimDuplicatesAndCalculateSum(abomination: Map<string, number[]>[]): number {
-  const xRanges: number[][] = [];
-  const mRanges: number[][] = [];
-  const aRanges: number[][] = [];
-  const sRanges: number[][] = [];
-  const xFinal: number[] = [1, 4000];
-  const mFinal: number[] = [1, 4000];
-  const aFinal: number[] = [1, 4000];
-  const sFinal: number[] = [1, 4000];
-
-  abomination.forEach((rangeMap) => {
-    const x = rangeMap.get("x")!;
-    xRanges.push(x);
-    const m = rangeMap.get("m")!;
-    mRanges.push(m);
-    const a = rangeMap.get("a")!;
-    aRanges.push(a);
-    const s = rangeMap.get("s")!;
-    sRanges.push(s);
-  });
-
-  xRanges.forEach((range) => {
-    if (range[0] > xFinal[0]) xFinal[0] = range[0];
-    if (range[1] < xFinal[1]) xFinal[1] = range[1];
-  });
-  mRanges.forEach((range) => {
-    if (range[0] > mFinal[0]) mFinal[0] = range[0];
-    if (range[1] < mFinal[1]) mFinal[1] = range[1];
-  });
-  aRanges.forEach((range) => {
-    if (range[0] > aFinal[0]) aFinal[0] = range[0];
-    if (range[1] < aFinal[1]) aFinal[1] = range[1];
-  });
-  sRanges.forEach((range) => {
-    if (range[0] > sFinal[0]) sFinal[0] = range[0];
-    if (range[1] < sFinal[1]) sFinal[1] = range[1];
-  });
-  console.log("Aal");
-  return (xFinal[1] - xFinal[0]) * (mFinal[1] - mFinal[0]) * (aFinal[1] - aFinal[0]) * (sFinal[1] - sFinal[0]);
-}
-
-function sumMaps(g: Map<string, number[]>[]) {
-  let sum = 0;
-  g.forEach((v) => {
-    const rangeList: number[][] = [];
-    v.forEach((v2) => {
-      rangeList.push(v2);
-    });
-    console.log(sum);
-    sum += rangeList.reduce((prev, curr) => prev * (curr[1] - curr[0] + 1), 1);
-  });
-  return sum;
-}
-//167409079868000
-//497087832120000
-//15350040384000

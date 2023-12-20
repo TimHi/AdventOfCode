@@ -9,6 +9,6 @@ describe("Day 19 Part 01", () => {
 
 describe("Day 19 Part 02", () => {
   test("Expected result", () => {
-    expect(SolvePartTwo()).toBe(-1);
+    expect(SolvePartTwo()).toBe(167409079868000);
   });
 });
