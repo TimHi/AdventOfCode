@@ -1,13 +1,14 @@
 import { Queue } from "data-structure-typed";
 import * as fs from "fs";
 
-const isSample = true;
+const isSample = false;
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day20/sample.txt" : "/src/days/day20/full.txt";
 
   const uberService = new ÜberSystemQueueDispatcherService();
   const broadcastModule = new Broadcast("broadcaster", [], [], uberService);
+  const conjectionModulesToInitialize: Conjunction[] = [];
   fs.readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
     .forEach((config) => {
@@ -15,16 +16,24 @@ export function SolvePartOne(): number {
       const destinations = splits[1].split(",").map((d) => d.replaceAll(" ", ""));
       if (splits[0][0] === "&") {
         const moduleId = splits[0].substring(1).replaceAll(" ", "");
-        uberService.addModule(new Conjunction(moduleId, [], destinations, uberService));
+        const conjectionModule = new Conjunction(moduleId, [], destinations, uberService);
+        uberService.addModule(conjectionModule);
+        conjectionModulesToInitialize.push(conjectionModule);
       } else if (splits[0][0] === "%") {
         const moduleId = splits[0].substring(1).replaceAll(" ", "");
         uberService.addModule(new FlipFlop(moduleId, [], destinations, uberService));
       } else if (splits[0].replace(" ", "") === "broadcaster") {
         broadcastModule.destinations = destinations;
       }
+      if (isSample) {
+        uberService.addModule(new Broadcast("output", [], [], uberService));
+      } else {
+        uberService.addModule(new Broadcast("rx", [], [], uberService));
+      }
     });
   uberService.addModule(broadcastModule);
 
+  uberService.initializeConjectionModules(conjectionModulesToInitialize);
   uberService.StartButtonSmashing();
   return uberService.pulseProduct();
 }
@@ -51,11 +60,11 @@ interface Module {
 
 class ÜberSystemQueueDispatcherService {
   private buttonPressQueue: Queue<Signal> = new Queue<Signal>();
-  private interModuleCommunicationQueue: Queue<Signal> = new Queue<Signal>();
   private modules = new Map<string, Module>();
   private BUTTON_PRESSES = 1000;
   private lowPulseCount = 0;
   private highPulseCount = 0;
+
   public findModule(id: string): Module {
     const result = this.modules.get(id);
     if (result === undefined) throw new Error("Module " + id + " not found");
@@ -71,6 +80,19 @@ class ÜberSystemQueueDispatcherService {
     return originModule.destinations;
   }
 
+  initializeConjectionModules(conjectionModulesToInitialize: Conjunction[]) {
+    this.modules.forEach((mod) => {
+      conjectionModulesToInitialize.forEach((conjectionModule) => {
+        const cModulesInModule = mod.destinations.filter((mod) => mod === conjectionModule.id);
+        if (cModulesInModule.length > 0) {
+          const cModToUpdate = this.modules.get(conjectionModule.id)! as Conjunction;
+          cModToUpdate.initOriginInMemory(mod.id);
+          this.modules.set(cModToUpdate.id, cModToUpdate);
+        }
+      });
+    });
+  }
+
   StartButtonSmashing() {
     //Push button sets the intial broadcast signals into movement
     for (let buttonSmashCount = 0; buttonSmashCount < this.BUTTON_PRESSES; buttonSmashCount++) {
@@ -83,6 +105,7 @@ class ÜberSystemQueueDispatcherService {
         if (signalToProcess === undefined) throw new Error("How did an undefined signal get into the uber system");
         this.processSignal(signalToProcess);
       }
+      console.log(`Smashed button ${buttonSmashCount} times.`);
     }
   }
 
@@ -92,12 +115,14 @@ class ÜberSystemQueueDispatcherService {
   }
 
   public enQueueSignal(signal: Signal) {
+    console.log(`Enquing Signal from ${signal.origin} to ${signal.destination} pulse: ${signal.pulse}`);
     this.buttonPressQueue.enqueue(signal);
     signal.pulse ? this.highPulseCount++ : this.lowPulseCount++;
   }
 
   pulseProduct(): number {
-    return this.lowPulseCount * this.highPulseCount;
+    console.log(`Low count: ${this.lowPulseCount + this.BUTTON_PRESSES} | High count ${this.highPulseCount}`);
+    return (this.lowPulseCount + this.BUTTON_PRESSES) * this.highPulseCount;
   }
 }
 
@@ -108,9 +133,15 @@ class Broadcast implements Module {
     public destinations: string[],
     public uberSystem: ÜberSystemQueueDispatcherService
   ) {}
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public processSignal(_signal: Signal) {
-    throw new Error("Broadcaster should not receive signals");
+
+  public processSignal(signal: Signal) {
+    if (this.id === "output") {
+      console.log(`Output: Received ${signal.pulse} from ${signal.origin}`);
+    } else if (this.id === "rx") {
+      console.log(`Rx: Received ${signal.pulse} from ${signal.origin}`);
+    } else {
+      throw new Error("Should not be reached");
+    }
   }
 }
 
@@ -124,8 +155,8 @@ class FlipFlop implements Module {
   ) {}
 
   public processSignal(signal: Signal) {
-    //Should this still increase the pulsecount if it is high
-    if (!signal) {
+    //Should this still increase the pulsecount if it is high?
+    if (!signal.pulse) {
       this.state = !this.state;
       const destinations = this.uberSystem.getDestinationIds(this.id);
       destinations.forEach((d) => {
@@ -136,7 +167,7 @@ class FlipFlop implements Module {
 }
 
 class Conjunction implements Module {
-  public previousSignals: Map<string, Signal> = new Map<string, Signal>();
+  public signalMemory: Map<string, Signal> = new Map<string, Signal>();
   constructor(
     public id: string,
     public signals: Signal[],
@@ -144,11 +175,22 @@ class Conjunction implements Module {
     public uberSystem: ÜberSystemQueueDispatcherService
   ) {}
 
-  public processSignal(signal: Signal) {}
+  public initOriginInMemory(id: string) {
+    this.signalMemory.set(id, { id: -1, destination: "", origin: "", pulse: false });
+  }
 
-  public hasAnyLowsRemebered(): boolean {
+  public processSignal(signal: Signal) {
+    this.signalMemory.set(signal.origin, signal);
+    if (this.memoryContainsLowSignal()) {
+      this.destinations.forEach((d) => this.uberSystem.enQueueSignal({ id: -1, destination: d, origin: this.id, pulse: true }));
+    } else {
+      this.destinations.forEach((d) => this.uberSystem.enQueueSignal({ id: -1, destination: d, origin: this.id, pulse: false }));
+    }
+  }
+
+  public memoryContainsLowSignal(): boolean {
     let rememberedLow = false;
-    this.previousSignals.forEach((v) => {
+    this.signalMemory.forEach((v) => {
       if (!v.pulse) rememberedLow = true;
     });
     return rememberedLow;
