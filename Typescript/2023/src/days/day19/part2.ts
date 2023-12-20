@@ -38,8 +38,8 @@ function getCount(currentID: string, map: Map<string, WorkflowP2>, ranges: Map<s
     ranges.forEach((v) => {
       rangeList.push(v);
     });
-    //const tSum = rangeList.reduce((prev, curr) => prev * (curr[1] - curr[0] + 1), 1);
-    //console.log(tSum);
+    const tSum = rangeList.reduce((prev, curr) => prev * (curr[1] - curr[0] + 1), 1);
+    console.log(tSum);
     sum.push(ranges);
     return sum;
   }
@@ -151,12 +151,15 @@ function trimDuplicatesAndCalculateSum(abomination: Map<string, number[]>[]): nu
 function sumMaps(g: Map<string, number[]>[]) {
   let sum = 0;
   g.forEach((v) => {
-    console.log(sum);
     const rangeList: number[][] = [];
     v.forEach((v2) => {
       rangeList.push(v2);
     });
+    console.log(sum);
     sum += rangeList.reduce((prev, curr) => prev * (curr[1] - curr[0] + 1), 1);
   });
   return sum;
 }
+//167409079868000
+//497087832120000
+//15350040384000
