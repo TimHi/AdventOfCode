@@ -34,12 +34,6 @@ function getCount(currentID: string, map: Map<string, WorkflowP2>, ranges: Map<s
   const sum: Map<string, number[]>[] = [];
 
   if (currentID === "A") {
-    const rangeList: number[][] = [];
-    ranges.forEach((v) => {
-      rangeList.push(v);
-    });
-    const tSum = rangeList.reduce((prev, curr) => prev * (curr[1] - curr[0] + 1), 1);
-    console.log(tSum);
     sum.push(ranges);
     return sum;
   }
@@ -52,7 +46,7 @@ function getCount(currentID: string, map: Map<string, WorkflowP2>, ranges: Map<s
     const child = currentNode.conditions[index];
     const tempRanges = cloneDeep(ranges);
     if (child.isDefault) {
-      sum.push(...getCount(child.destination, map, tempRanges));
+      getCount(child.destination, map, tempRanges);
     } else {
       if (child.variableShouldBeBigger) {
         const oldRange = tempRanges.get(child.variable)!;
