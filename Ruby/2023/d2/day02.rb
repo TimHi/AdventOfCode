@@ -13,13 +13,15 @@ end
 def solve
   data = true ? DATA.readlines : File.open(File.join(File.dirname(__FILE__), 'full.txt')
   ).readlines.map(&:chomp)
+  
   puts data.select  { |line|
     is_valid(line)
   }.map { |l| get_game_id(l) }.flatten.sum
-
-
+  
+  data.map { |line|  }
 end
 solve
+
 __END__
 Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue

@@ -2,7 +2,7 @@ import { Queue } from "data-structure-typed";
 import * as fs from "fs";
 import { CalculateNeededPresses } from "./Part2";
 
-const isSample = true;
+const isSample = false;
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day20/sample.txt" : "/src/days/day20/full.txt";
@@ -106,7 +106,7 @@ class ÜberSystemQueueDispatcherService {
         if (signalToProcess === undefined) throw new Error("How did an undefined signal get into the uber system");
         this.processSignal(signalToProcess);
       }
-      console.log(`Smashed button ${buttonSmashCount} times.`);
+      //console.log(`Smashed button ${buttonSmashCount} times.`);
     }
   }
 
@@ -116,13 +116,13 @@ class ÜberSystemQueueDispatcherService {
   }
 
   public enQueueSignal(signal: Signal) {
-    console.log(`Enquing Signal from ${signal.origin} to ${signal.destination} pulse: ${signal.pulse}`);
+    //console.log(`Enquing Signal from ${signal.origin} to ${signal.destination} pulse: ${signal.pulse}`);
     this.buttonPressQueue.enqueue(signal);
     signal.pulse ? this.highPulseCount++ : this.lowPulseCount++;
   }
 
   pulseProduct(): number {
-    console.log(`Low count: ${this.lowPulseCount + this.BUTTON_PRESSES} | High count ${this.highPulseCount}`);
+    //console.log(`Low count: ${this.lowPulseCount + this.BUTTON_PRESSES} | High count ${this.highPulseCount}`);
     return (this.lowPulseCount + this.BUTTON_PRESSES) * this.highPulseCount;
   }
 }
@@ -135,11 +135,12 @@ class Broadcast implements Module {
     public uberSystem: ÜberSystemQueueDispatcherService
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public processSignal(signal: Signal) {
     if (this.id === "output") {
-      console.log(`Output: Received ${signal.pulse} from ${signal.origin}`);
+      // console.log(`Output: Received ${signal.pulse} from ${signal.origin}`);
     } else if (this.id === "rx") {
-      console.log(`Rx: Received ${signal.pulse} from ${signal.origin}`);
+      //console.log(`Rx: Received ${signal.pulse} from ${signal.origin}`);
     } else {
       throw new Error("Should not be reached");
     }
