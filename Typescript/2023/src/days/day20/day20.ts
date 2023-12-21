@@ -1,5 +1,6 @@
 import { Queue } from "data-structure-typed";
 import * as fs from "fs";
+import { CalculateNeededPresses } from "./Part2";
 
 const isSample = true;
 
@@ -39,8 +40,8 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
-  console.log("TBD");
-  return 0;
+  const result = CalculateNeededPresses(isSample);
+  return result;
 }
 
 interface Signal {

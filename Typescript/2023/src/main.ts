@@ -20,7 +20,7 @@ import { SolvePartOne as SolvePartOneD19, SolvePartTwo as SolvePartTwoD19 } from
 import { SolvePartOne as SolvePartOneD20, SolvePartTwo as SolvePartTwoD20 } from "./days/day20/day20";
 import { SolvePartOne as SolvePartOneD21, SolvePartTwo as SolvePartTwoD21 } from "./days/day21/day21";
 //Please don't look at this file I dont care its ugly
-const day: number = 21;
+const day: number = 20;
 
 if (day === 1) {
   console.log("Day 01 Part 01: " + SolvePartOne());
