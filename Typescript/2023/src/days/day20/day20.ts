@@ -1,7 +1,7 @@
 import { Queue } from "data-structure-typed";
 import * as fs from "fs";
 
-const isSample = false;
+const isSample = true;
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day20/sample.txt" : "/src/days/day20/full.txt";
