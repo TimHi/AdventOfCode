@@ -18,9 +18,9 @@ import { SolvePartOne as SolvePartOneD17, SolvePartTwo as SolvePartTwoD17 } from
 import { SolvePartOne as SolvePartOneD18, SolvePartTwo as SolvePartTwoD18 } from "./days/day18/day18";
 import { SolvePartOne as SolvePartOneD19, SolvePartTwo as SolvePartTwoD19 } from "./days/day19/day19";
 import { SolvePartOne as SolvePartOneD20, SolvePartTwo as SolvePartTwoD20 } from "./days/day20/day20";
-
+import { SolvePartOne as SolvePartOneD21, SolvePartTwo as SolvePartTwoD21 } from "./days/day21/day21";
 //Please don't look at this file I dont care its ugly
-const day: number = 20;
+const day: number = 21;
 
 if (day === 1) {
   console.log("Day 01 Part 01: " + SolvePartOne());
@@ -82,4 +82,7 @@ if (day === 1) {
 } else if (day === 20) {
   console.log("Day 20 Part 01: " + SolvePartOneD20());
   console.log("Day 20 Part 02: " + SolvePartTwoD20());
+} else if (day === 21) {
+  console.log("Day 21 Part 01: " + SolvePartOneD21());
+  console.log("Day 21 Part 02: " + SolvePartTwoD21());
 }
