@@ -44,11 +44,11 @@ export function SolvePartOne(): number {
 
 export function SolvePartTwo(): number {
   const [start, end, hikingMap] = parseHikingMap();
-  const path = DFS_exhaustive(start, end, hikingMap);
+  const path = DFS_exhaustive(start, end, hikingMap, false);
   return path;
 }
 
-function DFS_exhaustive(start: Point, end: Point, hikingMap: Map<string, HikingNode>): number {
+function DFS_exhaustive(start: Point, end: Point, hikingMap: Map<string, HikingNode>, isSlippery = true): number {
   const stack: Array<[string, string[]]> = [[GetPointKey(start), [GetPointKey(start)]]];
   const foundPaths: number[] = [];
   while (stack.length > 0) {
@@ -60,7 +60,7 @@ function DFS_exhaustive(start: Point, end: Point, hikingMap: Map<string, HikingN
       console.log(Math.max(...foundPaths));
     }
 
-    const neighbors = getNeighbors(currentVertex!, hikingMap);
+    const neighbors = getNeighbors(currentVertex!, hikingMap, isSlippery);
 
     for (const neighbor of neighbors) {
       if (!path!.includes(neighbor)) {
@@ -71,7 +71,7 @@ function DFS_exhaustive(start: Point, end: Point, hikingMap: Map<string, HikingN
   return Math.max(...foundPaths);
 }
 
-function getNeighbors(current: string, hikingMap: Map<string, HikingNode>): string[] {
+function getNeighbors(current: string, hikingMap: Map<string, HikingNode>, isSlippery: boolean): string[] {
   const foundNeighbors: string[] = [];
   const currentNode = hikingMap.get(current)!;
 
@@ -81,7 +81,7 @@ function getNeighbors(current: string, hikingMap: Map<string, HikingNode>): stri
     { X: 0, Y: 1 },
     { X: 0, Y: -1 }
   ];
-  if (slopes.includes(currentNode.symbol)) {
+  if (slopes.includes(currentNode.symbol) && isSlippery) {
     const d = mapSlopeToDelta(currentNode.symbol);
     const newPoint: Point = { X: currentNode.pos.X + d.X, Y: currentNode.pos.Y + d.Y };
     const nextNode = hikingMap.get(GetPointKey(newPoint));
