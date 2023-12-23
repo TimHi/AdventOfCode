@@ -44,13 +44,41 @@ export function SolvePartOne(): number {
 
 export function SolvePartTwo(): number {
   const [start, end, hikingMap] = parseHikingMap();
+
   const path = DFS_exhaustive(start, end, hikingMap, false);
   return path;
+}
+
+function dfs(start: string, end: string, g: Map<string, HikingNode>): number {
+  const visited: Set<string> = new Set();
+  const stack: string[] = [start];
+
+  while (stack.length > 0) {
+    const curr = stack.pop()!;
+
+    if (curr === end) {
+      console.log(visited.size - 1);
+      return visited.size - 1;
+    }
+
+    visited.add(curr);
+
+    const neighbors = getNeighbors(curr, g, false);
+    for (const next of neighbors) {
+      if (!visited.has(next)) {
+        stack.push(next);
+        visited.add(next);
+      }
+    }
+  }
+
+  return 0;
 }
 
 function DFS_exhaustive(start: Point, end: Point, hikingMap: Map<string, HikingNode>, isSlippery = true): number {
   const stack: Array<[string, string[]]> = [[GetPointKey(start), [GetPointKey(start)]]];
   const foundPaths: number[] = [];
+
   while (stack.length > 0) {
     const [currentVertex, path] = stack.pop() ?? [];
 
@@ -59,7 +87,6 @@ function DFS_exhaustive(start: Point, end: Point, hikingMap: Map<string, HikingN
       foundPaths.push(path!.length - 2); //-2 because start/end?
       console.log(Math.max(...foundPaths));
     }
-
     const neighbors = getNeighbors(currentVertex!, hikingMap, isSlippery);
 
     for (const neighbor of neighbors) {
