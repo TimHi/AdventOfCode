@@ -1,0 +1,4 @@
+source 'https://rubygems.org'
+gem 'rubocop', group: 'development', require: false
+gem 'standard', group: 'development', require: false
+gem 'syntax_tree'

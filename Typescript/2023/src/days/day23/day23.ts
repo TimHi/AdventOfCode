@@ -49,43 +49,20 @@ export function SolvePartTwo(): number {
   return path;
 }
 
-function dfs(start: string, end: string, g: Map<string, HikingNode>): number {
-  const visited: Set<string> = new Set();
-  const stack: string[] = [start];
-
-  while (stack.length > 0) {
-    const curr = stack.pop()!;
-
-    if (curr === end) {
-      console.log(visited.size - 1);
-      return visited.size - 1;
-    }
-
-    visited.add(curr);
-
-    const neighbors = getNeighbors(curr, g, false);
-    for (const next of neighbors) {
-      if (!visited.has(next)) {
-        stack.push(next);
-        visited.add(next);
-      }
-    }
-  }
-
-  return 0;
-}
-
 function DFS_exhaustive(start: Point, end: Point, hikingMap: Map<string, HikingNode>, isSlippery = true): number {
   const stack: Array<[string, string[]]> = [[GetPointKey(start), [GetPointKey(start)]]];
   const foundPaths: number[] = [];
-
+  let aal = 0;
   while (stack.length > 0) {
     const [currentVertex, path] = stack.pop() ?? [];
 
     if (currentVertex === GetPointKey(end)) {
       // 94 90, 86, 82, 82, 74
       foundPaths.push(path!.length - 2); //-2 because start/end?
-      console.log(Math.max(...foundPaths));
+      if (path!.length > aal) {
+        aal = path!.length;
+        console.log(path!.length);
+      }
     }
     const neighbors = getNeighbors(currentVertex!, hikingMap, isSlippery);
 
@@ -141,3 +118,5 @@ function mapSlopeToDelta(slope: string): Point {
       throw new Error("Unknown slope");
   }
 }
+
+function parseToGraph() {}

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def get_colors_num(input, color)
   input.scan(/\b(\d+) #{color}\b/).flatten.map(&:to_i)
 end
@@ -6,19 +8,37 @@ def get_game_id(input)
   input.scan(/\bGame (\d+)\b/).flatten.map(&:to_i)
 end
 
-def is_valid(line)
-  line.split(";").map{ | split | get_colors_num(split, "red").sum <= 12 && get_colors_num(split, "green").sum <= 13 && get_colors_num(split, "blue").sum <= 14}.all? {|el| el === true}
+def valid?(line)
+  line
+    .split(';')
+    .map do |split|
+      get_colors_num(split, 'red').sum <= 12 &&
+        get_colors_num(split, 'green').sum <= 13 &&
+        get_colors_num(split, 'blue').sum <= 14
+    end
+    .all? { |el| el === true }
 end
 
 def solve
-  data = true ? DATA.readlines : File.open(File.join(File.dirname(__FILE__), 'full.txt')
-  ).readlines.map(&:chomp)
-  
-  puts data.select  { |line|
-    is_valid(line)
-  }.map { |l| get_game_id(l) }.flatten.sum
-  
-  data.map { |line|  }
+  data =
+    (
+      if true
+        DATA.readlines
+      else
+        File
+          .open(File.join(File.dirname(__FILE__), 'full.txt'))
+          .readlines
+          .map(&:chomp)
+      end
+    )
+
+  puts data
+    .select { |line| valid?(line) }
+    .map { |l| get_game_id(l) }
+    .flatten
+    .sum
+
+  data.map { |line| }
 end
 solve
 
