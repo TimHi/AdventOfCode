@@ -16,7 +16,7 @@ def valid?(line)
         get_colors_num(split, 'green').sum <= 13 &&
         get_colors_num(split, 'blue').sum <= 14
     end
-    .all? { |el| el === true }
+        .all? { |el| el === true }
 end
 
 def solve
