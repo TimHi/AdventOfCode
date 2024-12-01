@@ -1,27 +1,16 @@
 import * as fs from "fs";
-import { sumOfNumbers } from "../../util/array";
+import { readSplitArrays, sumOfNumbers } from "../../util/array";
+import { Dictionary } from "../../util/dict";
 
 const isSample = false;
-
-function readSplitArrays(raw: string[], a: number[], b: number[]) {
-  return raw.forEach((line) => {
-    const splitIDs = line.split("   ");
-    a.push(Number(splitIDs[0]));
-    b.push(Number(splitIDs[1]));
-  });
-}
+const DATA_SEPERATOR = "   ";
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day01/sample1.txt" : "/src/days/day01/full.txt";
   const a: number[] = [];
   const b: number[] = [];
-  fs.readFileSync(process.cwd() + fileName, "utf8")
-    .split("\n")
-    .forEach((line) => {
-      const splitIDs = line.split("   ");
-      a.push(Number(splitIDs[0]));
-      b.push(Number(splitIDs[1]));
-    });
+  const raw = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
+  readSplitArrays(raw, DATA_SEPERATOR, a, b);
 
   a.sort();
   b.sort();
@@ -35,8 +24,27 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
-  //const fileName = isSample ? "/src/days/day01/sample2.txt" : "/src/days/day01/full.txt";
-  //const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
+  const fileName = isSample ? "/src/days/day01/sample2.txt" : "/src/days/day01/full.txt";
+  const raw = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
 
-  return 0;
+  const left: number[] = [];
+  const right: number[] = [];
+
+  readSplitArrays(raw, DATA_SEPERATOR, left, right);
+
+  const occuranceDict: Dictionary<number, number> = {};
+  let simularityScore = 0;
+
+  left.forEach((leftNum) => {
+    if (leftNum in occuranceDict) {
+      const prevCalculated = occuranceDict[leftNum];
+      simularityScore += prevCalculated;
+    } else {
+      const occurances = right.filter((rightValue) => rightValue === leftNum);
+      const score = leftNum * occurances.length;
+      occuranceDict[leftNum] = score;
+      simularityScore += score;
+    }
+  });
+  return simularityScore;
 }

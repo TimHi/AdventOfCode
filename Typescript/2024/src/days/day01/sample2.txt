@@ -1,7 +1,6 @@
-two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
