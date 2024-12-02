@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { readSplitArrays, sumOfNumbers } from "../../util/array";
 import { Dictionary } from "../../util/dict";
 
-const isSample = false;
+const isSample = true;
 const DATA_SEPERATOR = "   ";
 
 export function SolvePartOne(): number {

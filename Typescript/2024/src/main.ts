@@ -1,10 +1,9 @@
 // Import all solver functions dynamically
 const solvers = [];
-for (let i = 1; i <= 1; i++) {
+const day: number = 2;
+for (let i = 1; i <= day; i++) {
   solvers[i] = require(`./days/day${i.toString().padStart(2, "0")}/day${i.toString().padStart(2, "0")}`);
 }
-
-const day: number = 1;
 
 if (day >= 1 && day <= 25) {
   const solvePartOne = solvers[day].SolvePartOne;
