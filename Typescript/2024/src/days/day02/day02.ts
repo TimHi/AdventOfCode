@@ -24,7 +24,7 @@ function isLevelvalid(level: number[]): boolean {
   const growthDirection = determineGrowthDirection(level[0], level[1]);
   if (growthDirection === Direction.ERR) return false;
 
-  for (let i = 1; i < level.length - 1; i++) {
+  for (let i = 0; i < level.length - 1; i++) {
     if (determineGrowthDirection(level[i], level[i + 1]) !== growthDirection) {
       return false;
     }
