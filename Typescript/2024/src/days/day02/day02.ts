@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-const isSample = false;
+const isSample = true;
 
 const isIncreasingGradually = (a: number, b: number) => {
   const dif = Math.abs(a - b);
