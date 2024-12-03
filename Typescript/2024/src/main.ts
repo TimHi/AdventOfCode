@@ -1,6 +1,6 @@
 // Import all solver functions dynamically
 const solvers = [];
-const day: number = 2;
+const day: number = 3;
 for (let i = 1; i <= day; i++) {
   solvers[i] = require(`./days/day${i.toString().padStart(2, "0")}/day${i.toString().padStart(2, "0")}`);
 }
