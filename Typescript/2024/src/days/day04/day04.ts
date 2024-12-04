@@ -15,7 +15,7 @@ import * as fs from "fs";
 const isSample = true;
 const WORD_TO_FIND = "XMAS";
 
-function checkOccurance(line: string[]): boolean {
+function isWordToFind(line: string[]): boolean {
   if (line.join("") === WORD_TO_FIND) return true;
   else return false;
 }
@@ -24,35 +24,35 @@ function checkDirections(line: string[][], x: number, y: number): number {
   let occuranceOfPosition = 0;
   //RIGHT
   const row = Slice2DArrayRight(x, y, WORD_TO_FIND.length, line);
-  if (row !== undefined && checkOccurance(row)) occuranceOfPosition++;
+  if (row !== undefined && isWordToFind(row)) occuranceOfPosition++;
 
   //LEFT
   const rowL = Slice2DArrayLeft(x, y, WORD_TO_FIND.length, line);
-  if (rowL !== undefined && checkOccurance(rowL)) occuranceOfPosition++;
+  if (rowL !== undefined && isWordToFind(rowL)) occuranceOfPosition++;
 
   //DOWN
   const downCol = Slice2DArrayDown(x, y, WORD_TO_FIND.length, line);
-  if (downCol !== undefined && checkOccurance(downCol)) occuranceOfPosition++;
+  if (downCol !== undefined && isWordToFind(downCol)) occuranceOfPosition++;
 
   //UP
   const upCol = Slice2DArrayUp(x, y, WORD_TO_FIND.length, line);
-  if (upCol !== undefined && checkOccurance(upCol)) occuranceOfPosition++;
+  if (upCol !== undefined && isWordToFind(upCol)) occuranceOfPosition++;
 
   //DIAG RIGHT UP
   const diagRightUpSlice = Slice2DArrayDiagRightUp(x, y, WORD_TO_FIND.length, line);
-  if (diagRightUpSlice !== undefined && checkOccurance(diagRightUpSlice)) occuranceOfPosition++;
+  if (diagRightUpSlice !== undefined && isWordToFind(diagRightUpSlice)) occuranceOfPosition++;
 
   //DIAG RIGHT DOWN
   const diagRightDownSlice = Slice2DArrayDiagRightDown(x, y, WORD_TO_FIND.length, line);
-  if (diagRightDownSlice !== undefined && checkOccurance(diagRightDownSlice)) occuranceOfPosition++;
+  if (diagRightDownSlice !== undefined && isWordToFind(diagRightDownSlice)) occuranceOfPosition++;
 
   //DIAG LEFT DOWN
   const diagLeftDownSlice = Slice2DArrayDiagLeftDown(x, y, WORD_TO_FIND.length, line);
-  if (diagLeftDownSlice !== undefined && checkOccurance(diagLeftDownSlice)) occuranceOfPosition++;
+  if (diagLeftDownSlice !== undefined && isWordToFind(diagLeftDownSlice)) occuranceOfPosition++;
 
   //DIAG LEFT UP
   const diagLeftUpSlice = Slice2DArrayDiagLeftUp(x, y, WORD_TO_FIND.length, line);
-  if (diagLeftUpSlice !== undefined && checkOccurance(diagLeftUpSlice)) occuranceOfPosition++;
+  if (diagLeftUpSlice !== undefined && isWordToFind(diagLeftUpSlice)) occuranceOfPosition++;
 
   return occuranceOfPosition;
 }
