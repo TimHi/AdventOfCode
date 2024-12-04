@@ -1,7 +1,7 @@
 import { GetPointKey, Point } from "aoc-util";
 import * as fs from "fs";
 
-const isSample = false;
+const isSample = true;
 const slopes = ["^", ">", "<", "v"];
 interface HikingNode {
   pos: Point;
