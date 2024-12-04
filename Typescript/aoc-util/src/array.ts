@@ -30,3 +30,48 @@ export function readSplitArrays(
     b.push(Number(splitIDs[1]));
   });
 }
+
+/**
+ * Slices a given array in the horizontal x direction for a given size.
+ * In case the desired slice would be out of bounds the method returns undefined.
+ * @param x x start position
+ * @param y y start position
+ * @param size desired size of slice
+ * @param arr array to slice
+ * @returns slice of the passed array
+ */
+export function Slice2DArrayRight<T>(
+  x: number,
+  y: number,
+  size: number,
+  arr: T[][],
+): T[] | undefined {
+  if (arr === undefined) throw new Error('Cant slice undefined array');
+  let row = undefined;
+  if (x + size <= arr[0]!.length) {
+    row = arr[y]!.slice(x, x + size);
+  }
+  return row;
+}
+
+/**
+ * Slices a given array in the negative horizontal x direction for a given size.
+ * In case the desired slice would be out of bounds the method returns undefined.
+ * @param x x start position
+ * @param y y start position
+ * @param size desired size of slice
+ * @param arr array to slice
+ * @returns slice of the passed array
+ */
+export function Slice2DArrayLeft<T>(
+  x: number,
+  y: number,
+  size: number,
+  arr: T[][],
+): T[] | undefined {
+  let row: T[] | undefined = undefined;
+  if (x - size + 1 >= 0) {
+    row = arr[y]!.slice(x - size + 1, x + 1).reverse();
+  }
+  return row;
+}

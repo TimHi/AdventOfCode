@@ -1,3 +1,4 @@
+import { Slice2DArrayLeft, Slice2DArrayRight } from "aoc-util";
 import * as fs from "fs";
 
 const isSample = false;
@@ -20,22 +21,21 @@ let diagLeftDown = 0;
 function checkDirections(line: string[][], x: number, y: number): number {
   let occuranceOfPosition = 0;
   //RIGHT
-  if (x + WORD_TO_FIND.length <= line[0].length) {
-    const row = line[y].slice(x, x + WORD_TO_FIND.length);
 
-    if (checkOccurance(row)) {
-      occuranceOfPosition++;
-      right++;
-    }
+  const row = Slice2DArrayRight(x, y, WORD_TO_FIND.length, line);
+  if (row !== undefined && checkOccurance(row)) {
+    occuranceOfPosition++;
+    right++;
   }
+
   //LEFT
-  if (x - WORD_TO_FIND.length + 1 >= 0) {
-    const row = line[y].slice(x - WORD_TO_FIND.length + 1, x + 1).reverse();
-    if (checkOccurance(row)) {
-      occuranceOfPosition++;
-      left++;
-    }
+
+  const rowL = Slice2DArrayLeft(x, y, WORD_TO_FIND.length, line);
+  if (rowL !== undefined && checkOccurance(rowL)) {
+    occuranceOfPosition++;
+    left++;
   }
+
   //DOWN
   if (y + WORD_TO_FIND.length <= line.length) {
     const downCol: string[] = [];
