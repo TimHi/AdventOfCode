@@ -1,4 +1,6 @@
 import {
+  Direction,
+  GetNeighbour,
   Slice2DArrayDiagLeftDown,
   Slice2DArrayDiagLeftUp,
   Slice2DArrayDiagRightDown,
@@ -10,7 +12,7 @@ import {
 } from "aoc-util";
 import * as fs from "fs";
 
-const isSample = false;
+const isSample = true;
 const WORD_TO_FIND = "XMAS";
 
 function checkOccurance(line: string[]): boolean {
@@ -109,6 +111,36 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
-  console.log("TBD");
-  return 0;
+  const fileName = isSample ? "/src/days/day04/sample.txt" : "/src/days/day04/full.txt";
+  const lines = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => l.split(""));
+  let masOccurance = 0;
+
+  for (let y = 0; y < lines.length; y++) {
+    for (let x = 0; x < lines[0].length; x++) {
+      const C = lines[y][x];
+      const NW = GetNeighbour(x, y, Direction.NW, lines);
+      const NE = GetNeighbour(x, y, Direction.NE, lines);
+      const SW = GetNeighbour(x, y, Direction.SW, lines);
+      const SE = GetNeighbour(x, y, Direction.SE, lines);
+      if (NW !== undefined && NE !== undefined && SW !== undefined && SE !== undefined) {
+        //Diag RightDown/Diag RightUp
+        const tLdR = NW + C + SE;
+        const dRtL = SE + C + NW;
+        //Diag LeftDown/Diag LeftUp
+        const tRdL = NE + C + SW;
+        const dLtR = SW + C + NE;
+
+        if (
+          (tLdR === "MAS" || tLdR === "SAM" || dRtL === "SAM" || dRtL === "MAS") &&
+          (tRdL === "MAS" || tRdL === "SAM" || dLtR === "SAM" || dLtR === "MAS")
+        ) {
+          masOccurance++;
+        }
+      }
+    }
+  }
+  return masOccurance;
 }

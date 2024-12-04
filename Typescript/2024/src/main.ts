@@ -18,7 +18,6 @@ loadSolvers()
     if (day >= 1 && day <= 25) {
       const solvePartOne = solvers[day].SolvePartOne;
       const solvePartTwo = solvers[day].SolvePartTwo;
-
       console.log(`Day ${day} Part 01: ${solvePartOne()}`);
       console.log(`Day ${day} Part 02: ${solvePartTwo()}`);
     } else {
