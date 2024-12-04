@@ -1,4 +1,5 @@
-import { Dictionary, readSplitArrays, sumOfNumbers } from "aoc-util";
+import { readSplitArrays, sumOfNumbers } from "aoc-util/dist/array.js";
+import { Dictionary } from "aoc-util/dist/dict.js";
 import * as fs from "fs";
 
 const isSample = true;

@@ -2,6 +2,7 @@
   "name": "aoc-2024-ts",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "preview": "vite preview",
