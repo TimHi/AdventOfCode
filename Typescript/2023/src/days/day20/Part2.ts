@@ -16,6 +16,7 @@ interface Broadcast extends Module {}
 interface Output extends Module {}
 
 //&xq -> zl, cx, qh, hs, nt, sp
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function parseMap(isSample: boolean) {
   const fileName = isSample ? "/src/days/day20/sample.txt" : "/src/days/day20/full.txt";
   const conjections: Conjunction[] = [];
@@ -53,23 +54,7 @@ function parseMap(isSample: boolean) {
   return map;
 }
 
-export function CalculateNeededPresses(isSample: boolean): number {
-  const map = parseMap(isSample);
-  //https://www.devtoolsdaily.com/graphviz/full-screen/?#v2=N4IgJg9gLiBc4EsDmAnAhgBwBYAIDiOwAOgHY45YDOOAtAHw6UA2pYStDKAHqQG4YccAMzAAaHGF6kA1gC9BAKwDG4gLZLSJXoMmksXQUiGlVqwbyykRgqGFbb6FLuIBGTcShXCxOLlD3sjlwAjqS2Orzi+qRuiv4kLiiKoSTBuI5MJKQhgrLuOErOOGlRlOIkUOKUGKSUgQy8kThQKKxmjm7iuiRIUIIhUUikmYKqweIhJkr9TcphBo4osxokTNI6QySq9RT5c1oODLJNieLSRabiLZp9QeMFPCTHG6RKYIpeGJSknoIoql0pCQSApBBhKr4UokIGgwEo0JQoABTJKOCpnIqeNSbIw6Lzdf46AESIFcBYNJpKWSkBS3BiScT8Uh5QQg2oCRxsbLTRzKM7Ukh+F4VDkMfZMHkUxlZLTpBhkxlAsaCKgTFJKSU4Rp8MiORriDVhVEMRJ6JiCYIucT7OERcpAhTBUbE7Ukc7mJp1V7k4qWEjMXL5SYkKmCCWK0iWj4GuwgzVfCZNNbY7KHZqPcH9e69H5pvnNGokL79FakciItAoPoAbUoWEwSIAvABZMAINCqCAkMAAXQA3GWcEjuzha-WME3m5RggBXStI-ukAC+ICXQA
-  const cycleModules = ["sp", "xt", "zv", "lk"];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function CalculateNeededPresses(_: boolean): number {
   return 0;
-}
-
-function getOriginsForConjections(modules: Conjunction[], map: Map<string, Module>) {
-  map.forEach((mod) => {
-    modules.forEach((conjectionModule) => {
-      const cModulesInModule = mod.destinations.filter((mod) => mod === conjectionModule.id);
-      if (cModulesInModule.length > 0) {
-        const cModToUpdate = map.get(conjectionModule.id)! as Conjunction;
-        cModToUpdate.memory.set(mod.id, false);
-
-        map.set(cModToUpdate.id, cModToUpdate);
-      }
-    });
-  });
 }

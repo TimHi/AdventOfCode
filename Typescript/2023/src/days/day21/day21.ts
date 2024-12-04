@@ -1,7 +1,7 @@
 import * as fs from "fs";
-import { GetPointKey, Point } from "../../util/coords";
 
 import { Queue } from "data-structure-typed";
+import { GetPointKey, Point } from "aoc-util";
 
 const isSample = true;
 

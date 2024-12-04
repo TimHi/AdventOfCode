@@ -8,10 +8,10 @@ export interface DirectedPoint extends Point {
 }
 
 export enum Direction {
-  N = "North",
-  E = "East",
-  S = "South",
-  W = "West"
+  N = 'North',
+  E = 'East',
+  S = 'South',
+  W = 'West',
 }
 
 export function IndexOfDirection(direction: Direction): number {
@@ -29,16 +29,16 @@ export function IndexOfDirection(direction: Direction): number {
 
 export function GetDirection(dir: string): Direction {
   switch (dir) {
-    case "North":
+    case 'North':
       return Direction.N;
-    case "East":
+    case 'East':
       return Direction.E;
-    case "South":
+    case 'South':
       return Direction.S;
-    case "West":
+    case 'West':
       return Direction.W;
     default:
-      throw new Error("Could not parse Direction " + dir);
+      throw new Error('Could not parse Direction ' + dir);
   }
 }
 
@@ -47,7 +47,7 @@ export function GetPointKey(p: Point): string {
 }
 
 export function GetDirectedPointKey(point: DirectedPoint): string {
-  return GetPointKey(point) + "-" + point.direction;
+  return GetPointKey(point) + '-' + point.direction;
 }
 
 export function GetDirectedPointFromKey(key: string): DirectedPoint {
@@ -56,18 +56,28 @@ export function GetDirectedPointFromKey(key: string): DirectedPoint {
   const match = key.match(pattern);
 
   if (match) {
-    const [, X, Y, direction] = match.map((part) => (isNaN(Number(part)) ? part : Number(part)));
+    const [, X, Y, direction] = match.map((part) =>
+      isNaN(Number(part)) ? part : Number(part),
+    );
 
-    if (typeof X === "number" && typeof Y === "number" && Direction[direction as keyof typeof Direction]) {
-      return { X, Y, direction: Direction[direction as keyof typeof Direction] };
+    if (
+      typeof X === 'number' &&
+      typeof Y === 'number' &&
+      Direction[direction as keyof typeof Direction]
+    ) {
+      return {
+        X,
+        Y,
+        direction: Direction[direction as keyof typeof Direction],
+      };
     }
   }
 
-  throw new Error("Point could not be parsed");
+  throw new Error('Point could not be parsed');
 }
 
 export function GetPointFromKey(key: string): Point {
-  const split = key.split(":");
+  const split = key.split(':');
   return { X: Number(split[0]), Y: Number(split[1]) };
 }
 

@@ -1,23 +1,12 @@
+import { getAllNumbersInString } from "aoc-util";
 import * as fs from "fs";
-import { getAllNumbersInString } from "../../util/regex";
 import { Vector } from "vector-math";
-
-interface HailStone {
-  px: number;
-  py: number;
-  pz: number;
-  vx: number;
-  vy: number;
-  vz: number;
-  vector: Vector;
-}
 
 const isSample = true;
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day24/sample.txt" : "/src/days/day24/full.txt";
-  const hailStones: HailStone[] = fs
-    .readFileSync(process.cwd() + fileName, "utf8")
+  fs.readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
     .map((l) => {
       const data = l.split("@");

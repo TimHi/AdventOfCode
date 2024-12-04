@@ -1,5 +1,5 @@
+import { Point } from "aoc-util";
 import * as fs from "fs";
-import { Point } from "../../util/coords";
 
 const isSample = true;
 

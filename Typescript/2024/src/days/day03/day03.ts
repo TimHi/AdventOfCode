@@ -1,5 +1,5 @@
+import { getAllNumbersInString } from "aoc-util";
 import * as fs from "fs";
-import { getAllNumbersInString } from "../../util/regex";
 
 const isSample = true;
 const MULT_REGEX: RegExp = new RegExp("mul\\(\\d+,\\d+\\)", "g");

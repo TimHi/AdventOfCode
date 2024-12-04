@@ -1,5 +1,5 @@
+import { getAllNumbersInString } from "aoc-util";
 import * as fs from "fs";
-import { getAllNumbersInString } from "../../util/regex";
 // qqz{s>2770:qs,m<1801:hdj,R}
 // gd{a>3333:R,R}
 // hdj{m>838:A,pv}

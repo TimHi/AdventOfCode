@@ -1,6 +1,5 @@
+import { rotateLeft, rotateRight } from "aoc-util";
 import * as fs from "fs";
-
-import { rotateLeft, rotateRight } from "../../util/array";
 
 const isSample = true;
 

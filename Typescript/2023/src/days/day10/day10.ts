@@ -1,8 +1,8 @@
 import * as fs from "fs";
-import { GetPointKey, Point } from "../../util/coords";
 import { Queue } from "data-structure-typed";
 import { Point as geoPoint } from "ts-2d-geometry/dist";
 import gaussShoelace from "gauss-shoelace";
+import { GetPointKey, Point } from "aoc-util";
 
 const isSample = true;
 function parsePipes(fileName: string): string[][] {

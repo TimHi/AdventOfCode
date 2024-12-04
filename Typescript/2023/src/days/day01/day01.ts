@@ -1,5 +1,5 @@
+import { isNumber } from "aoc-util";
 import * as fs from "fs";
-import { isNumber } from "../../util/numbers";
 
 const isSample = true;
 

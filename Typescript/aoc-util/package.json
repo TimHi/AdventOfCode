@@ -1,0 +1,23 @@
+{
+  "name": "aoc-util",
+  "version": "1.0.0",
+  "description": "Utils for Advent of Code",
+  "author": "TimHi",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "ci": "npm run build && npm run check-format",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "check-exports": "attw --pack ."
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.0",
+    "prettier": "^3.4.1",
+    "typescript": "^5.7.2"
+  }
+}

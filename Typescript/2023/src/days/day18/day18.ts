@@ -1,5 +1,5 @@
+import { Direction, Point } from "aoc-util";
 import * as fs from "fs";
-import { Direction, Point } from "../../util/coords";
 
 import gaussShoelace from "gauss-shoelace";
 

@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import { getAllNumbersInString } from "../../util/regex";
 import { GetPossibleCombinations } from "./part2";
+import { getAllNumbersInString } from "aoc-util";
 const isSample = true;
 
 interface Workflow {

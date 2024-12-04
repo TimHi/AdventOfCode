@@ -1,4 +1,3 @@
-
 import { SolvePartOne, SolvePartTwo } from "../day22/day22";
 import { describe, expect, test } from "vitest";
 

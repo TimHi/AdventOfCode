@@ -4,7 +4,7 @@ const isSample = true;
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day22/sample.txt" : "/src/days/day22/full.txt";
-  const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
+  fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
 
   console.log("TBD");
   return 0;

@@ -1,5 +1,5 @@
+import { getManhattanDistance, Point } from "aoc-util";
 import * as fs from "fs";
-import { Point, getManhattanDistance } from "../../util/coords";
 
 const isSample = true;
 

@@ -1,5 +1,5 @@
+import { GetPointKey, Point } from "aoc-util";
 import * as fs from "fs";
-import { GetPointKey, Point } from "../../util/coords";
 
 const isSample = false;
 const slopes = ["^", ">", "<", "v"];
@@ -118,5 +118,3 @@ function mapSlopeToDelta(slope: string): Point {
       throw new Error("Unknown slope");
   }
 }
-
-function parseToGraph() {}

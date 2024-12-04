@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey } from "../../util/coords";
 import { Queue } from "data-structure-typed";
+import { DirectedPoint, Direction, GetDirectedPointKey } from "aoc-util";
 
 const isSample = true;
 
@@ -181,17 +181,4 @@ function extendGrid(grid: string[][]): string[][] {
   }
   grid.push(newLine);
   return grid;
-}
-
-function printGrid(grid: string[][], eMap: Map<string, number>) {
-  grid.forEach((l, y) => {
-    let row = "";
-
-    l.forEach((r, x) => {
-      const ePos = eMap.get(GetPointKey({ X: x, Y: y }));
-      if (ePos !== undefined) row += "#";
-      else row += ".";
-    });
-    console.log(row);
-  });
 }

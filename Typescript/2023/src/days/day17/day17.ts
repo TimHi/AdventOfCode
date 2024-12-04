@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey } from "../../util/coords";
 import { HeapOptions, MinHeap } from "data-structure-typed";
+import { DirectedPoint, GetPointKey, GetDirectedPointKey, Direction } from "aoc-util";
 
 const isSample = true;
 type Step = {
