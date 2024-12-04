@@ -20,72 +20,39 @@ function checkOccurance(line: string[]): boolean {
   else return false;
 }
 
-let right = 0; // 3
-let left = 0; // 2
-let down = 0; // 1
-let up = 0; // 2
-let diagRightUp = 0;
-let diagRightDown = 0;
-let diagLeftup = 0;
-let diagLeftDown = 0;
-
 function checkDirections(line: string[][], x: number, y: number): number {
   let occuranceOfPosition = 0;
   //RIGHT
   const row = Slice2DArrayRight(x, y, WORD_TO_FIND.length, line);
-  if (row !== undefined && checkOccurance(row)) {
-    occuranceOfPosition++;
-    right++;
-  }
+  if (row !== undefined && checkOccurance(row)) occuranceOfPosition++;
 
   //LEFT
   const rowL = Slice2DArrayLeft(x, y, WORD_TO_FIND.length, line);
-  if (rowL !== undefined && checkOccurance(rowL)) {
-    occuranceOfPosition++;
-    left++;
-  }
+  if (rowL !== undefined && checkOccurance(rowL)) occuranceOfPosition++;
 
   //DOWN
   const downCol = Slice2DArrayDown(x, y, WORD_TO_FIND.length, line);
-  if (downCol !== undefined && checkOccurance(downCol)) {
-    occuranceOfPosition++;
-    down++;
-  }
+  if (downCol !== undefined && checkOccurance(downCol)) occuranceOfPosition++;
 
   //UP
   const upCol = Slice2DArrayUp(x, y, WORD_TO_FIND.length, line);
-  if (upCol !== undefined && checkOccurance(upCol)) {
-    occuranceOfPosition++;
-    up++;
-  }
+  if (upCol !== undefined && checkOccurance(upCol)) occuranceOfPosition++;
 
   //DIAG RIGHT UP
   const diagRightUpSlice = Slice2DArrayDiagRightUp(x, y, WORD_TO_FIND.length, line);
-  if (diagRightUpSlice !== undefined && checkOccurance(diagRightUpSlice)) {
-    occuranceOfPosition++;
-    diagRightUp++;
-  }
+  if (diagRightUpSlice !== undefined && checkOccurance(diagRightUpSlice)) occuranceOfPosition++;
 
   //DIAG RIGHT DOWN
   const diagRightDownSlice = Slice2DArrayDiagRightDown(x, y, WORD_TO_FIND.length, line);
-  if (diagRightDownSlice !== undefined && checkOccurance(diagRightDownSlice)) {
-    occuranceOfPosition++;
-    diagRightDown++;
-  }
+  if (diagRightDownSlice !== undefined && checkOccurance(diagRightDownSlice)) occuranceOfPosition++;
 
   //DIAG LEFT DOWN
   const diagLeftDownSlice = Slice2DArrayDiagLeftDown(x, y, WORD_TO_FIND.length, line);
-  if (diagLeftDownSlice !== undefined && checkOccurance(diagLeftDownSlice)) {
-    occuranceOfPosition++;
-    diagLeftDown++;
-  }
+  if (diagLeftDownSlice !== undefined && checkOccurance(diagLeftDownSlice)) occuranceOfPosition++;
 
   //DIAG LEFT UP
   const diagLeftUpSlice = Slice2DArrayDiagLeftUp(x, y, WORD_TO_FIND.length, line);
-  if (diagLeftUpSlice !== undefined && checkOccurance(diagLeftUpSlice)) {
-    occuranceOfPosition++;
-    diagLeftup++;
-  }
+  if (diagLeftUpSlice !== undefined && checkOccurance(diagLeftUpSlice)) occuranceOfPosition++;
 
   return occuranceOfPosition;
 }
@@ -103,10 +70,6 @@ export function SolvePartOne(): number {
     }
   }
 
-  console.log(
-    `Right: ${right}, Left ${left}, Down: ${down}, Up: ${up}, Diag Right Up: ${diagRightUp}, Diag Right Down: ${diagRightDown}, Diag Left Down ${diagLeftDown}, 
-    Diag Left Up ${diagLeftup}`
-  );
   return xmasOccurance;
 }
 
@@ -117,7 +80,8 @@ export function SolvePartTwo(): number {
     .split("\n")
     .map((l) => l.split(""));
   let masOccurance = 0;
-
+  const MAS = "MAS";
+  const SAM = "SAM";
   for (let y = 0; y < lines.length; y++) {
     for (let x = 0; x < lines[0].length; x++) {
       const C = lines[y][x];
@@ -134,8 +98,8 @@ export function SolvePartTwo(): number {
         const dLtR = SW + C + NE;
 
         if (
-          (tLdR === "MAS" || tLdR === "SAM" || dRtL === "SAM" || dRtL === "MAS") &&
-          (tRdL === "MAS" || tRdL === "SAM" || dLtR === "SAM" || dLtR === "MAS")
+          (tLdR === MAS || tLdR === SAM || dRtL === SAM || dRtL === MAS) &&
+          (tRdL === MAS || tRdL === SAM || dLtR === SAM || dLtR === MAS)
         ) {
           masOccurance++;
         }
