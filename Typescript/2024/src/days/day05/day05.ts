@@ -1,7 +1,7 @@
 import { getAllNumbersInString } from "aoc-util";
 import * as fs from "fs";
 
-const isSample = true;
+const isSample = false;
 
 function parsePageRules(lines: string[]): Map<number, number[]> {
   let index = 0;
@@ -64,12 +64,19 @@ export function SolvePartTwo(): number {
   //Do the same stuff as in Part 1 but track the broken ones, could be unified into one iteration but who cares am I right
   for (let i = index; i < lines.length; i++) {
     const printOrder = getAllNumbersInString(lines[i]);
-    const cPrintOrder = [...printOrder];
-
-    if (!isValidManual(instructionSet, printOrder)) {
-      const repairedManual = fixManual(instructionSet, [...cPrintOrder]);
-      const middleNumString = repairedManual[Math.floor(repairedManual.length / 2)];
-      middlePageResult += middleNumString;
+    let t = [...printOrder];
+    if (!isValidManual(instructionSet, [...t])) {
+      //Just shuffle the shit around until we are done
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        if (!isValidManual(instructionSet, [...t])) {
+          t = fixManual(instructionSet, [...t]);
+        } else {
+          const middleNumString = t[Math.floor(t.length / 2)];
+          middlePageResult += middleNumString;
+          break;
+        }
+      }
     }
   }
 
