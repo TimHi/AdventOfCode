@@ -83,7 +83,6 @@ export function SolvePartTwo(): number {
   return middlePageResult;
 }
 
-//Third one fails because of insertion of 29!
 function fixManual(instructionSet: Map<number, number[]>, manual: number[]): number[] {
   let printOrder = [...manual];
 
@@ -93,11 +92,11 @@ function fixManual(instructionSet: Map<number, number[]>, manual: number[]): num
     const charToCheck = printOrder.pop()!;
     const needToPrintBefore = instructionSet.get(charToCheck) ?? [];
     //Rule is only relevant if both pages are present in the print order, of not yeet it
-    const relevantPagesBefore = needToPrintBefore.filter((nP) => printOrder.includes(nP));
-    if (relevantPagesBefore.some((rPB) => !printedChars.includes(rPB))) {
-      relevantPagesBefore.push(charToCheck);
-      printedChars.push(...relevantPagesBefore);
-      printOrder = printOrder.filter((pO) => !relevantPagesBefore.includes(pO));
+    const mustBeBefore = needToPrintBefore.filter((nP) => printOrder.includes(nP));
+    if (mustBeBefore.some((rPB) => !printedChars.includes(rPB))) {
+      mustBeBefore.push(charToCheck);
+      printedChars.push(...mustBeBefore);
+      printOrder = printOrder.filter((pO) => !mustBeBefore.includes(pO));
     } else {
       printedChars.push(charToCheck);
     }
