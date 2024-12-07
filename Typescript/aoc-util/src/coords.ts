@@ -111,7 +111,7 @@ export function getManhattanDistance(a: Point, b: Point) {
  * Get a neighbour for a given position in a 2D array.
  * If the position is out of bounds undefined is returned
  */
-const DirectedSteps: Dictionary<
+export const DirectedSteps: Dictionary<
   Direction,
   <T>(x: number, y: number, arr: T[][]) => T | undefined
 > = {
