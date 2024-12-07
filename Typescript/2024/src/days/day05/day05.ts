@@ -1,7 +1,7 @@
 import { getAllNumbersInString } from "aoc-util";
 import * as fs from "fs";
 
-const isSample = false;
+const isSample = true;
 
 function parsePageRules(lines: string[]): Map<number, number[]> {
   let index = 0;
