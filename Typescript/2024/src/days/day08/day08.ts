@@ -3,6 +3,7 @@ import { GetPointKey, Point } from "aoc-util";
 import * as fs from "fs";
 
 const isSample = true;
+
 function getAntennaLocations(map: string[][]): Record<string, Point[]> {
   const antennaLocations: Record<string, Point[]> = {};
 
@@ -27,45 +28,10 @@ function getAntennaLocations(map: string[][]): Record<string, Point[]> {
 
 function calculateAntinodeBetweenPoints(p1: Point, p2: Point): Point {
   //Direction of vec between points p2 - p1:
-
   const xDir = p2.X - p1.X;
   const yDir = p2.Y - p1.Y;
   const antinode = { X: p2.X + xDir, Y: p2.Y + yDir };
   return antinode;
-}
-
-function calculateAllAntinodeBetweenPoints(p1: Point, p2: Point, maxX: number, maxY: number): Point[] {
-  const antinodes: Point[] = [];
-  const xDir = p2.X - p1.X;
-  const yDir = p2.Y - p1.Y;
-  let index = 1;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const antinode = { X: p2.X * index + xDir, Y: p2.Y * index + yDir };
-
-    if (antinode.X >= 0 && antinode.X < maxX && antinode.Y >= 0 && antinode.Y < maxY) {
-      antinodes.push(antinode);
-    } else {
-      break;
-    }
-    index++;
-  }
-
-  return antinodes;
-}
-
-function getAllAntinodesForAntenna(positions: Point[], maxX: number, maxY: number): Point[] {
-  const antinodes: Point[] = [];
-  for (let p1 = 0; p1 < positions.length; p1++) {
-    for (let p2 = 0; p2 < positions.length; p2++) {
-      //Only get positions if points are different
-      if (p1 !== p2) {
-        const antiNodesFromPoint: Point[] = calculateAllAntinodeBetweenPoints(positions[p1], positions[p2], maxX, maxY);
-        antinodes.push(...antiNodesFromPoint);
-      }
-    }
-  }
-  return antinodes;
 }
 
 function getAntinodeForAntenna(positions: Point[], maxX: number, maxY: number): Point[] {
@@ -85,28 +51,15 @@ function getAntinodeForAntenna(positions: Point[], maxX: number, maxY: number): 
   return antinodes;
 }
 
-function getAntinodeLocations(maxX: number, maxY: number, AntennaLocations: Record<string, Point[]>, isPartOne: boolean): number {
+function getAntinodeLocations(maxX: number, maxY: number, AntennaLocations: Record<string, Point[]>): number {
   const antinodeLocations: Record<string, Point[]> = {};
   const possibleAntinodes: string[] = [];
   for (const antenna in AntennaLocations) {
-    if (isPartOne) {
-      const antinodes = getAntinodeForAntenna(AntennaLocations[antenna], maxX, maxY);
-      antinodeLocations[antenna] = antinodes;
-      antinodes.forEach((a) => {
-        if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
-      });
-    } else {
-      const antinodes = getAllAntinodesForAntenna(AntennaLocations[antenna], maxX, maxY);
-      const aOfA = getAllAntinodesForAntenna(antinodes, maxX, maxY);
-      antinodeLocations[antenna] = antinodes;
-      antinodes.forEach((a) => {
-        if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
-      });
-      aOfA.forEach((a) => {
-        if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
-      });
-      console.log(possibleAntinodes);
-    }
+    const antinodes = getAntinodeForAntenna(AntennaLocations[antenna], maxX, maxY);
+    antinodeLocations[antenna] = antinodes;
+    antinodes.forEach((a) => {
+      if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
+    });
   }
 
   return possibleAntinodes.length;
@@ -119,7 +72,7 @@ export function SolvePartOne(): number {
     .split("\n")
     .map((l) => l.split(""));
   const AntennaLocations: Record<string, Point[]> = getAntennaLocations(lines);
-  return getAntinodeLocations(lines[0].length, lines.length, AntennaLocations, true);
+  return getAntinodeLocations(lines[0].length, lines.length, AntennaLocations);
 }
 
 export function SolvePartTwo(): number {
@@ -129,5 +82,5 @@ export function SolvePartTwo(): number {
     .split("\n")
     .map((l) => l.split(""));
   const AntennaLocations: Record<string, Point[]> = getAntennaLocations(lines);
-  return getAntinodeLocations(lines[0].length, lines.length, AntennaLocations, false);
+  return 0;
 }
