@@ -1,8 +1,8 @@
 import { GetPointKey, Point } from "aoc-util";
 
 import * as fs from "fs";
-
-const isSample = true;
+//for some reason on windows this produces a different result
+const isSample = false;
 
 function getAntennaLocations(map: string[][]): Record<string, Point[]> {
   const antennaLocations: Record<string, Point[]> = {};
@@ -95,6 +95,7 @@ function getAntinodeCountOfAntennas(maxX: number, maxY: number, antennaLocations
       if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
     });
 
+    //For some reason all antennas are also antinodes
     antennaLocations[antenna].forEach((a) => {
       if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
     });
@@ -102,7 +103,7 @@ function getAntinodeCountOfAntennas(maxX: number, maxY: number, antennaLocations
 
   return possibleAntinodes.length;
 }
-//Ich darf nur die Punkte weitergehen die aus dem selben Antennenpaar entstanden sind!
+
 function getAllAntinodes(antennas: Point[], maxX: number, maxY: number): Point[] {
   const antinodes: Point[] = [];
   for (let p1 = 0; p1 < antennas.length; p1++) {
@@ -117,6 +118,7 @@ function getAllAntinodes(antennas: Point[], maxX: number, maxY: number): Point[]
   return antinodes;
 }
 
+//Only get antinodes that are resulted between antennas
 function fuckThisShit(orig1: Point, orig2: Point, maxX: number, maxY: number): Point[] {
   const antinodes: Point[] = [];
   let p1: Point = { X: orig1.X, Y: orig1.Y };
