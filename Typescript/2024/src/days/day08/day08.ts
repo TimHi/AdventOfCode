@@ -26,8 +26,9 @@ function getAntennaLocations(map: string[][]): HashMap<string, Point[]> {
   return antennaLocations;
 }
 
-function getAntinodeLocations(maxX: number, maxY: number, AntennaLocations: HashMap<string, Point[]>) {
+function getAntinodeLocations(maxX: number, maxY: number, AntennaLocations: HashMap<string, Point[]>): HashMap<string, Point[]> {
   const antinodeLocations: HashMap<string, Point[]> = new HashMap();
+  return antinodeLocations;
 }
 
 export function SolvePartOne(): number {
