@@ -82,5 +82,60 @@ export function SolvePartTwo(): number {
     .split("\n")
     .map((l) => l.split(""));
   const AntennaLocations: Record<string, Point[]> = getAntennaLocations(lines);
-  return 0;
+  const antinodesCount = getAntinodeCountOfAntennas(lines[0].length, lines.length, AntennaLocations);
+  return antinodesCount;
+}
+
+function getAntinodeCountOfAntennas(maxX: number, maxY: number, antennaLocations: Record<string, Point[]>): number {
+  const possibleAntinodes: string[] = [];
+  for (const antenna in antennaLocations) {
+    const allAntinodes = getAllAntinodes(antennaLocations[antenna], maxX, maxY);
+    //In case we cooked wrong and got duplicates only add them once, should not affect the other stuff
+    allAntinodes.forEach((a) => {
+      if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
+    });
+
+    antennaLocations[antenna].forEach((a) => {
+      if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
+    });
+  }
+
+  return possibleAntinodes.length;
+}
+//Ich darf nur die Punkte weitergehen die aus dem selben Antennenpaar entstanden sind!
+function getAllAntinodes(antennas: Point[], maxX: number, maxY: number): Point[] {
+  const antinodes: Point[] = [];
+  for (let p1 = 0; p1 < antennas.length; p1++) {
+    for (let p2 = 0; p2 < antennas.length; p2++) {
+      //Only get positions if points are different
+      if (p1 !== p2) {
+        const antiNode: Point[] = fuckThisShit(antennas[p1], antennas[p2], maxX, maxY);
+        antinodes.push(...antiNode);
+      }
+    }
+  }
+  return antinodes;
+}
+
+function fuckThisShit(orig1: Point, orig2: Point, maxX: number, maxY: number): Point[] {
+  const antinodes: Point[] = [];
+  let p1: Point = { X: orig1.X, Y: orig1.Y };
+  let p2: Point = { X: orig2.X, Y: orig2.Y };
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const antinode: Point = calculateAntinodeBetweenPoints(p1, p2);
+
+    if (!pointInBounds(antinode, maxX, maxY)) {
+      break;
+    }
+    antinodes.push(antinode);
+    p1 = { X: p2.X, Y: p2.Y };
+    p2 = { X: antinode.X, Y: antinode.Y };
+  }
+
+  return antinodes;
+}
+
+function pointInBounds(p: Point, mX: number, mY: number): boolean {
+  return p.X >= 0 && p.X < mX && p.Y >= 0 && p.Y < mY;
 }
