@@ -36,17 +36,19 @@ function calculateAntinodeBetweenPoints(p1: Point, p2: Point): Point {
 
 function calculateAllAntinodeBetweenPoints(p1: Point, p2: Point, maxX: number, maxY: number): Point[] {
   const antinodes: Point[] = [];
-  let prevAntinode1: Point = p1;
-  let prevAntinode2: Point = p2;
+  const xDir = p2.X - p1.X;
+  const yDir = p2.Y - p1.Y;
+  let index = 1;
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const antiNode = calculateAntinodeBetweenPoints(prevAntinode1, prevAntinode2);
-    if (antiNode.X < 0 || antiNode.X >= maxX || antiNode.Y < 0 || antiNode.Y >= maxY) {
+    const antinode = { X: p2.X * index + xDir, Y: p2.Y * index + yDir };
+
+    if (antinode.X >= 0 && antinode.X < maxX && antinode.Y >= 0 && antinode.Y < maxY) {
+      antinodes.push(antinode);
+    } else {
       break;
     }
-    antinodes.push(antiNode);
-    prevAntinode1 = prevAntinode2;
-    prevAntinode2 = antiNode;
+    index++;
   }
 
   return antinodes;
@@ -95,14 +97,15 @@ function getAntinodeLocations(maxX: number, maxY: number, AntennaLocations: Reco
       });
     } else {
       const antinodes = getAllAntinodesForAntenna(AntennaLocations[antenna], maxX, maxY);
-      const antinodesWithAntiNodes = getAllAntinodesForAntenna(antinodes, maxX, maxY);
+      const aOfA = getAllAntinodesForAntenna(antinodes, maxX, maxY);
       antinodeLocations[antenna] = antinodes;
       antinodes.forEach((a) => {
         if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
       });
-      antinodesWithAntiNodes.forEach((a) => {
+      aOfA.forEach((a) => {
         if (!possibleAntinodes.includes(GetPointKey(a))) possibleAntinodes.push(GetPointKey(a));
       });
+      console.log(possibleAntinodes);
     }
   }
 
