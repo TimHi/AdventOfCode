@@ -40,8 +40,88 @@ function isOnlyEmptySpaceTrailing(block: number[]): boolean {
   }
   return isTrailing;
 }
+
+function getFileBlockToMove(alreadyTriedToMoveIDsThatDidNotFitIntoTheGapOfEmptyBlocks: number[], inflatedArray: number[]): number[] {
+  let block: number[] = [];
+  const blocks: number[][] = [];
+
+  let currentBlockNumber = Number.isNaN(inflatedArray[inflatedArray.length - 1]) ? -1 : inflatedArray[inflatedArray.length - 1];
+
+  for (let x = inflatedArray.length - 1; x >= 0; x--) {
+    const c = inflatedArray[x];
+
+    if (!Number.isNaN(c) && c === currentBlockNumber) {
+      block.push(c);
+    } else {
+      blocks.push(block);
+      block = [];
+      currentBlockNumber = -1;
+    }
+    if (!Number.isNaN(c) && currentBlockNumber === -1) {
+      currentBlockNumber = c;
+      block.push(c);
+    }
+  }
+  const blocksNoEmpty = blocks.filter((b) => b.length > 0);
+  const blocksNoAlreadyUsed = blocksNoEmpty.filter((b) => !alreadyTriedToMoveIDsThatDidNotFitIntoTheGapOfEmptyBlocks.includes(b[0]));
+  if (blocksNoAlreadyUsed.length > 0) {
+    return blocksNoAlreadyUsed[0];
+  } else return [];
+}
+
 function moveAmiphodeAsBlock(block: number[]): number[] {
   const inflatedArray = inflateBlocks(block);
+  const alreadyTriedBlocks: number[] = [];
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const nextBlockToInsert: number[] = getFileBlockToMove(alreadyTriedBlocks, inflatedArray);
+
+    //We tested all locations and the inserted blocks should be placed
+    if (nextBlockToInsert.length === 0) break;
+    //Mark blog as tried
+    alreadyTriedBlocks.push(nextBlockToInsert[0]);
+    const spaceNeededToInsertTheBlock = nextBlockToInsert.length;
+    let start = -1;
+    let end = -1;
+
+    for (let f = 0; f < inflatedArray.length; f++) {
+      const currentValue = inflatedArray[f];
+
+      if (Number.isNaN(currentValue)) {
+        if (start === -1) {
+          start = f;
+        }
+      }
+
+      if (!Number.isNaN(currentValue)) {
+        //Start was set and end is found
+        if (start !== -1) {
+          end = f;
+        }
+
+        if (end - start >= spaceNeededToInsertTheBlock) {
+          const removeIndex = inflatedArray.findIndex((n) => n === nextBlockToInsert[0]);
+          if (removeIndex < start) {
+            break;
+          }
+          const NaNs: number[] = [];
+          for (let t = 0; t < spaceNeededToInsertTheBlock; t++) {
+            NaNs.push(NaN);
+          }
+
+          inflatedArray.splice(removeIndex, spaceNeededToInsertTheBlock, ...NaNs);
+          inflatedArray.splice(start, spaceNeededToInsertTheBlock, ...nextBlockToInsert);
+
+          break;
+        }
+
+        start = -1;
+        end = -1;
+      }
+    }
+  }
+
+  return inflatedArray;
 }
 
 function moveAmiphode(block: number[]): number[] {
