@@ -4,7 +4,7 @@ type Solver = {
 };
 
 const solvers: Solver[] = [];
-const day: number = 9;
+const day: number = 10;
 
 async function loadSolvers() {
   for (let i = 1; i <= day; i++) {
