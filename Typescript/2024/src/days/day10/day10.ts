@@ -57,7 +57,7 @@ const DELTA = new Map<DIRECTION, Point>([
 function getCopyOfMap(map: number[][]): number[][] {
   return JSON.parse(JSON.stringify(map));
 }
-
+//USE BFS to find all paths
 function findAllPaths(map: number[][], start: Point): number {
   let foundPath = 0;
 
