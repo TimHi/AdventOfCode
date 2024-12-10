@@ -1,7 +1,7 @@
 import { GetPointKey, Point } from "aoc-util";
 
 import * as fs from "fs";
-const isSample = false;
+const isSample = true;
 
 interface IQueue<T> {
   enqueue(item: T): void;
@@ -118,6 +118,7 @@ export function SolvePartOne(): number {
 }
 
 export function SolvePartTwo(): number {
+  //Use bfs from part 1 but keep visited for each node as key value of complete used path to allow visiting the same node twice if the way there was different
   return 0;
 }
 
