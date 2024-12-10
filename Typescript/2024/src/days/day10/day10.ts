@@ -57,7 +57,7 @@ const DELTA = new Map<DIRECTION, Point>([
 function getCopyOfMap(map: number[][]): number[][] {
   return JSON.parse(JSON.stringify(map));
 }
-//USE BFS to find all paths
+//Use BFS to find all paths
 function findAllPaths(map: number[][], start: Point): number {
   let foundPath = 0;
 
@@ -117,9 +117,77 @@ export function SolvePartOne(): number {
   return trailheadScore;
 }
 
+function isNotVisited(p: Point, path: Point[]): boolean {
+  const size = path.length;
+  for (let i = 0; i < size; i++) {
+    if (GetPointKey(path[i]) === GetPointKey(p)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+//TODO: This shit is every year, try to generalize it
+function findAllPathsWithIntermediatePaths(map: number[][], src: Point): number {
+  // Create a queue which stores
+  // the paths
+  const queue: Queue<Point[]> = new Queue();
+  let foundEnd = 0;
+  // Path vector to store the current path
+  const path: Point[] = [];
+  path.push(src);
+  queue.enqueue(path);
+  const foundPaths: Point[][] = [];
+  while (queue.size() > 0) {
+    const pPath = queue.dequeue();
+    if (pPath === undefined) throw new Error("Path in Que is undefined but there is size höh");
+    const lastPointInPath = pPath[pPath.length - 1];
+
+    // If last vertex is the desired destination
+    // then print the path
+    if (map[lastPointInPath.Y][lastPointInPath.X] === 9) {
+      foundPaths.push(pPath);
+      foundEnd++;
+    }
+    //Get neighbours in each direction
+    for (let d = 0; d < 4; d++) {
+      const dir = DELTA.get(d);
+      if (dir === undefined) throw new Error("Weird delta, should not happen");
+      const n = { X: lastPointInPath.X + dir.X, Y: lastPointInPath.Y + dir.Y };
+      if (isInBounds(n, map[0].length, map.length)) {
+        if (isNotVisited(n, pPath)) {
+          if (map[n.Y][n.X] - map[lastPointInPath.Y][lastPointInPath.X] === 1) {
+            const newpath = JSON.parse(JSON.stringify(pPath));
+            newpath.push(n);
+            queue.enqueue(newpath);
+          }
+        }
+      }
+    }
+  }
+
+  //console.log(foundPaths);
+  return foundEnd;
+}
+
 export function SolvePartTwo(): number {
-  //Use bfs from part 1 but keep visited for each node as key value of complete used path to allow visiting the same node twice if the way there was different
-  return 0;
+  const fileName = isSample ? "/src/days/day10/sample.txt" : "/src/days/day10/full.txt";
+  const lines = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) =>
+      l.split("").map((n) => {
+        if (n === ".") return -100;
+        else return Number(n);
+      })
+    );
+  const startPlaces = findAllOccurencesOfNum(lines, 0);
+
+  let trailheadScore = 0;
+  startPlaces.forEach((s) => {
+    trailheadScore += findAllPathsWithIntermediatePaths(lines, s);
+  });
+  return trailheadScore;
 }
 
 function print2D(cMap: number[][], visited: string[]) {
