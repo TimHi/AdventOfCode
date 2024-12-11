@@ -1,38 +1,6 @@
 import * as fs from "fs";
-const isSample = false;
 
-function blink(stones: number[], n: number): number[] {
-  let copyStones = [...stones];
-  for (let b = 0; b < n; b++) {
-    let insertCounter = 0;
-    const newStones: number[] = [...copyStones];
-    for (let s = 0; s < copyStones.length; s++) {
-      const stone = copyStones[s];
-      // If the stone is engraved with the number 0, it is replaced by a stone engraved with the number 1.
-      if (stone === 0) {
-        newStones[s + insertCounter] = 1;
-      }
-      // If the stone is engraved with a number that has an even number of digits, it is replaced by two stones.
-      // The left half of the digits are engraved on the new left stone, and the right half of the digits are engraved on the new right stone.
-      // (The new numbers don't keep extra leading zeroes: 1000 would become stones 10 and 0.)
-      else if (String(stone).length % 2 === 0) {
-        const stringStone = String(stone);
-        const left = stringStone.slice(0, Math.floor(stringStone.length / 2));
-        const right = stringStone.slice(Math.floor(stringStone.length / 2), stringStone.length);
-        newStones[s + insertCounter] = Number(left);
-        newStones.splice(s + 1 + insertCounter, 0, Number(right));
-        insertCounter++;
-      }
-      // If none of the other rules apply, the stone is replaced by a new stone; the old stone's number multiplied by 2024 is engraved on the new stone.
-      else {
-        newStones[s + insertCounter] *= 2024;
-      }
-    }
-
-    copyStones = newStones;
-  }
-  return copyStones;
-}
+const isSample = true;
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day11/sample.txt" : "/src/days/day11/full.txt";
@@ -41,68 +9,51 @@ export function SolvePartOne(): number {
     .split(" ")
     .map((l) => Number(l));
 
-  const blinkedStones = blink(stones, isSample ? 25 : 25);
-  return blinkedStones.length;
+  const blinkedStones = Blink(0, stones, 6, new Map<string, number>());
+  return blinkedStones;
 }
 
-function makeKey(nums: number[]): string {
-  return nums.join(" ");
-}
+type StonePos = {
+  stone: number;
+  count: number;
+};
 
-function getFromKey(nums: string): number[] {
-  return nums.split(" ").map((l) => Number(l));
-}
-
-function calcNumber(stone: number): number[] {
-  // If the stone is engraved with the number 0, it is replaced by a stone engraved with the number 1.
-  if (stone === 0) {
-    return [1];
+function Blink(blinkCounter: number, stones: number[], maxBlinkCounter: number, cache: Map<string, number>): number {
+  if (blinkCounter === maxBlinkCounter) {
+    return stones.length;
   }
-  // If the stone is engraved with a number that has an even number of digits, it is replaced by two stones.
-  // The left half of the digits are engraved on the new left stone, and the right half of the digits are engraved on the new right stone.
-  // (The new numbers don't keep extra leading zeroes: 1000 would become stones 10 and 0.)
-  else if (String(stone).length % 2 === 0) {
-    const stringStone = String(stone);
-    const left = stringStone.slice(0, Math.floor(stringStone.length / 2));
-    const right = stringStone.slice(Math.floor(stringStone.length / 2), stringStone.length);
-    return [Number(left), Number(right)];
-  }
-  // If none of the other rules apply, the stone is replaced by a new stone; the old stone's number multiplied by 2024 is engraved on the new stone.
-  else {
-    return [stone * 2024];
-  }
-  throw new Error("Unable to handle number");
-}
 
-function blinkSmart(stones: number[], n: number): number {
-  let copyStones = [...stones];
-  const numMap = new Map<string, number[]>();
-  for (let b = 0; b < n; b++) {
-    let insertCounter = 0;
-    let cacheHit = false;
-    const newStones: number[] = [...copyStones];
-    for (let s = 0; s < copyStones.length; s++) {
-      const stone = copyStones[s];
-      const key = makeKey(newStones);
-      const cachedValue = numMap.get(key);
-      if (cachedValue === undefined) {
-        const calcedValue = calcNumber(stone);
-        newStones[s + insertCounter] = calcedValue[0];
-        if (calcedValue.length === 2) {
-          newStones.splice(s + 1 + insertCounter, 0, calcedValue[1]);
-          insertCounter++;
-        }
+  let sum = 0;
+
+  for (const stone of stones) {
+    const stonePos: StonePos = { stone, count: blinkCounter };
+    const stoneKey = JSON.stringify(stonePos);
+
+    if (cache.has(stoneKey)) {
+      sum += cache.get(stoneKey)!;
+      continue;
+    }
+
+    let res: number;
+    if (stone === 0) {
+      res = Blink(blinkCounter + 1, [1], maxBlinkCounter, cache);
+    } else {
+      const stoneStr = String(stone);
+      if (stoneStr.length % 2 === 0) {
+        const mid = stoneStr.length / 2;
+        const left = Number(stoneStr.slice(0, mid));
+        const right = Number(stoneStr.slice(mid));
+        res = Blink(blinkCounter + 1, [left, right], maxBlinkCounter, cache);
       } else {
-        cacheHit = true;
-        newStones.splice(s + 1 + insertCounter, cachedValue.length, ...cachedValue);
+        res = Blink(blinkCounter + 1, [stone * 2024], maxBlinkCounter, cache);
       }
     }
-    if (!cacheHit) {
-      numMap.set(makeKey(copyStones), newStones);
-    }
-    copyStones = newStones;
+
+    cache.set(stoneKey, res);
+    sum += res;
   }
-  return copyStones.length;
+
+  return sum;
 }
 
 export function SolvePartTwo(): number {
@@ -112,6 +63,6 @@ export function SolvePartTwo(): number {
     .split(" ")
     .map((l) => Number(l));
 
-  const blinkedStones = blinkSmart(stones, isSample ? 25 : 75);
+  const blinkedStones = Blink(0, stones, isSample ? 25 : 75, new Map<string, number>());
   return blinkedStones;
 }
