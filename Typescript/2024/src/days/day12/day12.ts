@@ -1,5 +1,6 @@
 import { Point } from "aoc-util";
 import * as fs from "fs";
+import { map } from "lodash";
 enum DIRECTION {
   North = 0,
   East = 1,
@@ -47,17 +48,23 @@ export class Queue<T> implements IQueue<T> {
   }
 }
 
-const isSample = false;
+const isSample = true;
 
 type Region = {
   plant: string;
   area: Point[];
   perimeter: Point[];
+  edges: number;
 };
 
 function calculatePrice(r: Region): number {
   return r.area.length * r.perimeter.length;
 }
+
+function calculateFencePrice(r: Region): number {
+  return r.area.length * r.edges;
+}
+
 function isInBounds(p: Point, mX: number, mY: number): boolean {
   return p.X >= 0 && p.X < mX && p.Y >= 0 && p.Y < mY;
 }
@@ -123,7 +130,7 @@ function getRegionArea(map: string[][], start: Point): Region {
   }
 
   const perimeterPoints: Point[] = getPerimeter(map, area, currentRegionPlant);
-  return { area: area, perimeter: perimeterPoints, plant: currentRegionPlant };
+  return { area: area, perimeter: perimeterPoints, plant: currentRegionPlant, edges: 0 };
 }
 
 function getAreas(map: string[][]): Region[] {
@@ -153,9 +160,101 @@ export function SolvePartOne(): number {
   return totalPrice;
 }
 
+function getAreaOrigin(map: string[][], p: Point, plant: string): DIRECTION | undefined {
+  for (let d = 0; d < 4; d++) {
+    const dir = DELTA.get(d);
+    if (dir === undefined) throw new Error("");
+    const n = { X: p.X + dir.X, Y: p.Y + dir.Y };
+    if (isInBounds(n, map[0].length, map.length)) {
+      if (map[n.Y][n.X] === plant) {
+        return d;
+      }
+    }
+  }
+  return undefined;
+}
+
+function getEdgeLength(map: string[][], region: Region): Region {
+  let edgeCounter = 0;
+  let pointInEdge: string[] = [];
+
+  let areaOriginDirection: DIRECTION | undefined = undefined;
+  for (let start = 0; start < region.perimeter.length; start++) {
+    const startP = region.perimeter[start];
+    if (pointInEdge.includes(JSON.stringify(startP))) {
+      break;
+    }
+    pointInEdge.push(JSON.stringify(startP));
+
+    areaOriginDirection = getAreaOrigin(map, startP, region.plant);
+    if (areaOriginDirection === undefined) throw new Error("Orig needs direction");
+    //Go X or Y
+
+    //X
+    let step = 0;
+    let n1Reached = false;
+    let n2Reached = false;
+    if (areaOriginDirection === DIRECTION.North || areaOriginDirection === DIRECTION.South) {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        step++;
+        const n1: Point = { X: startP.X + step, Y: startP.Y };
+        const n2: Point = { X: startP.X - step, Y: startP.Y };
+        const o1 = getAreaOrigin(map, n1, region.plant);
+        const o2 = getAreaOrigin(map, n2, region.plant);
+        if (o1 === undefined || o1 !== areaOriginDirection) {
+          n1Reached = true;
+        } else {
+          if (!n1Reached) pointInEdge.push(JSON.stringify(n1));
+        }
+        if (o2 === undefined || o2 !== areaOriginDirection) {
+          n2Reached = true;
+        } else {
+          if (!n2Reached) pointInEdge.push(JSON.stringify(n2));
+        }
+        if (n1Reached && n2Reached) {
+          edgeCounter++;
+          break;
+        }
+        //currentEdge.push(...[JSON.stringify(n1), JSON.stringify(n2)]);
+      }
+    }
+    //Y
+    if (areaOriginDirection === DIRECTION.East || areaOriginDirection === DIRECTION.West) {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        step++;
+        const n1: Point = { X: startP.X, Y: startP.Y + step };
+        const n2: Point = { X: startP.X, Y: startP.Y - step };
+        if (getAreaOrigin(map, n1, region.plant) !== areaOriginDirection) {
+          n1Reached = true;
+        } else {
+          if (!n1Reached) pointInEdge.push(JSON.stringify(n1));
+        }
+        if (getAreaOrigin(map, n2, region.plant) !== areaOriginDirection) {
+          n2Reached = true;
+        } else {
+          if (!n2Reached) pointInEdge.push(JSON.stringify(n2));
+        }
+        if (n1Reached && n2Reached) {
+          edgeCounter++;
+          break;
+        }
+      }
+    }
+  }
+  region.edges = edgeCounter;
+  return region;
+}
+
 export function SolvePartTwo(): number {
   const fileName = isSample ? "/src/days/day12/sample.txt" : "/src/days/day12/full.txt";
-  const field = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
-
-  return 0;
+  const field = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => l.split(""));
+  const regions: Region[] = getAreas(field);
+  regions.forEach((r) => getEdgeLength(field, r));
+  const totalPrice = regions.map((r) => calculateFencePrice(r)).reduce((sum, c) => (sum += c));
+  return totalPrice;
 }
