@@ -3,13 +3,13 @@ import { GetPointKey, Point } from "aoc-util";
 import * as fs from "fs";
 const isSample = true;
 
-interface IQueue<T> {
+export interface IQueue<T> {
   enqueue(item: T): void;
   dequeue(): T | undefined;
   size(): number;
 }
 
-class Queue<T> implements IQueue<T> {
+export class Queue<T> implements IQueue<T> {
   private storage: T[] = [];
 
   constructor(private capacity: number = Infinity) {}
@@ -40,14 +40,14 @@ function findAllOccurencesOfNum(map: number[][], numToSearch: number): Point[] {
   return foundNum;
 }
 
-enum DIRECTION {
+export enum DIRECTION {
   North = 0,
   East = 1,
   South = 2,
   West = 3
 }
 
-const DELTA = new Map<DIRECTION, Point>([
+export const DELTA = new Map<DIRECTION, Point>([
   [DIRECTION.North, { X: 0, Y: -1 }],
   [DIRECTION.East, { X: 1, Y: 0 }],
   [DIRECTION.South, { X: 0, Y: 1 }],
