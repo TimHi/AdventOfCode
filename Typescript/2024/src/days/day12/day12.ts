@@ -1,6 +1,5 @@
-import { getManhattanDistance, Point } from "aoc-util";
+import { Point } from "aoc-util";
 import * as fs from "fs";
-import { map } from "lodash";
 enum DIRECTION {
   North = 0,
   East = 1,
@@ -54,7 +53,7 @@ type Region = {
   plant: string;
   area: Point[];
   perimeter: Point[];
-  edges: Point[];
+  edges: number;
 };
 
 function calculatePrice(r: Region): number {
@@ -62,7 +61,7 @@ function calculatePrice(r: Region): number {
 }
 
 function calculateFencePrice(r: Region): number {
-  return r.area.length * r.edges.length;
+  return r.area.length * r.edges;
 }
 
 function isInBounds(p: Point, mX: number, mY: number): boolean {
@@ -142,7 +141,7 @@ function getRegionArea(map: string[][], start: Point): Region {
   }
 
   const perimeterPoints: Point[] = getPerimeter(map, area, currentRegionPlant);
-  return { area: area, perimeter: perimeterPoints, plant: currentRegionPlant, edges: [] };
+  return { area: area, perimeter: perimeterPoints, plant: currentRegionPlant, edges: 0 };
 }
 
 function getAreas(map: string[][]): Region[] {
@@ -172,24 +171,72 @@ export function SolvePartOne(): number {
   return totalPrice;
 }
 
+function getNeighbours(p: Point): Point[] {
+  const neighbours: Point[] = [];
+  for (let d = 0; d < 4; d++) {
+    const dir = DELTA.get(d);
+    if (dir === undefined) throw new Error("Weird delta, should not happen");
+    const n = { X: p.X + dir.X, Y: p.Y + dir.Y };
+    neighbours.push(n);
+  }
+  return neighbours;
+}
+
+function getBorderPoints(map: string[][], region: Region): Point[] {
+  const borderPoints: Point[] = [];
+  const pointTracker: string[] = [];
+  for (let p = 0; p < region.area.length; p++) {
+    const sourcePoint = region.area[p];
+    const neighbours = getNeighbours(sourcePoint)
+      .filter((p) => isInBounds(p, map[0].length, map.length))
+      .filter((p) => map[p.Y][p.X] === region.plant);
+
+    neighbours.forEach((n) => {
+      if (!pointTracker.includes(JSON.stringify(n))) {
+        borderPoints.push(n);
+        pointTracker.push(JSON.stringify(n));
+      }
+    });
+  }
+  return borderPoints;
+}
+
+function checkDirectNeighbours(map: string[][], currentBorderPoint: Point): number {
+  let n = 0;
+  let e = 0;
+  let s = 0;
+  let w = 0;
+  if (isNorthEdge(map, currentBorderPoint)) n++;
+  if (isSouthEdge(map, currentBorderPoint)) s++;
+  if (isEastEdge(map, currentBorderPoint)) e++;
+  if (isWestEdge(map, currentBorderPoint)) w++;
+  return n + e + w + s;
+}
+
 function getEdgeLength(map: string[][], region: Region): Region {
-  // let edges = 0;
-  // for (let p = 0; p < region.perimeter.length; p++) {
-  //   const edgeToTest = region.perimeter[p];
-  //   for (let p2 = 0; p2 < region.perimeter.length; p2++) {
-  //     const p2ToTest = region.perimeter[p2];
+  let edges: number = 0;
+  if (region.area.length === 1) {
+    edges = 4;
+  } else {
+    const borderPoints = getBorderPoints(map, region);
 
-  //     if (edgeToTest.X !== p2ToTest.X && edgeToTest.Y !== p2ToTest.Y) {
-  //       if (getManhattanDistance(edgeToTest, p2ToTest) === 2) {
-  //         edges++;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // region.edges = edges;
-
+    borderPoints.forEach((b) => (edges += checkDirectNeighbours(map, b)));
+  }
+  region.edges = edges;
   return region;
+}
+
+function padMap(map: string[][]): string[][] {
+  let padMap = JSON.parse(JSON.stringify(map));
+  const edge = Array(padMap.length + 2).fill(" ");
+  padMap = padMap.map((a: string[]) => {
+    a.push(" ");
+    a.unshift(" ");
+    return a;
+  });
+  padMap.push(edge);
+  padMap.unshift(edge);
+  return padMap;
 }
 
 export function SolvePartTwo(): number {
@@ -198,8 +245,80 @@ export function SolvePartTwo(): number {
     .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
     .map((l) => l.split(""));
-  const regions: Region[] = getAreas(field);
-  regions.forEach((r) => getEdgeLength(field, r));
+  const modifiedMap = padMap(field);
+  const regions: Region[] = getAreas(modifiedMap).filter((r) => r.plant !== " ");
+
+  regions.forEach((r) => getEdgeLength(modifiedMap, r));
   const totalPrice = regions.map((r) => calculateFencePrice(r)).reduce((sum, c) => (sum += c));
   return totalPrice;
+}
+
+//These methods check the LEFTMOST point
+function isNorthEdge(map: string[][], currentBorderPoint: Point): boolean {
+  const plant = map[currentBorderPoint.Y][currentBorderPoint.X];
+
+  //No plant to the left AND no plant on Top
+  if (map[currentBorderPoint.Y][currentBorderPoint.X - 1] !== plant && map[currentBorderPoint.Y - 1][currentBorderPoint.X] !== plant) {
+    return true;
+  }
+  //Plant to the left, no plant on top BUT on top of the left plant is also a plant (Concave C)
+  if (
+    map[currentBorderPoint.Y][currentBorderPoint.X - 1] === plant &&
+    map[currentBorderPoint.Y - 1][currentBorderPoint.X] !== plant &&
+    map[currentBorderPoint.Y - 1][currentBorderPoint.X - 1] === plant
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isEastEdge(map: string[][], currentBorderPoint: Point): boolean {
+  const plant = map[currentBorderPoint.Y][currentBorderPoint.X];
+  //No plant to the right AND no plant on Top
+  if (map[currentBorderPoint.Y][currentBorderPoint.X + 1] !== plant && map[currentBorderPoint.Y - 1][currentBorderPoint.X] !== plant) {
+    return true;
+  }
+  //Plant to the left, no plant on top BUT on top of the left plant is also a plant (Concave C)
+  if (
+    map[currentBorderPoint.Y - 1][currentBorderPoint.X] === plant &&
+    map[currentBorderPoint.Y][currentBorderPoint.X + 1] !== plant &&
+    map[currentBorderPoint.Y - 1][currentBorderPoint.X + 1] === plant
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isSouthEdge(map: string[][], currentBorderPoint: Point): boolean {
+  const plant = map[currentBorderPoint.Y][currentBorderPoint.X];
+
+  if (map[currentBorderPoint.Y][currentBorderPoint.X - 1] !== plant && map[currentBorderPoint.Y + 1][currentBorderPoint.X] !== plant) {
+    return true;
+  }
+
+  if (
+    map[currentBorderPoint.Y][currentBorderPoint.X - 1] === plant &&
+    map[currentBorderPoint.Y + 1][currentBorderPoint.X] !== plant &&
+    map[currentBorderPoint.Y + 1][currentBorderPoint.X - 1] === plant
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isWestEdge(map: string[][], currentBorderPoint: Point): boolean {
+  const plant = map[currentBorderPoint.Y][currentBorderPoint.X];
+
+  if (map[currentBorderPoint.Y][currentBorderPoint.X - 1] !== plant && map[currentBorderPoint.Y - 1][currentBorderPoint.X] !== plant) {
+    return true;
+  }
+  //Plant to the left, no plant on top BUT on top of the left plant is also a plant (Concave C)
+  if (
+    map[currentBorderPoint.Y - 1][currentBorderPoint.X] === plant &&
+    map[currentBorderPoint.Y][currentBorderPoint.X - 1] !== plant &&
+    map[currentBorderPoint.Y - 1][currentBorderPoint.X - 1] === plant
+  ) {
+    return true;
+  }
+  return false;
 }
