@@ -1,7 +1,7 @@
 import * as fs from "fs";
-import { getAllNumbersInString, Point } from "aoc-util";
+import { getAllNumbersInString, GetPointKey, Point } from "aoc-util";
 
-const isSample = false;
+const isSample = true;
 
 interface Robot {
   pos: Point;
@@ -77,9 +77,39 @@ export function SolvePartOne(): number {
   return calculateSafetyFactor(robots, fieldSize);
 }
 
+function noDuplicatePos(robots: Robot[]): boolean {
+  const posMap: string[] = [];
+  let dupFound = false;
+  robots.forEach((robot) => {
+    if (!posMap.includes(GetPointKey(robot.final))) {
+      posMap.push(GetPointKey(robot.final));
+    } else {
+      dupFound = true;
+    }
+  });
+  return dupFound;
+}
+
 export function SolvePartTwo(): number {
   const fileName = isSample ? "/src/days/day14/sample.txt" : "/src/days/day14/full.txt";
-  const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
+  const fieldSize = isSample ? [11, 7] : [101, 103];
+  const robots = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => {
+      const nums = getAllNumbersInString(l);
+      const robot: Robot = { pos: { X: nums[0], Y: nums[1] }, dir: { X: nums[2], Y: nums[3] }, final: { X: nums[0], Y: nums[1] } };
+      return robot;
+    });
+  let tick = 0;
 
-  return 0;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    moveRobots(robots, fieldSize, tick);
+    if (!noDuplicatePos(robots)) {
+      break;
+    }
+    tick++;
+  }
+  return tick;
 }
