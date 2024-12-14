@@ -1,5 +1,6 @@
 import * as fs from "fs";
-const isSample = false;
+
+const isSample = true;
 
 interface Eq {
   x1: number;
@@ -40,10 +41,8 @@ export function SolvePartOne(): number {
         rawLines.push(l);
       }
     });
-  // const cEq = calculateBigButtonPresses(equations);
-  // const cost = calculateBigCosts(cEq);
-  // console.log(cost);
-  return 0;
+  const cEq = calculateButtonPresses(equations);
+  return calculateCosts(cEq);
 }
 
 export function SolvePartTwo(): number {
@@ -89,7 +88,6 @@ function calc2x2Determinant(tl: number, tr: number, bl: number, br: number): num
 
 function calculateButtonPresses(equations: Eq[]): Eq[] {
   equations.forEach((eq) => {
-    //TODO Double Check
     const A_detA = calc2x2Determinant(eq.x1, eq.x2, eq.y1, eq.y2);
 
     const A_detA1 = calc2x2Determinant(eq.X, eq.x2, eq.Y, eq.y2);
