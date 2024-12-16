@@ -1,46 +1,7 @@
 import * as fs from "fs";
-import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey, Point } from "aoc-util";
+import { DirectedPoint, GetPointKey } from "aoc-util";
 
 const isSample = false;
-
-export interface IQueue<T> {
-  enqueue(item: T): void;
-  dequeue(): T | undefined;
-  size(): number;
-}
-
-export class Queue<T> implements IQueue<T> {
-  private storage: T[] = [];
-
-  constructor(private capacity: number = Infinity) {}
-
-  enqueue(item: T): void {
-    if (this.size() === this.capacity) {
-      throw Error("Queue has reached max capacity, you cannot add more items");
-    }
-    this.storage.push(item);
-  }
-  dequeue(): T | undefined {
-    return this.storage.shift();
-  }
-  size(): number {
-    return this.storage.length;
-  }
-}
-
-export enum DIRECTION {
-  North = 0,
-  East = 1,
-  South = 2,
-  West = 3
-}
-
-export const DELTA = new Map<DIRECTION, Point>([
-  [DIRECTION.North, { X: 0, Y: -1 }],
-  [DIRECTION.East, { X: 1, Y: 0 }],
-  [DIRECTION.South, { X: 0, Y: 1 }],
-  [DIRECTION.West, { X: -1, Y: 0 }]
-]);
 
 export function SolvePartOne(): number {
   const fileName = isSample ? "/src/days/day16/sample.txt" : "/src/days/day16/full.txt";
@@ -73,113 +34,96 @@ export function SolvePartTwo(): number {
   return 0;
 }
 
-function getFieldCoord(field: string[][], f: string) {
-  for (let y = 0; y < field.length; y++) {
-    for (let x = 0; x < field[0].length; x++) {
-      if (field[y][x] === f) return { X: x, Y: y };
+/*
+1   function Dijkstra(Graph, source):
+2       create vertex priority queue Q
+3
+4       dist[source] ← 0                          // Initialization
+5       Q.add_with_priority(source, 0)            // associated priority equals dist[·]
+6
+7       for each vertex v in Graph.Vertices:
+8           if v ≠ source
+9               prev[v] ← UNDEFINED               // Predecessor of v
+10              dist[v] ← INFINITY                // Unknown distance from source to v
+11              Q.add_with_priority(v, INFINITY)
+12
+13
+14      while Q is not empty:                     // The main loop
+15          u ← Q.extract_min()                   // Remove and return best vertex
+16          for each neighbor v of u:             // Go through all v neighbors of u
+17              alt ← dist[u] + Graph.Edges(u, v)
+18              if alt < dist[v]:
+19                  prev[v] ← u
+20                  dist[v] ← alt
+21                  Q.decrease_priority(v, alt)
+22
+23      return dist, prev
+*/
+
+type Direction = "N" | "E" | "S" | "W";
+
+interface State {
+  x: number;
+  y: number;
+  dir: Direction;
+  score: number;
+}
+
+const directions: Direction[] = ["N", "E", "S", "W"];
+const deltas: Record<Direction, [number, number]> = {
+  N: [-1, 0],
+  E: [0, 1],
+  S: [1, 0],
+  W: [0, -1]
+};
+
+function getFieldCoord(map: string[][], target: string): [number, number] {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[i].length; j++) {
+      if (map[i][j] === target) return [i, j];
     }
   }
-  throw new Error("Field not found");
+  throw new Error(`Field ${target} not found`);
 }
-
-//lol
-function dirToDir(dir: number): Direction {
-  if (dir === 0) return Direction.N;
-  if (dir === 1) return Direction.E;
-  if (dir === 2) return Direction.S;
-  if (dir === 3) return Direction.W;
-  throw new Error("Unkown Dir");
-}
-
-function isWall(pos: DirectedPoint, field: string[][]): boolean {
-  return field[pos.Y][pos.X] === "#";
-}
-
-function isInBounds(p: Point, mX: number, mY: number): boolean {
-  return p.X >= 0 && p.X < mX && p.Y >= 0 && p.Y < mY;
-}
-
-const visited = new Set<string>();
 
 function getPathScore(map: string[][]): number {
-  // Create a queue which stores
-  // the paths
-  const queue: Queue<DirectedPoint[]> = new Queue();
+  const [startX, startY] = getFieldCoord(map, "S");
+  const [endX, endY] = getFieldCoord(map, "E");
 
-  const src = getFieldCoord(map, "S");
-  const end = getFieldCoord(map, "E");
-  // Path vector to store the current path
-  const path: DirectedPoint[] = [];
-  //HEHEHEHE
-  path.push({ ...src, direction: Direction.E });
-  queue.enqueue(path);
-  const foundPaths: DirectedPoint[][] = [];
-  while (queue.size() > 0) {
-    const pPath = queue.dequeue();
-    if (pPath === undefined) throw new Error("Path in Que is undefined but there is size höh");
-    const lastPointInPath = pPath[pPath.length - 1];
+  const pq: State[] = [];
+  const visited = new Set<string>();
 
-    // If last vertex is the desired destination
-    // then print the path
-    if (lastPointInPath.Y === end.Y && lastPointInPath.X === end.X) {
-      foundPaths.push(pPath);
+  pq.push({ x: startX, y: startY, dir: "E", score: 0 });
+
+  while (pq.length > 0) {
+    // Sort the queue to simulate priority queue behavior
+    pq.sort((a, b) => a.score - b.score);
+    const current = pq.shift()!;
+    const key = `${current.x},${current.y},${current.dir}`;
+
+    if (visited.has(key)) continue;
+    visited.add(key);
+
+    if (current.x === endX && current.y === endY) return current.score;
+
+    // Move forward
+    const [dx, dy] = deltas[current.dir];
+    const nx = current.x + dx;
+    const ny = current.y + dy;
+    if (nx >= 0 && ny >= 0 && nx < map.length && ny < map[0].length && map[nx][ny] !== "#") {
+      pq.push({ x: nx, y: ny, dir: current.dir, score: current.score + 1 });
     }
-    const neighbours: DirectedPoint[] = [];
-    const n: DirectedPoint = { X: lastPointInPath.X, Y: lastPointInPath.Y - 1, direction: Direction.N };
-    const e: DirectedPoint = { X: lastPointInPath.X + 1, Y: lastPointInPath.Y, direction: Direction.E };
-    const w: DirectedPoint = { X: lastPointInPath.X - 1, Y: lastPointInPath.Y, direction: Direction.W };
-    const s: DirectedPoint = { X: lastPointInPath.X, Y: lastPointInPath.Y + 1, direction: Direction.S };
-    if (lastPointInPath.direction === Direction.N) {
-      neighbours.push(n);
-      neighbours.push(e);
-      neighbours.push(w);
-    }
-    if (lastPointInPath.direction === Direction.S) {
-      neighbours.push(s);
-      neighbours.push(e);
-      neighbours.push(w);
-    }
-    if (lastPointInPath.direction === Direction.E) {
-      neighbours.push(n);
-      neighbours.push(e);
-      neighbours.push(s);
-    }
-    if (lastPointInPath.direction === Direction.W) {
-      neighbours.push(w);
-      neighbours.push(n);
-      neighbours.push(s);
-    }
-    neighbours.forEach((n) => {
-      if (isInBounds(n, map[0].length, map.length)) {
-        if (!visited.has(GetDirectedPointKey(n))) {
-          visited.add(GetDirectedPointKey(n));
-          if (!isWall(n, map)) {
-            const newpath = JSON.parse(JSON.stringify(pPath));
-            newpath.push(n);
-            queue.enqueue(newpath);
-          }
-        }
-      }
-    });
+
+    // Rotate clockwise, no OOB/Wall because auf der stelle
+    const cwDir = directions[(directions.indexOf(current.dir) + 1) % 4];
+    pq.push({ x: current.x, y: current.y, dir: cwDir, score: current.score + 1000 });
+
+    // Rotate clockwise, no OOB/Wall because auf der stelle
+    const ccwDir = directions[(directions.indexOf(current.dir) + 3) % 4];
+    pq.push({ x: current.x, y: current.y, dir: ccwDir, score: current.score + 1000 });
   }
 
-  let pathScore = Number.MAX_SAFE_INTEGER;
-  let tPathScore = 0;
-  for (let p = 0; p < foundPaths.length; p++) {
-    tPathScore = 0;
-    for (let v = 1; v < foundPaths[p].length; v++) {
-      if (foundPaths[p][v - 1].direction !== foundPaths[p][v].direction) {
-        tPathScore += 1000;
-        tPathScore += 1;
-      } else {
-        tPathScore += 1;
-      }
-    }
-    if (tPathScore < pathScore) pathScore = tPathScore;
-    console.log(tPathScore);
-    printPath(map, foundPaths[p]);
-  }
-  return pathScore;
+  throw new Error("No path found");
 }
 
 function printPath(field: string[][], foundPath: DirectedPoint[]) {
@@ -204,3 +148,5 @@ function printPath(field: string[][], foundPath: DirectedPoint[]) {
 //113404
 //113404
 //114404
+
+//95444
