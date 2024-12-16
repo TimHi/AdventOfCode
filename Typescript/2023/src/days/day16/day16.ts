@@ -5,7 +5,7 @@ import { DirectedPoint, Direction, GetDirectedPointKey } from "aoc-util";
 const isSample = true;
 
 export function SolvePartOne(): number {
-  const fileName = isSample ? "/src/days/day16/sample.txt" : "/src/days/day16/full.txt";
+  const fileName = isSample ? "/src/days/day15/sample.txt" : "/src/days/day15/full.txt";
   const lines = fs
     .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
@@ -28,7 +28,7 @@ function countEnergizedFields(energizedMap: Map<string, number>): number {
 }
 
 export function SolvePartTwo(): number {
-  const fileName = isSample ? "/src/days/day16/sample.txt" : "/src/days/day16/full.txt";
+  const fileName = isSample ? "/src/days/day15/sample.txt" : "/src/days/day15/full.txt";
   const lines = fs
     .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
