@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { DirectedPoint, Direction, GetDirectedPointKey, Point } from "aoc-util";
+import { DirectedPoint, Direction, GetDirectedPointKey, GetPointKey, Point } from "aoc-util";
 
 const isSample = false;
 
@@ -95,33 +95,10 @@ function isWall(pos: DirectedPoint, field: string[][]): boolean {
   return field[pos.Y][pos.X] === "#";
 }
 
-function getPossibleNeighbours(pos: DirectedPoint, field: string[][]): DirectedPoint[] {
-  const neighbours: DirectedPoint[] = [];
-  for (let d = 0; d < 4; d++) {
-    const dir = DELTA.get(d);
-
-    if (dir === undefined) throw new Error("Weird delta, should not happen");
-    const n: DirectedPoint = { X: pos.X + dir.X, Y: pos.Y + dir.Y, direction: dirToDir(d) };
-    if (isInBounds(n, field[0].length, field.length) && !isWall(n, field)) {
-      neighbours.push(n);
-    }
-  }
-  return neighbours;
-}
-
 function isInBounds(p: Point, mX: number, mY: number): boolean {
   return p.X >= 0 && p.X < mX && p.Y >= 0 && p.Y < mY;
 }
 
-function isNotVisited(p: DirectedPoint, path: DirectedPoint[]): boolean {
-  const size = path.length;
-  for (let i = 0; i < size; i++) {
-    if (GetDirectedPointKey(path[i]) === GetDirectedPointKey(p)) {
-      return false;
-    }
-  }
-  return true;
-}
 const visited = new Set<string>();
 
 function getPathScore(map: string[][]): number {
@@ -147,32 +124,43 @@ function getPathScore(map: string[][]): number {
     if (lastPointInPath.Y === end.Y && lastPointInPath.X === end.X) {
       foundPaths.push(pPath);
     }
-    //Get neighbours in each direction
-    for (let d = 0; d < 4; d++) {
-      const dir = DELTA.get(d);
-      if (dir === undefined) throw new Error("Weird delta, should not happen");
-      const n: DirectedPoint = { X: lastPointInPath.X + dir.X, Y: lastPointInPath.Y + dir.Y, direction: dirToDir(d) };
-      if (n.direction === Direction.S && lastPointInPath.direction === Direction.N) {
-        //Skip
-      } else if (n.direction === Direction.E && lastPointInPath.direction === Direction.W) {
-        //SKip
-      } else if (n.direction === Direction.W && lastPointInPath.direction === Direction.E) {
-        //SKip
-      } else if (n.direction === Direction.N && lastPointInPath.direction === Direction.S) {
-        //SKip
-      } else {
-        if (isInBounds(n, map[0].length, map.length)) {
-          if (!visited.has(GetDirectedPointKey(n))) {
-            visited.add(GetDirectedPointKey(n));
-            if (!isWall(n, map)) {
-              const newpath = JSON.parse(JSON.stringify(pPath));
-              newpath.push(n);
-              queue.enqueue(newpath);
-            }
+    const neighbours: DirectedPoint[] = [];
+    const n: DirectedPoint = { X: lastPointInPath.X, Y: lastPointInPath.Y - 1, direction: Direction.N };
+    const e: DirectedPoint = { X: lastPointInPath.X + 1, Y: lastPointInPath.Y, direction: Direction.E };
+    const w: DirectedPoint = { X: lastPointInPath.X - 1, Y: lastPointInPath.Y, direction: Direction.W };
+    const s: DirectedPoint = { X: lastPointInPath.X, Y: lastPointInPath.Y + 1, direction: Direction.S };
+    if (lastPointInPath.direction === Direction.N) {
+      neighbours.push(n);
+      neighbours.push(e);
+      neighbours.push(w);
+    }
+    if (lastPointInPath.direction === Direction.S) {
+      neighbours.push(s);
+      neighbours.push(e);
+      neighbours.push(w);
+    }
+    if (lastPointInPath.direction === Direction.E) {
+      neighbours.push(n);
+      neighbours.push(e);
+      neighbours.push(s);
+    }
+    if (lastPointInPath.direction === Direction.W) {
+      neighbours.push(w);
+      neighbours.push(n);
+      neighbours.push(s);
+    }
+    neighbours.forEach((n) => {
+      if (isInBounds(n, map[0].length, map.length)) {
+        if (!visited.has(GetDirectedPointKey(n))) {
+          visited.add(GetDirectedPointKey(n));
+          if (!isWall(n, map)) {
+            const newpath = JSON.parse(JSON.stringify(pPath));
+            newpath.push(n);
+            queue.enqueue(newpath);
           }
         }
       }
-    }
+    });
   }
 
   let pathScore = Number.MAX_SAFE_INTEGER;
@@ -181,16 +169,38 @@ function getPathScore(map: string[][]): number {
     tPathScore = 0;
     for (let v = 1; v < foundPaths[p].length; v++) {
       if (foundPaths[p][v - 1].direction !== foundPaths[p][v].direction) {
-        tPathScore += 1001;
+        tPathScore += 1000;
+        tPathScore += 1;
       } else {
         tPathScore += 1;
       }
     }
     if (tPathScore < pathScore) pathScore = tPathScore;
     console.log(tPathScore);
+    printPath(map, foundPaths[p]);
   }
   return pathScore;
 }
-//113404
+
+function printPath(field: string[][], foundPath: DirectedPoint[]) {
+  console.log("Found Path:");
+  const keys = foundPath.map((p) => GetPointKey(p));
+  for (let y = 0; y < field.length; y++) {
+    let row = "";
+    for (let x = 0; x < field[0].length; x++) {
+      if (keys.includes(GetPointKey({ X: x, Y: y }))) {
+        row += "o";
+      } else {
+        row += field[y][x];
+      }
+    }
+    console.log(row);
+  }
+}
+//11037
+//111404 not the right
+//112403 too high
 //112404 too high
 //113404
+//113404
+//114404
