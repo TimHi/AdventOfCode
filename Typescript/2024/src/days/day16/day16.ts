@@ -60,6 +60,7 @@ export function SolvePartTwo(): number {
 23      return dist, prev
 */
 
+//kann meine direct nicht benutzen weil da diagonal drinne steckt....
 type Direction = "N" | "E" | "S" | "W";
 
 interface State {
