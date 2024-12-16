@@ -201,21 +201,22 @@ function getBoxesToMove(map: string[][], dir: DirectedPoint, currentPos: Point):
     switch (dir.direction) {
       case Direction.N:
       case Direction.S:
-        if (map[neighbour.left.Y][neighbour.left.X] === "[") {
-          Q.push(neighbour);
+        if (!checkNeighbourBothFields(neighbour, map, EMPTY)) {
+          if (map[neighbour.left.Y][neighbour.left.X] === "[") {
+            Q.push(neighbour);
+          }
+          if (map[neighbour.left.Y][neighbour.left.X] === "]") {
+            const shiftOneLeft = shiftDoubleBoxHorizontal(neighbour, -1);
+            Q.push(shiftOneLeft);
+          }
+          if (map[neighbour.right.Y][neighbour.right.X] === "[") {
+            const shiftOneRight = shiftDoubleBoxHorizontal(neighbour, 1);
+            Q.push(shiftOneRight);
+          }
+          if (map[neighbour.right.Y][neighbour.right.X] === "]") {
+            Q.push(neighbour);
+          }
         }
-        if (map[neighbour.left.Y][neighbour.left.X] === "]") {
-          const shiftOneLeft = shiftDoubleBoxHorizontal(neighbour, -1);
-          Q.push(shiftOneLeft);
-        }
-        if (map[neighbour.right.Y][neighbour.right.X] === "[") {
-          const shiftOneRight = shiftDoubleBoxHorizontal(neighbour, 1);
-          Q.push(shiftOneRight);
-        }
-        if (map[neighbour.right.Y][neighbour.right.X] === "]") {
-          Q.push(neighbour);
-        }
-
         break;
       case Direction.E:
         if (checkNeighbourHorizontal(map, dir, currentBox, EMPTY)) {
@@ -400,7 +401,7 @@ export function SolvePartTwo(): number {
   fs.readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
     .forEach((l) => {
-      if (l === "\n" || l === "\r" || l === "") isField = false;
+      if (l === "\n" || l === "\r") isField = false;
       if (isField) {
         field.push(l.split("").filter((x) => x !== "\r"));
       } else if (!isField && l !== "\n" && l !== "\r") {
@@ -408,7 +409,7 @@ export function SolvePartTwo(): number {
       }
     });
 
-  const inflatedField: string[][] = inflateField(field).filter((l) => l.length > 0);
+  const inflatedField: string[][] = inflateField(field);
   //const inflatedField = field;
   print2D(inflatedField);
   const m = playInflatedField(
