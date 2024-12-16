@@ -117,16 +117,6 @@ export function SolvePartOne(): number {
   return trailheadScore;
 }
 
-function isNotVisited(p: Point, path: Point[]): boolean {
-  const size = path.length;
-  for (let i = 0; i < size; i++) {
-    if (GetPointKey(path[i]) === GetPointKey(p)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 //TODO: This shit is every year, try to generalize it
 function findAllPathsWithIntermediatePaths(map: number[][], src: Point): number {
   // Create a queue which stores
@@ -166,8 +156,18 @@ function findAllPathsWithIntermediatePaths(map: number[][], src: Point): number 
     }
   }
 
-  //console.log(foundPaths);
+  console.log(foundPaths);
   return foundEnd;
+}
+
+function isNotVisited(p: Point, path: Point[]): boolean {
+  const size = path.length;
+  for (let i = 0; i < size; i++) {
+    if (GetPointKey(path[i]) === GetPointKey(p)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export function SolvePartTwo(): number {
