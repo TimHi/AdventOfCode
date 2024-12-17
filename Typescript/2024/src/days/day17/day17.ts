@@ -109,10 +109,32 @@ export function SolvePartTwo(): number {
   }
   pc.program = operations;
 
-  const output = runProgram(pc).out;
-  console.log(pc);
-  console.log(finishedPc.out.map((n) => String(n)).join(","));
-  return 0;
+  const output = pc.program.map((o) => o.code + "," + o.comboOperand).join();
+  let newA = Number.MAX_SAFE_INTEGER;
+  //LETS GOOOO
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    if (newA % 1_000_000 === 0) {
+      console.log(newA);
+    }
+    const copiedPC = JSON.parse(JSON.stringify(pc));
+    copiedPC.A = newA;
+    const result = runProgram(copiedPC).out;
+    const resultString = getSolutionString(result);
+    if (resultString === output) {
+      console.log("A found:");
+      console.log(resultString);
+      console.log(output);
+      break;
+    } else {
+      newA--;
+    }
+  }
+  return newA;
+}
+
+function getSolutionString(a: number[]): string {
+  return a.map((n) => String(n)).join(",");
 }
 
 function getComboOperandValue(op: Operation, pc: Computer): number {
