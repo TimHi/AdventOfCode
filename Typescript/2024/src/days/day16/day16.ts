@@ -17,48 +17,13 @@ export function SolvePartOne(): number {
 export function SolvePartTwo(): number {
   const fileName = isSample ? "/src/days/day16/sample.txt" : "/src/days/day16/full.txt";
 
-  const field: string[][] = [];
-  const instructions: string[] = [];
-  let isField = true;
-  fs.readFileSync(process.cwd() + fileName, "utf8")
+  const field: string[][] = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
-    .forEach((l) => {
-      if (l === "\n" || l === "\r") isField = false;
-      if (isField) {
-        field.push(l.split("").filter((x) => x !== "\r"));
-      } else if (!isField && l !== "\n" && l !== "\r") {
-        instructions.push(...l.split(""));
-      }
-    });
+    .map((l) => l.split(""));
 
-  return 0;
+  return getSeatingScore(field);
 }
-
-/*
-1   function Dijkstra(Graph, source):
-2       create vertex priority queue Q
-3
-4       dist[source] ← 0                          // Initialization
-5       Q.add_with_priority(source, 0)            // associated priority equals dist[·]
-6
-7       for each vertex v in Graph.Vertices:
-8           if v ≠ source
-9               prev[v] ← UNDEFINED               // Predecessor of v
-10              dist[v] ← INFINITY                // Unknown distance from source to v
-11              Q.add_with_priority(v, INFINITY)
-12
-13
-14      while Q is not empty:                     // The main loop
-15          u ← Q.extract_min()                   // Remove and return best vertex
-16          for each neighbor v of u:             // Go through all v neighbors of u
-17              alt ← dist[u] + Graph.Edges(u, v)
-18              if alt < dist[v]:
-19                  prev[v] ← u
-20                  dist[v] ← alt
-21                  Q.decrease_priority(v, alt)
-22
-23      return dist, prev
-*/
 
 //kann meine direct nicht benutzen weil da diagonal drinne steckt....
 type Direction = "N" | "E" | "S" | "W";
@@ -142,12 +107,8 @@ function printPath(field: string[][], foundPath: DirectedPoint[]) {
     console.log(row);
   }
 }
-//11037
-//111404 not the right
-//112403 too high
-//112404 too high
-//113404
-//113404
-//114404
 
-//95444
+//Find all paths, get all positions
+function getSeatingScore(field: string[][]): number {
+  throw new Error("Function not implemented.");
+}
