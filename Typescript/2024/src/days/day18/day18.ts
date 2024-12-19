@@ -1,8 +1,7 @@
-import { getAllNumbersInString , Point, GetPointKey} from "aoc-util";
+import { getAllNumbersInString, GetPointKey, Point } from "aoc-util";
 import * as fs from "fs";
 
-const isSample = true;
-
+const isSample = false;
 
 export interface IQueue<T> {
   enqueue(item: T): void;
@@ -28,80 +27,91 @@ export class Queue<T> implements IQueue<T> {
     return this.storage.length;
   }
 }
-enum DIRECTION {
-  North = 0,
-  East = 1,
-  South = 2,
-  West = 3
-}
 
-const DELTA = new Map<DIRECTION, Point>([
-  [DIRECTION.North, { X: 0, Y: -1 }],
-  [DIRECTION.East, { X: 1, Y: 0 }],
-  [DIRECTION.South, { X: 0, Y: 1 }],
-  [DIRECTION.West, { X: -1, Y: 0 }]
-]);
 function isInBounds(p: Point, mX: number, mY: number): boolean {
   return p.X >= 0 && p.X < mX && p.Y >= 0 && p.Y < mY;
 }
 
-function findPath(blocked: Point[], start: Point, end: Point): number {
-  let foundPath = 0;
+interface State {
+  p: Point;
+  score: number;
+}
+type Direction = "N" | "E" | "S" | "W";
+const directions: Direction[] = ["N", "E", "S", "W"];
+const deltas: Record<Direction, [number, number]> = {
+  N: [-1, 0],
+  E: [0, 1],
+  S: [1, 0],
+  W: [0, -1]
+};
 
-  const Q = new Queue<Point>();
-  const visited: string[] = [];
-  const blockedP = blocked.map((b) => GetPointKey(b));
-  visited.push(GetPointKey(start));
-  Q.enqueue(start);
+function findPath(blocked: Point[], start: Point, end: Point, kb: number): number {
+  const blockedL = blocked.slice(0, kb).map((p) => GetPointKey(p));
+  const pq: State[] = [];
+  const visited = new Set<string>();
 
-  while (Q.size() > 0) {
-    const newPos: Point = Q.dequeue()!;
+  pq.push({ p: start, score: 0 });
 
-    if (end.X === newPos.X && end.Y === newPos.Y) {
-      return visited.length;
-    }
+  while (pq.length > 0) {
+    // Sort the queue to simulate priority queue behavior
+    pq.sort((a, b) => a.score - b.score);
+    const current = pq.shift()!;
+    const key = GetPointKey(current.p);
 
-    for (let d = 0; d < 4; d++) {
-      const dir = DELTA.get(d);
-      if (dir === undefined) throw new Error("Weird delta, should not happen");
-      const n = { X: newPos.X + dir.X, Y: newPos.Y + dir.Y };
-      if (isInBounds(n, end.X + 1, end.Y + 1)) {
-        if (!visited.includes(GetPointKey(n)) && !blockedP.includes(GetPointKey(n))) {
-          
-            Q.enqueue(n);
-            visited.push(GetPointKey(n));
-          
-        }
+    if (visited.has(key)) continue;
+    visited.add(key);
+
+    if (current.p.X === end.X && current.p.Y === end.Y) return current.score;
+
+    // Move forward
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(deltas).forEach(([key, value]) => {
+      const n = { X: current.p.X + value[1], Y: current.p.Y + value[0] };
+      if (n.X >= 0 && n.Y >= 0 && n.X < end.X + 1 && n.Y < end.Y + 1 && !blockedL.includes(GetPointKey(n))) {
+        pq.push({ p: n, score: current.score + 1 });
       }
-    }
+    });
   }
-
-  return 0;
+  return -1;
 }
 
 export function SolvePartOne(): number {
-  const fileName = isSample ? "/src/days/day17/sample.txt" : "/src/days/day17/full.txt";
-  const points: Point[] = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n").map((l)=>{
-    const nums = getAllNumbersInString(l);
-    return {X: nums[0], Y: nums[1]};
-  });
+  const fileName = isSample ? "/src/days/day18/sample.txt" : "/src/days/day18/full.txt";
+  const points: Point[] = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => {
+      const nums = getAllNumbersInString(l);
+      return { X: nums[0], Y: nums[1] };
+    });
 
-  const start = {X: 0, Y: 0};
-  const end = isSample ? {X: 6, Y: 6} : {X: 70, Y: 70};
-  
-  const result = findPath(points, start, end);
-  return result;
+  const start = { X: 0, Y: 0 };
+  const end = isSample ? { X: 6, Y: 6 } : { X: 70, Y: 70 };
+  const kb = isSample ? 12 : 1024;
+  return findPath(points, start, end, kb);
 }
 
 export function SolvePartTwo(): number {
   const fileName = isSample ? "/src/days/day18/sample.txt" : "/src/days/day18/full.txt";
-  
-  const lines = fs.readFileSync(process.cwd() + fileName, "utf8").split("\n");
+  const points: Point[] = fs
+    .readFileSync(process.cwd() + fileName, "utf8")
+    .split("\n")
+    .map((l) => {
+      const nums = getAllNumbersInString(l);
+      return { X: nums[0], Y: nums[1] };
+    });
 
-  const raw = lines[4]
-    .split(" ")[1]
-    .split(",");
-
-  
-  return 0;
+  const start = { X: 0, Y: 0 };
+  const end = isSample ? { X: 6, Y: 6 } : { X: 70, Y: 70 };
+  let kb = 1;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const path = findPath(points, start, end, kb);
+    if (path === -1) {
+      console.log(points[2908]);
+      return kb;
+    } else {
+      kb++;
+    }
+  }
 }
