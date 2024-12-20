@@ -27,7 +27,6 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "@wry/trie": "^0.5.0",
     "aoc-util": "file:../aoc-util",
     "data-structure-typed": "^1.48.9",
     "decimal.js": "^10.4.3",
@@ -35,7 +34,6 @@
     "hamming": "^0.0.2",
     "lodash": "^4.17.21",
     "nunjucks": "^3.2.4",
-    "trie-search": "^2.1.0",
     "ts-2d-geometry": "^6.3.2",
     "vector": "^0.0.4",
     "vector-math": "^1.1.1"

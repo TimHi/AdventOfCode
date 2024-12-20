@@ -1,6 +1,6 @@
-import { getAllNumbersInString, Point } from "aoc-util";
 import * as fs from "fs";
-const isSample = true;
+
+const isSample = false;
 
 class Node {
   CHAR_SIZE: number = 26; // Supports lowercase English characters 'a' to 'z'
@@ -14,11 +14,11 @@ class Node {
 }
 
 //https://www.techiedelight.com/word-break-problem-using-trie/
-function insertTrie(head: Node, s: string): void {
+function insertTrie(head: Node, word: string): void {
   let node = head;
 
   // Iterate over each character in the string
-  for (const char of s) {
+  for (const char of word) {
     const index = char.charCodeAt(0) - "a".charCodeAt(0);
 
     // Create a new node if the path doesn't exist
@@ -65,65 +65,71 @@ function wordBreak(head: Node, s: string): boolean {
   return good[s.length];
 }
 
-function checkCombination(combination: string, towels: string[], primeMap: Map<string, number>): boolean {
-  const t = new Node();
-  for (const word of towels) {
-    insertTrie(t, word);
-  }
-  const result = wordBreak(t, combination);
-  return result;
-}
+function findAllCombinations(head: Node, wordToFind: string): string[][] {
+  const wordLength = wordToFind.length;
+  const dp: string[][][] = Array(wordLength + 1)
+    .fill(null)
+    .map(() => []);
 
-function isPrime(num: number): boolean {
-  if (num <= 1) {
-    return false;
-  }
+  dp[0].push([]); // Base case: empty list for the starting point
 
-  for (let i = 2; i <= Math.sqrt(num); i++) {
-    if (num % i === 0) {
-      return false;
-    }
-  }
+  for (let i = 0; i < wordLength; i++) {
+    if (dp[i].length > 0) {
+      let node = head;
+      for (let j = i; j < wordLength; j++) {
+        //The Unicode code point of 'a' is 97. Subtracting this value normalizes the result to start from 0:
+        //This gives the index of the character in the range a–z (0 for 'a', 1 for 'b', ..., 25 for 'z').
+        //Used to find the child node
+        const index = wordToFind.charCodeAt(j) - "a".charCodeAt(0);
 
-  return true;
-}
+        if (!node.next[index]) {
+          break;
+        }
 
-function buildPrimeMap(towels: string[]): Map<string, number> {
-  const primeMap = new Map<string, number>();
-  let lastUsedPrime = 0;
+        node = node.next[index]!;
 
-  for (const towel of towels) {
-    const splits = towel.split("");
-    for (const s of splits) {
-      if (!primeMap.has(s)) {
-        let newPrime = lastUsedPrime + 1;
-
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          if (isPrime(newPrime)) {
-            primeMap.set(s, newPrime);
-            lastUsedPrime = newPrime;
-            break;
-          } else {
-            newPrime++;
+        if (node.exist) {
+          const word = wordToFind.slice(i, j + 1);
+          for (const combination of dp[i]) {
+            dp[j + 1].push([...combination, word]);
           }
         }
       }
     }
   }
-  return primeMap;
+
+  return dp[wordLength];
+}
+
+function checkCombination(combination: string, towels: string[]): boolean {
+  const t = new Node();
+  for (const word of towels) {
+    insertTrie(t, word);
+  }
+  return wordBreak(t, combination);
 }
 
 function checkTowels(availableTowels: string[], combinations: string[]): number {
   let possibleTowels = 0;
 
-  const primeMap = buildPrimeMap(availableTowels);
-
   combinations.forEach((combination) => {
-    if (!checkCombination(combination, availableTowels, primeMap)) {
+    if (!checkCombination(combination, availableTowels)) {
       return;
     }
     possibleTowels++;
+  });
+  return possibleTowels;
+}
+
+function checkAllTowels(availableTowels: string[], combinations: string[]): number {
+  let possibleTowels = 0;
+
+  combinations.forEach((combination) => {
+    const t = new Node();
+    for (const word of availableTowels) {
+      insertTrie(t, word);
+    }
+    possibleTowels += findAllCombinations(t, combination).length;
   });
   return possibleTowels;
 }
@@ -147,18 +153,27 @@ export function SolvePartOne(): number {
       }
     });
 
-  const possibleCombinations = checkTowels(availableTowels, combinations);
-  return possibleCombinations;
+  return checkTowels(availableTowels, combinations);
 }
 
 export function SolvePartTwo(): number {
-  const fileName = isSample ? "/src/days/day18/sample.txt" : "/src/days/day18/full.txt";
-  const points: Point[] = fs
-    .readFileSync(process.cwd() + fileName, "utf8")
+  const fileName = isSample ? "/src/days/day19/sample.txt" : "/src/days/day19/full.txt";
+  const combinations: string[] = [];
+  const availableTowels: string[] = [];
+  let isCombinations = false;
+  fs.readFileSync(process.cwd() + fileName, "utf8")
     .split("\n")
-    .map((l) => {
-      const nums = getAllNumbersInString(l);
-      return { X: nums[0], Y: nums[1] };
+    .map((line) => line.trim())
+    .forEach((line) => {
+      if (line === "" || line === "\r") {
+        isCombinations = true;
+      } else if (isCombinations) {
+        combinations.push(line);
+      } else {
+        const towels = line.split(", ");
+        availableTowels.push(...towels);
+      }
     });
-  return 0;
+
+  return checkAllTowels(availableTowels, combinations);
 }
