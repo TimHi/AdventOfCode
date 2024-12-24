@@ -45,7 +45,16 @@ export function SolvePartOne(): number {
     .map((line) => line.trim())
     .map((line) => line.split("-"));
   const maps = getSets(secrets);
-  return 0;
+
+  let tSums = 0;
+  const found: string[] = [];
+  maps[1].forEach((v, k) => {
+    if (!found.includes(k) && v.length === 4) {
+      found.push(k);
+      tSums += 1;
+    }
+  });
+  return tSums;
 }
 
 export function SolvePartTwo(): number {
