@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-const isSample = false;
+const isSample = true;
 
 function mod(dividend: number, modulus: number): number {
   return ((dividend % modulus) + modulus) % modulus;
@@ -133,7 +133,7 @@ export function SolvePartTwo(): number {
     let sum = 0;
     allNumsMap.forEach((map) => {
       if (map.has(womboCombo)) {
-        sum += map.get(womboCombo);
+        sum += map.get(womboCombo)!;
       }
     });
     if (sum > sumTingWong) {
