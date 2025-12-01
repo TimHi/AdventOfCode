@@ -1,0 +1,6 @@
+2025/src/main/resources/**/input.txt
+2025/.kotlin
+.idea
+2025/.gradle
+2025/build
+2025.iml
