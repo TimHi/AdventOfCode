@@ -17,6 +17,15 @@ class Day01Test {
     }
 
     @Test
+    fun testCooked() {
+        mockkStatic("day01.Day01Kt")
+        val mockedTurns = listOf(Turn(true, 1000))
+        every { readFile("/day01/sample.txt") } returns mockedTurns
+        val result = partTwo(true)
+        assertEquals(10, result)
+    }
+
+    @Test
     fun testPartTwoOneOverflowLeft() {
         mockkStatic("day01.Day01Kt")
         val mockedTurns = listOf(Turn(false, 51))
@@ -72,8 +81,7 @@ class Day01Test {
     @Test
     fun testPartZero() {
         mockkStatic("day01.Day01Kt")
-        // 50 -> 0 | 1
-        // 0 -> 0 | 1 -> 2
+
         val mockedTurns = listOf(Turn(false, 50), Turn(true, 100))
         every { readFile("/day01/sample.txt") } returns mockedTurns
         val result = partTwo(true)

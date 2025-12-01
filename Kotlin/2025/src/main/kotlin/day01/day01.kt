@@ -56,72 +56,41 @@ fun partTwo(sampleFlag: Boolean): Int {
     var dial = 50
     var zeroHits = 0
 
+
     turns.forEach {
-       if(it.direction) {
-           val delta = 100 - dial
-           if (delta == it.steps) {
-               zeroHits++
-               dial = 0
-           } else if (it.steps > delta) {
-                val tSteps = it.steps - delta
-               val dialTurns = tSteps / 100
-               if (dialTurns == 0) zeroHits++
-               else zeroHits += dialTurns
+        var tCounter = 0
+        val dir = if(it.direction) "R" else "L"
 
-               dial += it.steps
-               dial = dial.mod(100)
-               if(dial == 0) zeroHits++
-           } else {
-               dial += it.steps
-           }
-       } else {
-           var delta = dial
-           if(delta == 0) delta = 100
-           if (delta == it.steps) {
-            zeroHits++
-               dial = 0
-           } else if (it.steps > delta) {
-               val tSteps = it.steps - delta
-               val dialTurns = tSteps / 100
-               if (dialTurns == 0) zeroHits++
-               else zeroHits += dialTurns
+        if(it.direction) {
+            if(dial == 100) dial = 0
+         for (i in 0..<it.steps) {
+             dial++
+             if(dial == 100) {
+                 dial = 0
+                 zeroHits++
+                 tCounter++
+             }
 
-               dial -= it.steps
-               dial = dial.mod(100)
-               if(dial == 0) zeroHits++
-           } else {
-               dial -= it.steps
-           }
-       }
+         }
+     } else {
+         if(dial == 0) dial = 100
+         for (i in 0..<it.steps) {
+             dial--
+             if (dial == 0) {
+                 zeroHits++
+                 tCounter++
+                 dial = 100
+             }
+         }
+     }
+        if(tCounter == 0)
+        println("The dial is rotated $dir${it.steps} to point at $dial")
+        else {
+            println("The dial is rotated $dir${it.steps} to point at $dial; during this rotation, it points at zero: $tCounter times.")
+        }
     }
 
     println("Result: $zeroHits")
     return zeroHits
 }
 
-//4150
-//4350 too low
-//4960 not right
-//5222
-//5436
-//5585
-//5819
-//6223
-//6242 too high
-
-
-/* Cooked Sample:
-L150 3 während spinnen, steht danach auf der 0
-
-L68
-L30
-R48
-L5
-R60
-L55
-L1
-L99
-R14
-L82
-
- */
