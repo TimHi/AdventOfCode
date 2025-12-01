@@ -26,7 +26,7 @@ fun main() {
     println("Sample Part 02:")
     partTwo(true)
     println("Real Input Part 02:")
-    //partTwo(false)
+    partTwo(false)
 }
 
 fun partOne(sampleFlag: Boolean) {
@@ -57,64 +57,58 @@ fun partTwo(sampleFlag: Boolean): Int {
     var zeroHits = 0
 
     turns.forEach {
+       if(it.direction) {
+           val delta = 100 - dial
+           if (delta == it.steps) {
+               zeroHits++
+               dial = 0
+           } else if (it.steps > delta) {
+                val tSteps = it.steps - delta
+               val dialTurns = tSteps / 100
+               if (dialTurns == 0) zeroHits++
+               else zeroHits += dialTurns
 
-        val hits = hitsWhileDialing(it, dial)
-
-        if (it.direction) {
-            dial += it.steps
-        } else {
-            dial -= it.steps
-        }
-
-        dial = dial.mod(100)
-
-        if(it.direction) {
-            println("The dial is rotated R${it.steps} to point at $dial")
-        }else {
-            println("The dial is rotated L${it.steps} to point at $dial")
-        }
-
-
-        if (dial == 0){
+               dial += it.steps
+               dial = dial.mod(100)
+               if(dial == 0) zeroHits++
+           } else {
+               dial += it.steps
+           }
+       } else {
+           var delta = dial
+           if(delta == 0) delta = 100
+           if (delta == it.steps) {
             zeroHits++
-            if(hits > 1) {
-                zeroHits += hits
-            }
-        }
-        else {
-            if(hits != 0) println("during this rotation, it points at 0 $hits times")
-            zeroHits += hits
-        }
+               dial = 0
+           } else if (it.steps > delta) {
+               val tSteps = it.steps - delta
+               val dialTurns = tSteps / 100
+               if (dialTurns == 0) zeroHits++
+               else zeroHits += dialTurns
+
+               dial -= it.steps
+               dial = dial.mod(100)
+               if(dial == 0) zeroHits++
+           } else {
+               dial -= it.steps
+           }
+       }
     }
 
     println("Result: $zeroHits")
     return zeroHits
 }
 
-fun hitsWhileDialing(turn: Turn, dial: Int): Int {
-    var total = 0
-    var hits = 0
-    if(dial == 0) return 0
-      if (turn.direction) {
-          total = dial + turn.steps
-          hits = total / 100
-      }
-    else {
-        total = dial - turn.steps
-        if (total < 0){
-            hits++
-        }
-          hits += abs(total) / 100
-    }
-
-    return hits
-}
 //4150
 //4350 too low
 //4960 not right
 //5222
 //5436
+//5585
+//5819
+//6223
 //6242 too high
+
 
 /* Cooked Sample:
 L150 3 während spinnen, steht danach auf der 0
