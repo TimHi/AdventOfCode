@@ -25,7 +25,7 @@ fun main() {
 
     println("Sample Part 02:")
     partTwo(true)
-    //println("Real Input Part 02:")
+    println("Real Input Part 02:")
     //partTwo(false)
 }
 
@@ -47,19 +47,19 @@ fun partOne(sampleFlag: Boolean) {
     }
 
     println(zeroHits)
+
 }
 
-fun partTwo(sampleFlag: Boolean) {
+fun partTwo(sampleFlag: Boolean): Int {
     val path = if (sampleFlag) "/day01/sample.txt" else "/day01/input.txt";
     val turns = readFile(path)
     var dial = 50
     var zeroHits = 0
 
     turns.forEach {
-        println(it)
+
         val hits = hitsWhileDialing(it, dial)
-        println("Hits: $hits")
-        zeroHits += hits
+
         if (it.direction) {
             dial += it.steps
         } else {
@@ -67,16 +67,34 @@ fun partTwo(sampleFlag: Boolean) {
         }
 
         dial = dial.mod(100)
-        if (dial == 0 && hits == 0) zeroHits++
-        println("Dial now: $dial")
+
+        if(it.direction) {
+            println("The dial is rotated R${it.steps} to point at $dial")
+        }else {
+            println("The dial is rotated L${it.steps} to point at $dial")
+        }
+
+
+        if (dial == 0){
+            zeroHits++
+            if(hits > 1) {
+                zeroHits += hits
+            }
+        }
+        else {
+            if(hits != 0) println("during this rotation, it points at 0 $hits times")
+            zeroHits += hits
+        }
     }
 
     println("Result: $zeroHits")
+    return zeroHits
 }
 
 fun hitsWhileDialing(turn: Turn, dial: Int): Int {
     var total = 0
     var hits = 0
+    if(dial == 0) return 0
       if (turn.direction) {
           total = dial + turn.steps
           hits = total / 100
@@ -91,8 +109,11 @@ fun hitsWhileDialing(turn: Turn, dial: Int): Int {
 
     return hits
 }
+//4150
 //4350 too low
 //4960 not right
+//5222
+//5436
 //6242 too high
 
 /* Cooked Sample:

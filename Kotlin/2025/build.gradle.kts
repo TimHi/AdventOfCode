@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    testImplementation("io.mockk:mockk:1.9.3")
     implementation(kotlin("stdlib-jdk8"))
 }
 
