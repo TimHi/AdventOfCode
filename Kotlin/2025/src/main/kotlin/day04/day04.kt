@@ -58,17 +58,23 @@ fun partTwo(sampleFlag: Boolean) {
     }
     println("$sum rolls can be accessed by an elf on a forklift")
 }
+fun getSumOfNeighboursButCheckIfItWasRemoved(map: Map<Point, Boolean>, p: Point, removed: Boolean?): Int {
+    if (removed == true) return 5
 
-fun getSumOfNeighboursButCheckIfItWasRemoved(map: HashMap<Point, Boolean>, p: Point, removed: Boolean?): Int {
-    if(removed != null && removed) return 5;
+    val directions = listOf(
+        Point(-1, 0), Point(1, 0),   // Left, Right
+        Point(-1, -1), Point(1, -1), // Top-left, Top-right
+        Point(1, 1), Point(-1, 1),   // Down-right, Down-left
+        Point(0, 1), Point(0, -1)    // Down, Up
+    )
+
     var sum = 0
-    if(map.containsKey(Point(p.x - 1, p.y)) && map[Point(p.x - 1, p.y)] == false) sum++; //Left
-    if(map.containsKey(Point(p.x + 1, p.y)) && map[Point(p.x + 1, p.y)] == false) sum++; //Right, Left eyyoo captain jack
-    if(map.containsKey(Point(p.x - 1, p.y - 1)) && map[Point(p.x - 1, p.y - 1)] == false) sum++; //Top left
-    if(map.containsKey(Point(p.x + 1, p.y - 1)) && map[Point(p.x + 1, p.y -1)] == false) sum++;// Top right
-    if(map.containsKey(Point(p.x + 1, p.y + 1)) && map[Point(p.x + 1, p.y + 1)] == false) sum++; //Down right
-    if(map.containsKey(Point(p.x - 1, p.y + 1)) && map[Point(p.x - 1, p.y + 1)] == false) sum++; //Down left
-    if(map.containsKey(Point(p.x, p.y + 1)) && map[Point(p.x, p.y + 1)] == false) sum++; //Down
-    if(map.containsKey(Point(p.x, p.y - 1)) && map[Point(p.x, p.y - 1)] == false) sum++; //Up
+    for (d in directions) {
+        val neighbour = Point(p.x + d.x, p.y + d.y)
+        if (map[neighbour] == false) {
+            sum++
+        }
+    }
+
     return sum
 }
