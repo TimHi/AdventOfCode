@@ -44,7 +44,6 @@ fun partTwo(sampleFlag: Boolean) {
     val map = readFile(path)
 
     while(true) {
-        var removedWhileRunning = 0
         var deletedFlag = false;
         map.forEach { (t, u) ->
             val sumOfNeighbours = getSumOfNeighboursButCheckIfItWasRemoved(map, t, u)
@@ -52,7 +51,6 @@ fun partTwo(sampleFlag: Boolean) {
                 sum++;
                 map[t] = true
                 deletedFlag = true;
-                removedWhileRunning++
             }
         }
         if(!deletedFlag) break;
