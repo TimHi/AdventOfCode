@@ -55,7 +55,7 @@ fun isOperandLine(line: String): Boolean {
 }
 
 fun main() {
-    println("Day 05:")
+    println("Day 06:")
     println("Sample Part 01:")
     partOne(true)
     println("Real Input Part 01:")
