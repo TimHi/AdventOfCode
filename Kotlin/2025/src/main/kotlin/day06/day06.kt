@@ -16,52 +16,37 @@ fun parseHomework(path: String): MathHomeWork {
     {}.javaClass.getResourceAsStream(path)?.bufferedReader()?.forEachLine { it ->
         val splitLine = it.toList()
         if (isOperandLine(it)) {
-            for (r in 1..splitLine.size) {
-                if (splitLine[r] == '+' || splitLine[r] == '*') {
-                    operandGap = r - 1
-                    break
-                }
-            }
-            operands = splitLine.filter { c -> c != ' ' }.map { c -> c.toString() }.toMutableList()
+            operands = splitLine.map { c -> c.toString() }.toMutableList()
         }
     };
 
     //Now do the fucking numbers
     {}.javaClass.getResourceAsStream(path)?.bufferedReader()?.forEachLine {
         val splitLine = it.toList()
+
         if (!isOperandLine(it)) {
-            var tickTockTicker = 0
-            var currentParsingNumber = ""
-            val newList = mutableListOf<Number>()
-            for (i in splitLine.indices) {
-                if (i == 51) {
-                    println("Oooa")
-                }
-                if (tickTockTicker < operandGap) {
-                    currentParsingNumber += splitLine[i]
-                    tickTockTicker++
+            if (splitLine.size != operands.size) throw Error("Fucked it")
+            val n = mutableListOf<Number>()
+            var currentNum = ""
+            for (x in splitLine.indices) {
+                if (x > 0 && (operands[x] == "+" || operands[x] == "*")) {
+                    val strippedEnd = currentNum.substring(0, currentNum.length - 1)
+                    val isLeft = strippedEnd[0] == ' '
+                    n.add(Number(strippedEnd.filter { f -> f != ' ' }.toLong(), isLeft))
+                    currentNum = splitLine[x].toString()
                 } else {
-                    val isLeft = currentParsingNumber[0] != ' ';
-                    val parsedNumber = currentParsingNumber.filter { n -> n != ' ' }.toLong()
-
-                    newList.add(Number(parsedNumber, isLeft))
-
-                    tickTockTicker = 0
-                    currentParsingNumber = ""
+                    currentNum += splitLine[x]
                 }
             }
 
-            //add last num, fix later lol
-            val isLeft = currentParsingNumber[0] != ' ';
-            val parsedNumber = currentParsingNumber.filter { n -> n != ' ' }.toLong()
-
-            newList.add(Number(parsedNumber, isLeft))
-            numRows.add(newList)
+            val isLeft = currentNum[0] == ' '
+            n.add(Number(currentNum.filter { f -> f != ' ' }.toLong(), isLeft))
+            numRows.add(n)
         }
     }
 
 
-    return MathHomeWork(numRows, operands, operandGap)
+    return MathHomeWork(numRows, operands.filter { o -> o != " " }.toMutableList(), operandGap)
 }
 
 fun isOperandLine(line: String): Boolean {
@@ -76,9 +61,9 @@ fun main() {
     println("Real Input Part 01:")
     partOne(false)
     println("Sample Part 02:")
-    //partTwo(true)
+    partTwo(true)
     println("Real Input Part 02:")
-    //partTwo(false)
+    partTwo(false)
 }
 
 fun partOne(sampleFlag: Boolean) {
@@ -105,6 +90,61 @@ fun doHomework(homeWork: MathHomeWork): Long {
 }
 
 fun partTwo(sampleFlag: Boolean) {
-    var sum = 0L
-    val path = if (sampleFlag) "/day05/sample.txt" else "/day05/input.txt";
+    val path = if (sampleFlag) "/day06/sample.txt" else "/day06/input.txt";
+    val homeWork = parseHomework(path)
+    val grandTotal = doCorrectHomework(homeWork)
+    println("Grand total: $grandTotal")
+}
+
+fun doCorrectHomework(homeWork: MathHomeWork): Long {
+    val grandTotals = mutableListOf<Long>()
+    for (x in homeWork.operands.indices) {
+        val operand = homeWork.operands[x]
+        var intermediateGrandTotal = if (operand == "+") 0L else 1L
+        val intNums = mutableListOf<Number>()
+
+        var longestNumberInSplit = 0
+        for (y in homeWork.numRows.indices) {
+            val num = homeWork.numRows[y][x]
+            intNums.add(num)
+            if (num.num.toString().length > longestNumberInSplit) longestNumberInSplit = num.num.toString().length
+        }
+
+        //Pad left or right with X
+        val pad = if (operand == "+") "X" else "X"
+        val paddedNumbers = mutableListOf<String>()
+        intNums.forEach { n ->
+            if (n.num.toString().length < longestNumberInSplit) {
+                val missingPadding = longestNumberInSplit - n.num.toString().length
+                var tNum = if (n.left) "" else n.num.toString()
+
+                for (p in 0..<missingPadding) {
+                    tNum += pad
+                }
+
+                if (n.left) {
+                    tNum += n.num.toString()
+                }
+                paddedNumbers.add(tNum)
+            } else paddedNumbers.add(n.num.toString())
+        }
+
+        //Build numbers by going -> then V and filtering the padded X
+        val builtNumbers = mutableListOf<Long>()
+        for (c in 0..<paddedNumbers[0].length) {
+            var built = ""
+            for (y in 0..<paddedNumbers.size) {
+                built += paddedNumbers[y][c]
+            }
+            builtNumbers.add(built.filter { b -> b != 'X' }.toLong())
+        }
+
+        //Sum up the shit
+        builtNumbers.forEach { b ->
+            if (operand == "+") intermediateGrandTotal += b
+            else intermediateGrandTotal *= b
+        }
+        grandTotals.add(intermediateGrandTotal)
+    }
+    return grandTotals.sum()
 }
