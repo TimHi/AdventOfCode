@@ -66,43 +66,25 @@ fun partOne(sampleFlag: Boolean) {
 fun partTwo(sampleFlag: Boolean) {
     val path = if (sampleFlag) "/day07/sample.txt" else "/day07/input.txt";
     val grid = parseGrind(path)
-    var beamSum = 0
-    val startPos = grid[0].find { p -> p.s == "S" }
-    if (startPos == null) throw Error("Startpos undefined")
-    var beamPos = mutableListOf(Point(startPos.x, startPos.y, "."))
+    var beamSum = 0L
+    var worlds = LongArray(grid[0].size) { 0L }
+    val startX = grid[0].find { it.s == "S" }!!.x
+    worlds[startX] = 1
 
-    //Worlds have to be for each line
-    //now its 6 in the small sample, but it has to be 4, 6 because first split counts twice?
-    var worlds = hashMapOf<Point, Int>()
     for (y in grid.indices) {
-        val droppedBeamPos = mutableListOf<Point>()
-
+        val worldsAfterX = LongArray(grid[0].size) { 0L }
         for (x in grid[y].indices) {
-            val foundPoint = beamPos.find { p -> p.x == x && p.y == y }
-            if (foundPoint != null && grid[y][x].s == "^") {
-
-                val d1 = Point(x - 1, y + 1, foundPoint.s)
-                val d2 = Point(x + 1, y + 1, foundPoint.s)
-
-                worlds = checkAndUpdateWorld(d1, worlds)
-                worlds = checkAndUpdateWorld(d2, worlds)
-
-                droppedBeamPos.add(d1)
-                droppedBeamPos.add(d2)
-            } else if (foundPoint != null && grid[y][x].s == "." || grid[y][x].s == "S") {
-                droppedBeamPos.add(Point(x, y + 1, grid[y][x].s))
-            } else if (foundPoint != null && grid[y][x].s != "." && grid[y][x].s != "^") {
-                throw Error("Wtf: {$grid[y][x].s}")
+            if (grid[y][x].s == "^") {
+                worldsAfterX[x + 1] += worlds[x]
+                worldsAfterX[x - 1] += worlds[x]
             } else {
-                // Do nothing?
+                worldsAfterX[x] += worlds[x]
             }
         }
-        beamPos = droppedBeamPos
+        worlds = worldsAfterX
     }
 
-    worlds.forEach { (_, u) ->
-        beamSum += u
-    }
+    worlds.forEach { beamSum += it }
     println("Seperate Worlds: $beamSum")
 }
 
